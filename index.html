@@ -24,10 +24,7 @@
       background: var(--bg);
       color: var(--text);
     }
-    .app{
-      min-height: 100vh;
-      padding-bottom: 86px; /* место под нижнее меню */
-    }
+    .app{ min-height:100vh; padding-bottom:86px; }
     .topbar{
       position: sticky;
       top:0;
@@ -43,7 +40,7 @@
     }
     .brand{
       display:flex; align-items:center; gap:10px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: .2px;
     }
     .chip{
@@ -52,6 +49,7 @@
       border:1px solid var(--line);
       border-radius: 999px;
       color: var(--muted);
+      white-space: nowrap;
     }
     .container{ padding: 16px; }
     .row{ display:flex; gap:12px; flex-wrap:wrap; }
@@ -71,7 +69,7 @@
       border-radius: 12px;
       padding: 12px 14px;
       font-size: 15px;
-      font-weight: 650;
+      font-weight: 700;
       width: 100%;
     }
     .btn.primary{ background: var(--accent); color:#07110c; }
@@ -94,8 +92,8 @@
       cursor:pointer;
       user-select:none;
     }
-    .game-tile .title{ font-weight: 750; }
-    .game-tile .tag{ font-size:12px; color: var(--muted); }
+    .game-tile .title{ font-weight: 850; }
+    .game-tile .tag{ font-size:12px; color: var(--muted); margin-top:6px; }
     .pill{
       display:inline-flex;
       align-items:center;
@@ -151,7 +149,30 @@
       font-size: 12px;
       color: var(--muted);
       margin-top: 10px;
+      line-height: 1.35;
     }
+
+    /* Simple “toast” */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 86px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      z-index: 999;
+      max-width: 90vw;
+      text-align:center;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+    }
+    .toast.show{ opacity: 1; }
   </style>
 </head>
 
@@ -165,21 +186,28 @@
       <div class="chip" id="userChip">Гость</div>
     </div>
 
-    <!-- PAGES -->
     <main class="container">
 
       <!-- GAMES -->
       <section id="page-games">
         <div class="card" style="margin-bottom:12px;">
           <h2>Выбор игры</h2>
-          <div class="muted">Выбери режим и соревнуйся. Пока подключим 1–2 игры, потом расширим.</div>
+          <div class="muted">Выбирай режим. Сейчас доступны две игры (без сервера, локально).</div>
         </div>
 
         <div class="grid">
           <div class="game-tile" onclick="openGame('reaction')">
             <div>
               <div class="title">⚡ Reaction Duel</div>
-              <div class="tag">Скорость реакции • 1 игрок (пока)</div>
+              <div class="tag">Скорость реакции • 1 игрок</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Нажми, чтобы открыть</div>
+          </div>
+
+          <div class="game-tile" onclick="openGame('penalty')">
+            <div>
+              <div class="title">⚽️ Penalty Duel</div>
+              <div class="tag">Пенальти • серия 5 ударов</div>
             </div>
             <div class="muted" style="font-size:12px;">Нажми, чтобы открыть</div>
           </div>
@@ -199,17 +227,9 @@
             </div>
             <div class="muted" style="font-size:12px;">Скоро</div>
           </div>
-
-          <div class="game-tile" onclick="toast('Скоро добавим 🙂')">
-            <div>
-              <div class="title">🃏 Lucky Draw</div>
-              <div class="tag">Риск/награда • валюта</div>
-            </div>
-            <div class="muted" style="font-size:12px;">Скоро</div>
-          </div>
         </div>
 
-        <div class="note">Совет: сначала делаем 1 игру идеально (UX, баланс, награды), потом клонируем механику.</div>
+        <div class="note">Дальше можно: (1) сделать UI красивее, (2) добавить ставки coins, (3) сделать PvP (нужен сервер).</div>
       </section>
 
       <!-- WALLET -->
@@ -238,7 +258,7 @@
           </div>
 
           <button style="margin-top:10px;" class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
-          <div class="note">Пока это локально (в твоём телефоне). Для PvP и реальных «звёзд/крипты» нужен сервер.</div>
+          <div class="note">Пока всё хранится локально (на устройстве). Для PvP и настоящей экономики нужен backend.</div>
         </div>
       </section>
 
@@ -255,11 +275,11 @@
           </div>
 
           <div style="margin-top:14px;" class="row">
-            <button class="btn ghost" onclick="toast('Скоро: аватар, достижения, история матчей')">Настройки (скоро)</button>
+            <button class="btn ghost" onclick="toast('Скоро: достижения, история матчей, рефералы')">Настройки (скоро)</button>
             <button class="btn primary" onclick="go('games')">Играть</button>
           </div>
 
-          <div class="note">Позже сюда добавим: рефералы, достижения, историю дуэлей, привязку кошелька.</div>
+          <div class="note">Позже сюда: достижения, рефералы, история дуэлей, подключение кошелька (crypto).</div>
         </div>
       </section>
 
@@ -277,17 +297,61 @@
             background:red; box-shadow: 0 0 20px red;"></div>
 
           <button id="startBtn" class="btn primary">Ждать старт</button>
-          <div id="result" style="margin-top:14px; font-size:20px; font-weight:700;"></div>
+          <div id="result" style="margin-top:14px; font-size:20px; font-weight:850;"></div>
 
-          <div class="note">Награда: +5 coins за валидную попытку. Быстро (<250ms): +3 бонус.</div>
+          <div class="note">Награда: +5 coins за валидную попытку. Быстро (&lt;250ms): +3 бонус. Фальстарт: −2 coins.</div>
           <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад к играм</button>
+        </div>
+      </section>
+
+      <!-- GAME: PENALTY -->
+      <section id="page-penalty" class="hidden">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>⚽️ Penalty Duel</h2>
+          <div class="muted">Выбери направление удара. Вратарь выбирает тоже. 5 ударов — и итог.</div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="margin: 0 0 12px;">
+            <div class="pill" style="flex:1; justify-content:space-between;">
+              <span>🥅 Голы</span><strong id="penScore">0</strong>
+            </div>
+            <div class="pill" style="flex:1; justify-content:space-between;">
+              <span>🎯 Удар</span><strong id="penShot">1/5</strong>
+            </div>
+          </div>
+
+          <div style="
+            width:100%;
+            max-width: 420px;
+            margin: 0 auto 14px;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(140,255,193,.08), rgba(255,255,255,0));
+          ">
+            <div style="text-align:center; font-weight:900; margin-bottom:10px;">ВЫБОР УДАРА</div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+              <button class="btn ghost" onclick="penShoot('L')">⬅️ Лево</button>
+              <button class="btn ghost" onclick="penShoot('C')">⬆️ Центр</button>
+              <button class="btn ghost" onclick="penShoot('R')">➡️ Право</button>
+            </div>
+
+            <div id="penMsg" style="margin-top:12px; text-align:center; font-size:18px; font-weight:900;"></div>
+            <div id="penSub" class="muted" style="margin-top:6px; text-align:center;"></div>
+          </div>
+
+          <button id="penRestartBtn" class="btn primary" onclick="penRestart()">Начать серию</button>
+          <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад к играм</button>
+
+          <div class="note">Награда: +2 coins за гол. Победа (3+ из 5): +10 coins и +1 win.</div>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="nav">
     <button id="tab-games" onclick="go('games')">
       <div class="icon">🎮</div>
@@ -303,15 +367,15 @@
     </button>
   </nav>
 
+  <div id="toast" class="toast"></div>
+
 <script>
   // --- Telegram init ---
   const tg = window.Telegram?.WebApp;
   try { tg?.ready(); } catch(e){}
-
-  // Expand for nicer UI
   try { tg?.expand(); } catch(e){}
 
-  // --- State (local) ---
+  // --- Local state ---
   const storeKey = "f1duel_state_v1";
   const defaultState = { coins: 0, stars: 0, wins: 0, plays: 0 };
   const state = loadState();
@@ -324,33 +388,49 @@
       return { ...defaultState };
     }
   }
+
   function saveState(){
     localStorage.setItem(storeKey, JSON.stringify(state));
     renderWallet();
   }
 
+  // --- UI toast ---
+  const toastEl = document.getElementById("toast");
+  let toastTimer = null;
+  function toast(text){
+    try{ tg?.HapticFeedback?.impactOccurred("light"); }catch(e){}
+    toastEl.textContent = text;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1600);
+  }
+
   // --- Routing ---
-  const pages = ["games","wallet","profile","reaction"];
+  const pages = ["games","wallet","profile","reaction","penalty"];
+
   function go(page){
     pages.forEach(p => {
       document.getElementById("page-" + p).classList.toggle("hidden", p !== page);
     });
+
     // Tabs active
     ["games","wallet","profile"].forEach(t => {
       const el = document.getElementById("tab-" + t);
       el.classList.toggle("active", t === page);
     });
+
     // If inside a game page, keep games tab active
-    if(page === "reaction"){
+    if(page === "reaction" || page === "penalty"){
       document.getElementById("tab-games").classList.add("active");
       ["wallet","profile"].forEach(t => document.getElementById("tab-"+t).classList.remove("active"));
     }
-    // simple hash
+
     location.hash = "#" + page;
   }
 
   function openGame(id){
     if(id === "reaction") go("reaction");
+    if(id === "penalty") go("penalty");
   }
 
   // --- Header / User ---
@@ -359,19 +439,19 @@
   const envChip = document.getElementById("envChip");
 
   envChip.textContent = tg ? "Telegram WebApp" : "Browser";
+
   if(user){
     const nick = user.username || user.first_name || "Player";
     userChip.textContent = "@" + nick;
     document.getElementById("nickVal").textContent = nick;
     document.getElementById("tgidVal").textContent = user.id;
-    document.getElementById("profileLine").textContent = `Привет, ${nick}. Здесь будут твои достижения и статистика.`;
+    document.getElementById("profileLine").textContent = `Привет, ${nick}. Тут будут достижения и история игр.`;
   } else {
     document.getElementById("profileLine").textContent = "Открой через Telegram, чтобы подтянулся профиль.";
   }
 
-  // --- Wallet render ---
+  // --- Wallet ---
   function calcLevel(){
-    // примитивный уровень по coins+stars
     const score = state.coins + state.stars * 50;
     return Math.max(1, Math.floor(score / 200) + 1);
   }
@@ -387,12 +467,10 @@
   function addCoins(n){
     state.coins = Math.max(0, state.coins + n);
     saveState();
-    toast(`Баланс: ${state.coins} coins`);
   }
 
   function convertCoinsToStars(){
-    // правило: 100 coins = 1 star
-    const rate = 100;
+    const rate = 100; // 100 coins = 1 star
     if(state.coins < rate){
       toast(`Нужно минимум ${rate} coins`);
       return;
@@ -410,14 +488,7 @@
     toast("Прогресс сброшен");
   }
 
-  // --- Toast (mini) ---
-  function toast(text){
-    // Telegram haptic (optional)
-    try{ tg?.HapticFeedback?.impactOccurred("light"); }catch(e){}
-    alert(text);
-  }
-
-  // --- Reaction game ---
+  // --- Game: Reaction ---
   const light = document.getElementById("light");
   const startBtn = document.getElementById("startBtn");
   const result = document.getElementById("result");
@@ -428,18 +499,20 @@
 
   function setLight(color){
     light.style.background = color;
-    light.style.boxShadow = color === "lime" ? "0 0 30px lime" : "0 0 20px red";
+    light.style.boxShadow = (color === "lime")
+      ? "0 0 30px lime"
+      : "0 0 20px red";
   }
 
   startBtn.onclick = () => {
     if (waiting) return;
+
     result.textContent = "";
     setLight("red");
     waiting = true;
     startBtn.textContent = "ЖДИ…";
 
     const delay = 2000 + Math.random() * 3000;
-
     timer = setTimeout(() => {
       setLight("lime");
       startTime = Date.now();
@@ -455,7 +528,8 @@
       clearTimeout(timer);
       result.textContent = "❌ Фальстарт! −2 coins";
       addCoins(-2);
-      resetRound();
+      toast("Фальстарт −2");
+      resetReactionRound();
       return;
     }
 
@@ -466,24 +540,107 @@
     if(reaction < 250) reward += 3;
 
     addCoins(reward);
+    saveState();
+
     result.textContent = `⚡ ${reaction} мс  •  +${reward} coins`;
+    toast(`+${reward} coins`);
     try{ tg?.HapticFeedback?.notificationOccurred("success"); }catch(e){}
-    resetRound();
+    resetReactionRound();
   };
 
-  function resetRound(){
+  function resetReactionRound(){
     waiting = false;
     startTime = 0;
     startBtn.textContent = "Ещё раз";
-    saveState();
+  }
+
+  // --- Game: Penalty ---
+  const penScoreEl = document.getElementById("penScore");
+  const penShotEl  = document.getElementById("penShot");
+  const penMsgEl   = document.getElementById("penMsg");
+  const penSubEl   = document.getElementById("penSub");
+  const penRestartBtn = document.getElementById("penRestartBtn");
+
+  let penShot = 1;
+  let penGoals = 0;
+  let penActive = false;
+
+  function penRender(){
+    penScoreEl.textContent = penGoals;
+    penShotEl.textContent = `${Math.min(penShot,5)}/5`;
+  }
+
+  function penRestart(){
+    penShot = 1;
+    penGoals = 0;
+    penActive = true;
+    penRestartBtn.textContent = "Серия идёт…";
+    penMsgEl.textContent = "Выбирай направление";
+    penSubEl.textContent = "";
+    penRender();
+    toast("Старт серии");
+  }
+
+  function penShoot(dir){
+    if(!penActive){
+      toast("Нажми «Начать серию»");
+      return;
+    }
+    if(penShot > 5){
+      toast("Серия закончилась");
+      return;
+    }
+
+    const keeper = ["L","C","R"][Math.floor(Math.random()*3)];
+    const isGoal = dir !== keeper;
+
+    const map = {L:"лево", C:"центр", R:"право"};
+
+    if(isGoal){
+      penGoals += 1;
+      addCoins(2);
+      penMsgEl.textContent = "⚽️ ГОООЛ! +2 coins";
+      toast("+2 coins");
+      try{ tg?.HapticFeedback?.notificationOccurred("success"); }catch(e){}
+    } else {
+      penMsgEl.textContent = "🧤 Сейв!";
+      toast("Сейв");
+      try{ tg?.HapticFeedback?.notificationOccurred("error"); }catch(e){}
+    }
+
+    penSubEl.textContent = `Ты: ${map[dir]} • Вратарь: ${map[keeper]}`;
+
+    penShot += 1;
+    penRender();
+
+    if(penShot === 6){
+      // финал
+      penActive = false;
+      state.plays += 1;
+
+      if(penGoals >= 3){
+        state.wins += 1;
+        addCoins(10);
+        saveState();
+        penMsgEl.textContent = `🏆 Победа! ${penGoals}/5 • +10 coins`;
+        toast("Победа +10");
+      } else {
+        saveState();
+        penMsgEl.textContent = `Серия окончена: ${penGoals}/5`;
+        toast("Серия завершена");
+      }
+
+      penRestartBtn.textContent = "Сыграть ещё раз";
+    }
   }
 
   // --- Boot ---
   renderWallet();
+  penRender();
 
-  // open from hash
   const initial = (location.hash || "#games").slice(1);
   go(pages.includes(initial) ? initial : "games");
 </script>
 </body>
 </html>
+
