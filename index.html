@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Penalty Duel</title>
+  <title>F1 Duel</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
@@ -13,196 +13,164 @@
       --shadow:0 12px 30px rgba(0,0,0,.35);--r:16px;
     }
 
-    /* CRITICAL: prevent selection/copy/callout in mobile webview */
+    /* ======= CRITICAL: prevent selection/copy/callout in mobile webview ======= */
     html, body{
       margin:0;
       background:var(--bg);
       color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      height:100%;
       -webkit-user-select:none;
       user-select:none;
       -webkit-touch-callout:none;
       overscroll-behavior:none;
-      height:100%;
     }
     *{
       box-sizing:border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .app{min-height:100vh;padding:16px 16px 24px;text-align:center}
-    h1{font-size:20px;margin:0 0 6px}
-    .muted{color:var(--muted);font-size:13px;line-height:1.35}
+    .app{min-height:100vh;padding-bottom:86px}
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      background:rgba(15,17,21,.92);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950}
+    .chip{
+      font-size:12px;padding:6px 10px;border:1px solid var(--line);
+      border-radius:999px;color:var(--muted);white-space:nowrap
+    }
+    .container{padding:16px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:14px
+    }
+    .card h2{margin:0 0 8px 0;font-size:16px}
+    .muted{color:var(--muted);line-height:1.35}
+    .tile{
+      background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      padding:14px;
+      min-height:120px;
+      display:flex;flex-direction:column;justify-content:space-between;
+      cursor:pointer;user-select:none
+    }
+    .tile .t{font-weight:950}
+    .tile .d{font-size:12px;color:var(--muted);margin-top:6px}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:10px 12px;border:1px solid var(--line);border-radius:14px;
+      background:rgba(255,255,255,.02);flex:1
+    }
+    .btn{
+      appearance:none;border:none;cursor:pointer;
+      border-radius:12px;padding:12px 14px;
+      font-size:15px;font-weight:950;width:100%
+    }
+    .btn.primary{background:var(--accent);color:#07110c}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+    .btn.danger{background:var(--danger);color:#1a0b0b}
+    .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
+    .hidden{display:none!important}
 
+    .nav{
+      position:fixed;left:0;right:0;bottom:0;height:72px;
+      background:rgba(15,17,21,.92);
+      backdrop-filter:blur(10px);
+      border-top:1px solid var(--line);
+      display:flex;padding:10px 10px 14px;gap:10px;z-index:20
+    }
+    .nav button{
+      flex:1;border:none;background:transparent;color:var(--muted);
+      border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
+    }
+    .nav button.active{
+      color:var(--text);
+      background:rgba(140,255,193,.12);
+      border:1px solid rgba(140,255,193,.25)
+    }
+    .icon{font-size:18px;line-height:1}
+
+    .toast{
+      position:fixed;left:50%;bottom:86px;transform:translateX(-50%);
+      background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);
+      font-size:13px;z-index:999;max-width:90vw;text-align:center;
+      opacity:0;pointer-events:none;transition:opacity .18s ease
+    }
+    .toast.show{opacity:1}
+
+    /* ===================== PENALTY ===================== */
     .stage{
-      position:relative;
-      max-width:420px;
-      height:290px;
-      margin:18px auto 12px;
+      position:relative;width:100%;max-width:420px;margin:0 auto 12px;height:300px;
+      border-radius:18px;border:1px solid var(--line);overflow:hidden;
       background:
         radial-gradient(520px 240px at 50% 10%, rgba(255,255,255,.12), rgba(255,255,255,0)),
         linear-gradient(180deg, rgba(140,255,193,.06), rgba(0,0,0,0)),
         #0b0d12;
-      border-radius:18px;
-      border:1px solid var(--line);
-      overflow:hidden;
+      box-shadow:var(--shadow);
 
       /* CRITICAL: disable browser gestures inside playfield */
       touch-action:none;
     }
-
     .goal{
-      position:absolute;
-      top:28px; left:26px; right:26px;
-      height:130px;
-      border:2px solid rgba(255,255,255,.28);
-      border-radius:16px;
+      position:absolute;top:28px;left:26px;right:26px;height:130px;
+      border:2px solid rgba(255,255,255,.28);border-radius:16px;
       box-shadow:0 18px 50px rgba(0,0,0,.40) inset;
     }
     .goal:before{
-      content:"";
-      position:absolute; inset:0;
+      content:"";position:absolute;inset:0;border-radius:16px;
       background-image:
         linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
-      background-size: 24px 24px;
-      opacity:.55;
-      border-radius:16px;
+      background-size: 24px 24px;opacity:.55;
     }
-    .goalLine{
-      position:absolute;
-      top:160px; left:26px; right:26px;
-      height:2px;
-      background:rgba(255,255,255,.18);
-    }
-
+    .goalLine{position:absolute;top:160px;left:26px;right:26px;height:2px;background:rgba(255,255,255,.18)}
     .keeper{
-      position:absolute;
-      top:88px;
-      left:50%;
-      width:54px;height:54px;
-      transform:translateX(-50%);
-      border-radius:18px;
-      background:rgba(255,255,255,.16);
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:0 10px 24px rgba(0,0,0,.35);
+      position:absolute;top:88px;left:50%;width:54px;height:54px;transform:translateX(-50%);
+      border-radius:18px;background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.35);
     }
     .keeper:after{
-      content:"";
-      position:absolute;
-      left:12px; right:12px; bottom:-18px;
-      height:18px;
-      border-radius:0 0 14px 14px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.08);
+      content:"";position:absolute;left:12px;right:12px;bottom:-18px;height:18px;
+      border-radius:0 0 14px 14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.08);
     }
-
     .ball{
-      position:absolute;
-      bottom:18px;
-      left:50%;
-      width:24px;height:24px;
-      transform:translateX(-50%) scale(1);
-      border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
-      box-shadow:0 10px 22px rgba(0,0,0,.45);
-      will-change: transform;
+      position:absolute;bottom:18px;left:50%;width:24px;height:24px;transform:translateX(-50%) scale(1);
+      border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
+      box-shadow:0 10px 22px rgba(0,0,0,.45);will-change:transform;
 
-      /* CRITICAL: also disable gestures on the ball itself */
+      /* CRITICAL */
       touch-action:none;
       -webkit-user-drag:none;
     }
-
     .aimLine{
-      position:absolute;
-      width:2px;
-      background:rgba(140,255,193,.85);
-      box-shadow:0 0 16px rgba(140,255,193,.35);
-      transform-origin:bottom center;
-      bottom:30px;
-      left:50%;
-      height:0;
-      display:none;
-      border-radius:999px;
-      will-change: transform, height;
+      position:absolute;width:2px;background:rgba(140,255,193,.85);
+      box-shadow:0 0 16px rgba(140,255,193,.35);transform-origin:bottom center;
+      bottom:30px;left:50%;height:0;display:none;border-radius:999px;will-change:transform,height;
     }
-
     .aimSpot{
-      position:absolute;
-      width:10px;height:10px;border-radius:50%;
-      background:rgba(140,255,193,.95);
-      box-shadow:0 0 18px rgba(140,255,193,.55);
-      opacity:0;
-      transition:opacity .12s ease;
+      position:absolute;width:10px;height:10px;border-radius:50%;
+      background:rgba(140,255,193,.95);box-shadow:0 0 18px rgba(140,255,193,.55);
+      opacity:0;transition:opacity .12s ease;
     }
     .aimSpot.show{opacity:1}
+    .flash{position:absolute;inset:0;opacity:0;transition:opacity .15s ease}
 
-    .flash{
-      position:absolute; inset:0;
-      opacity:0;
-      transition:opacity .15s ease;
-    }
-
-    .hud{
-      max-width:420px;
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      justify-content:space-between;
-    }
-    .pill{
-      flex:1;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px 12px;
-      background:rgba(255,255,255,.02);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .pill strong{color:#fff;font-size:14px}
-
-    .msg{
-      margin-top:10px;
-      font-size:18px;
-      font-weight:900;
-      min-height:26px;
-    }
-    .sub{
-      margin-top:6px;
-      color:var(--muted);
-      font-size:13px;
-      min-height:18px;
-    }
-
-    .btn{
-      max-width:420px;
-      margin:12px auto 0;
-      width:100%;
-      border:none;
-      border-radius:12px;
-      padding:12px 14px;
-      font-weight:900;
-      font-size:15px;
-      cursor:pointer;
-      background:transparent;
-      color:#fff;
-      border:1px solid var(--line);
-    }
-    .btn.primary{
-      background:var(--accent);
-      color:#07110c;
-      border:none;
-    }
-    .note{
-      max-width:420px;
-      margin:10px auto 0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.35;
-    }
+    .centerText{ text-align:center; }
+    .bigMsg{ margin-top:12px;font-size:18px;font-weight:950;min-height:26px }
+    .smallMsg{ margin-top:6px;color:var(--muted);font-size:13px;min-height:18px }
 
     @keyframes kickL { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-210%) translateY(-190px) scale(.55)} }
     @keyframes kickC { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-50%) translateY(-205px) scale(.55)} }
@@ -211,70 +179,166 @@
     @keyframes keepL { from{transform:translateX(-50%)} to{transform:translateX(-150%)} }
     @keyframes keepC { from{transform:translateX(-50%)} to{transform:translateX(-50%)} }
     @keyframes keepR { from{transform:translateX(-50%)} to{transform:translateX(50%)} }
-
-    .helpHand{
-      max-width:420px;
-      margin:8px auto 0;
-      font-size:12px;
-      color:var(--muted);
-      opacity:.9;
-    }
   </style>
 </head>
 
 <body>
-<div class="app">
-  <h1>⚽ Penalty Duel</h1>
-  <div class="muted">Управление: коснись мяча → свайпни вверх (направление) → держи (сила) → отпусти (удар).</div>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand"><span>🏁 F1 Duel</span><span id="envChip" class="chip">WebApp</span></div>
+      <div class="chip" id="userChip">Гость</div>
+    </div>
 
-  <div class="stage" id="stage">
-    <div class="goal"></div>
-    <div class="goalLine"></div>
+    <main class="container">
+      <!-- GAMES -->
+      <section id="page-games">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>Игры</h2>
+          <div class="muted">Собираем MVP: сейчас — Penalty. Air Hockey добавим следующим шагом.</div>
+        </div>
 
-    <!-- Aim spots (visual hint where you're aiming) -->
-    <div id="spotL" class="aimSpot" style="left:64px; top:58px;"></div>
-    <div id="spotC" class="aimSpot" style="left:50%; top:46px; transform:translateX(-50%);"></div>
-    <div id="spotR" class="aimSpot" style="right:64px; top:58px;"></div>
+        <div class="grid">
+          <div class="tile" onclick="openGame('penalty')">
+            <div>
+              <div class="t">⚽ Penalty</div>
+              <div class="d">Swipe + Hold (направление + сила)</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Открыть</div>
+          </div>
+          <div class="tile" onclick="toast('Air Hockey скоро 🙂')">
+            <div>
+              <div class="t">🏒 Air Hockey</div>
+              <div class="d">Скоро (не трогаем сейчас)</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Скоро</div>
+          </div>
+        </div>
 
-    <div class="keeper" id="keeper"></div>
-    <div class="aimLine" id="aimLine"></div>
-    <div class="ball" id="ball"></div>
-    <div class="flash" id="flash"></div>
+        <div class="note">Звук в браузере включается после первого касания.</div>
+      </section>
+
+      <!-- WALLET -->
+      <section id="page-wallet" class="hidden">
+        <div class="card">
+          <h2>Баланс</h2>
+          <div class="row" style="margin:10px 0 14px;">
+            <div class="pill"><span>🪙 Coins</span><strong id="coinsVal">0</strong></div>
+            <div class="pill"><span>🏆 Wins</span><strong id="winsVal">0</strong></div>
+          </div>
+          <div class="row">
+            <div class="pill"><span>🎮 Игры</span><strong id="playsVal">0</strong></div>
+            <div class="pill"><span>⭐ Level</span><strong id="levelVal">1</strong></div>
+          </div>
+          <div class="note">Пока всё локально (localStorage). PvP появится, когда подключим backend.</div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn ghost" onclick="addCoins(10); toast('+10 coins (тест)')">+10 coins</button>
+            <button class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="page-profile" class="hidden">
+        <div class="card">
+          <h2>Личный кабинет</h2>
+          <div class="muted" id="profileLine">—</div>
+
+          <div style="margin-top:12px;">
+            <div class="row">
+              <div class="pill"><span>Ник</span><strong id="nickVal">—</strong></div>
+              <div class="pill"><span>TG ID</span><strong id="tgidVal">—</strong></div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn primary" onclick="go('games')">Играть</button>
+            <button class="btn ghost" onclick="toast('Настройки скоро 🙂')">Настройки</button>
+          </div>
+
+          <div class="note">Если открыть не через Telegram — профиль не подтянется.</div>
+        </div>
+      </section>
+
+      <!-- PENALTY -->
+      <section id="page-penalty" class="hidden">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>⚽ Penalty</h2>
+          <div class="muted">Коснись мяча → свайпни вверх (направление) → держи (сила) → отпусти (удар).</div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="margin:0 0 12px;">
+            <div class="pill"><span>🎯 Удар</span><strong id="penShotTxt">1/5</strong></div>
+            <div class="pill"><span>🥅 Голы</span><strong id="penGoalsTxt">0</strong></div>
+          </div>
+
+          <div class="stage" id="penStage">
+            <div class="goal"></div>
+            <div class="goalLine"></div>
+
+            <div id="spotL" class="aimSpot" style="left:64px; top:58px;"></div>
+            <div id="spotC" class="aimSpot" style="left:50%; top:46px; transform:translateX(-50%);"></div>
+            <div id="spotR" class="aimSpot" style="right:64px; top:58px;"></div>
+
+            <div class="keeper" id="keeper"></div>
+            <div class="aimLine" id="aimLine"></div>
+            <div class="ball" id="ball"></div>
+            <div class="flash" id="flash"></div>
+          </div>
+
+          <div class="centerText">
+            <div class="bigMsg" id="penMsg"></div>
+            <div class="smallMsg" id="penSub"></div>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn ghost" onclick="penRestart()">Заново серию</button>
+            <button class="btn primary" onclick="go('games')">← Назад</button>
+          </div>
+
+          <div class="note">Гол: +2 coins. Победа серии (3+ из 5): +10 coins и +1 win.</div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <div class="hud">
-    <div class="pill"><span>🎯 Удар</span><strong id="shotTxt">1/5</strong></div>
-    <div class="pill"><span>🥅 Голы</span><strong id="goalsTxt">0</strong></div>
-  </div>
+  <nav class="nav">
+    <button id="tab-games" onclick="go('games')"><div class="icon">🎮</div><div>Игры</div></button>
+    <button id="tab-wallet" onclick="go('wallet')"><div class="icon">💰</div><div>Баланс</div></button>
+    <button id="tab-profile" onclick="go('profile')"><div class="icon">👤</div><div>Кабинет</div></button>
+  </nav>
 
-  <div class="msg" id="msg"></div>
-  <div class="sub" id="sub"></div>
-
-  <button class="btn" id="restartBtn">Заново серию</button>
-  <div class="note">Сильнее держишь — мощнее удар, но выше риск промаха (перекладина/мимо). Вратарь иногда угадывает направление.</div>
-</div>
+  <div id="toast" class="toast"></div>
 
 <script>
-  // Telegram
+  // ========= Telegram =========
   const tg = window.Telegram?.WebApp;
-  try { tg?.ready(); tg?.expand(); } catch(e) {}
+  try{ tg?.ready(); tg?.expand(); }catch(e){}
 
-  // Haptics helpers
+  const envChip = document.getElementById("envChip");
+  envChip.textContent = tg ? "Telegram WebApp" : "Browser";
+
+  // ========= UI helpers =========
+  const toastEl=document.getElementById("toast"); let toastTimer=null;
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1600); }
+
+  // ========= Haptics =========
   function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
   function hImpact(type="light"){ try{ tg?.HapticFeedback?.impactOccurred(type); }catch(e){} }
   function hNote(type="success"){ try{ tg?.HapticFeedback?.notificationOccurred(type); }catch(e){} }
 
-  // Audio (minimal, no spam)
+  // ========= Audio (minimal) =========
   let audioUnlocked=false, audioCtx=null;
   function unlockAudio(){
     if(audioUnlocked) return;
     try{
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
       o.connect(g); g.connect(audioCtx.destination);
-      g.gain.value = 0.0001; o.start(); o.stop(audioCtx.currentTime + 0.01);
-      audioUnlocked = true;
+      g.gain.value=0.0001; o.start(); o.stop(audioCtx.currentTime+0.01);
+      audioUnlocked=true;
     }catch(e){}
   }
   function beep(freq=440,dur=0.07,vol=0.06,type="sine"){
@@ -293,173 +357,212 @@
   const sSave=()=>{beep(220,0.10,0.06,"square");};
   const sMiss=()=>{beep(180,0.14,0.05,"sawtooth");};
 
-  // DOM
-  const stage = document.getElementById("stage");
-  const ball = document.getElementById("ball");
-  const keeper = document.getElementById("keeper");
-  const line = document.getElementById("aimLine");
-  const flash = document.getElementById("flash");
-  const spotL = document.getElementById("spotL");
-  const spotC = document.getElementById("spotC");
-  const spotR = document.getElementById("spotR");
-  const shotTxt = document.getElementById("shotTxt");
-  const goalsTxt = document.getElementById("goalsTxt");
-  const msg = document.getElementById("msg");
-  const sub = document.getElementById("sub");
-  const restartBtn = document.getElementById("restartBtn");
-
-  // Game state
-  let shot = 1, goals = 0;
-  let holding = false;
-  let startX = 0, startY = 0;
-  let currentAngle = 0;
-  let power = 0;
-  let locked = false;
-
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-  function renderHUD(){
-    shotTxt.textContent = `${Math.min(shot,5)}/5`;
-    goalsTxt.textContent = `${goals}`;
+  // ========= Local state =========
+  const storeKey="f1duel_state_app_v1";
+  const defaultState={coins:0,wins:0,plays:0};
+  const state=(()=>{ try{const r=localStorage.getItem(storeKey); return r?{...defaultState,...JSON.parse(r)}:{...defaultState}; }catch(e){ return {...defaultState}; } })();
+
+  function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); renderWallet(); }
+  function calcLevel(){ return Math.max(1, Math.floor(state.coins/120)+1); }
+  function addCoins(n){ state.coins=Math.max(0, state.coins+n); saveState(); }
+  function resetProgress(){ Object.assign(state,{...defaultState}); saveState(); toast("Прогресс сброшен"); }
+
+  function renderWallet(){
+    document.getElementById("coinsVal").textContent=state.coins;
+    document.getElementById("winsVal").textContent=state.wins;
+    document.getElementById("playsVal").textContent=state.plays;
+    document.getElementById("levelVal").textContent=calcLevel();
   }
 
-  function hideSpots(){
-    spotL.classList.remove("show");
-    spotC.classList.remove("show");
-    spotR.classList.remove("show");
+  // ========= Profile =========
+  const userChip=document.getElementById("userChip");
+  const user=tg?.initDataUnsafe?.user;
+  if(user){
+    const nick=user.username||user.first_name||"Player";
+    userChip.textContent="@"+nick;
+    document.getElementById("nickVal").textContent=nick;
+    document.getElementById("tgidVal").textContent=user.id;
+    document.getElementById("profileLine").textContent=`Привет, ${nick}.`;
+  } else {
+    userChip.textContent="Гость";
+    document.getElementById("profileLine").textContent="Открой через Telegram, чтобы подтянулся профиль.";
   }
+
+  // ========= Routing =========
+  const pages=["games","wallet","profile","penalty"];
+  function go(page){
+    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden", p!==page));
+    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active", t===page));
+    if(page==="penalty"){
+      document.getElementById("tab-games").classList.add("active");
+      ["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"));
+    }
+    location.hash="#"+page;
+  }
+  function openGame(id){
+    if(id==="penalty") go("penalty");
+  }
+
+  // ========= Penalty game =========
+  const penShotTxt=document.getElementById("penShotTxt");
+  const penGoalsTxt=document.getElementById("penGoalsTxt");
+  const penMsg=document.getElementById("penMsg");
+  const penSub=document.getElementById("penSub");
+
+  const penStage=document.getElementById("penStage");
+  const ball=document.getElementById("ball");
+  const keeper=document.getElementById("keeper");
+  const line=document.getElementById("aimLine");
+  const flash=document.getElementById("flash");
+
+  const spotL=document.getElementById("spotL");
+  const spotC=document.getElementById("spotC");
+  const spotR=document.getElementById("spotR");
+
+  let shot=1, goals=0;
+  let holding=false;
+  let startX=0,startY=0;
+  let currentAngle=0;
+  let power=0;
+  let locked=false;
+  let downAt=0;
+
+  function penRender(){
+    penShotTxt.textContent=`${Math.min(shot,5)}/5`;
+    penGoalsTxt.textContent=`${goals}`;
+  }
+  function hideSpots(){ spotL.classList.remove("show");spotC.classList.remove("show");spotR.classList.remove("show"); }
   function showSpot(dir){
     hideSpots();
     if(dir==="L") spotL.classList.add("show");
     if(dir==="C") spotC.classList.add("show");
     if(dir==="R") spotR.classList.add("show");
   }
-
   function resetAnim(){
-    ball.style.animation = "";
-    ball.style.transform = "translateX(-50%) scale(1)";
-    keeper.style.animation = "";
-    keeper.style.transform = "translateX(-50%)";
-    line.style.display = "none";
-    line.style.height = "0px";
-    flash.style.opacity = "0";
+    ball.style.animation="";
+    ball.style.transform="translateX(-50%) scale(1)";
+    keeper.style.animation="";
+    keeper.style.transform="translateX(-50%)";
+    line.style.display="none";
+    line.style.height="0px";
+    flash.style.opacity="0";
     hideSpots();
   }
-
   function setFlash(ok){
     flash.style.background = ok ? "rgba(140,255,193,.18)" : "rgba(255,92,92,.18)";
-    flash.style.opacity = "1";
+    flash.style.opacity="1";
     setTimeout(()=>flash.style.opacity="0", 140);
   }
 
+  function penRestart(){
+    unlockAudio();
+    shot=1; goals=0; locked=false; holding=false;
+    penMsg.textContent=""; penSub.textContent="Коснись мяча и свайпни вверх.";
+    penRender(); resetAnim();
+    toast("Новая серия");
+  }
+
   function endSeries(){
-    locked = true;
-    if(goals >= 3){
-      msg.textContent = `🏆 Победа серии! ${goals}/5`;
-      sub.textContent = "Отлично сыграно.";
+    locked=true;
+    state.plays += 1;
+
+    if(goals>=3){
+      state.wins += 1;
+      addCoins(10);
+      penMsg.textContent=`🏆 Победа серии! ${goals}/5`;
+      penSub.textContent="+10 coins • +1 win";
       hNote("success"); sGoal();
-    } else {
-      msg.textContent = `Серия окончена: ${goals}/5`;
-      sub.textContent = "Попробуй ещё раз — чуть точнее и сильнее.";
+    }else{
+      penMsg.textContent=`Серия окончена: ${goals}/5`;
+      penSub.textContent="Ещё раз — и будет лучше.";
       hNote("error"); sMiss();
     }
+    saveState();
   }
 
-  function restart(){
-    unlockAudio();
-    shot = 1; goals = 0;
-    locked = false;
-    holding = false;
-    msg.textContent = "";
-    sub.textContent = "Коснись мяча и свайпни вверх.";
-    renderHUD();
-    resetAnim();
-  }
-  restartBtn.addEventListener("click", restart);
+  // Prevent context menu on stage (some webviews)
+  penStage.addEventListener("contextmenu", (e)=>{ e.preventDefault(); }, {passive:false});
 
-  // Touch handling: IMPORTANT: passive:false + preventDefault
+  // Also: prevent default scrolling/selection on the whole stage (more robust)
+  function stageBlock(e){ e.preventDefault(); }
+  penStage.addEventListener("touchstart", stageBlock, {passive:false});
+  penStage.addEventListener("touchmove", stageBlock, {passive:false});
+  penStage.addEventListener("touchend", stageBlock, {passive:false});
+
   function onTouchStart(e){
     if(locked) return;
     unlockAudio();
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
 
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-    holding = true;
-    power = 0;
-    currentAngle = 0;
+    const t=e.touches[0];
+    startX=t.clientX; startY=t.clientY;
+    downAt=Date.now();
 
-    line.style.display = "block";
-    line.style.height = "0px";
-    line.style.transform = "translateX(-50%) rotate(0rad)";
-
-    msg.textContent = "";
-    sub.textContent = "Держи палец (сила растёт) → отпусти для удара.";
+    holding=true; power=0; currentAngle=0;
+    line.style.display="block";
+    line.style.height="0px";
+    line.style.transform="translateX(-50%) rotate(0rad)";
+    penMsg.textContent="";
+    penSub.textContent="Держи палец (сила растёт) → отпусти для удара.";
     hImpact("light");
   }
 
   function onTouchMove(e){
     if(!holding || locked) return;
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
 
-    const t = e.touches[0];
-    const dx = t.clientX - startX;
-    const dy = startY - t.clientY; // up is positive
+    const t=e.touches[0];
+    const dx=t.clientX-startX;
+    const dy=startY-t.clientY; // up is positive
 
-    // Require some upward intention, otherwise keep stable
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const maxLen = 140;
-    const visLen = clamp(len, 0, maxLen);
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const maxLen=150;
+    const visLen=clamp(len,0,maxLen);
 
-    // Angle (left/right), if dy small, clamp to avoid wild values
-    const safeDy = Math.max(20, dy);
-    const angle = Math.atan2(dx, safeDy);
-    currentAngle = angle;
+    // stable angle calc
+    const safeDy=Math.max(24, dy);
+    const angle=Math.atan2(dx, safeDy);
+    currentAngle=angle;
 
-    line.style.height = visLen + "px";
-    line.style.transform = `translateX(-50%) rotate(${angle}rad)`;
+    line.style.height=visLen+"px";
+    line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
 
-    // power from length + small hold bonus (handled via pulse timer below)
-    power = clamp(visLen / 110, 0, 1);
+    power = clamp(visLen/110, 0, 1);
+    // small pulse by power (feel)
+    ball.style.transform=`translateX(-50%) scale(${1 + power*0.25})`;
 
-    // Visual: ball pulse by power
-    ball.style.transform = `translateX(-50%) scale(${1 + power*0.25})`;
-
-    // Direction hint spots
-    let dir = "C";
-    if(angle < -0.28) dir = "L";
-    else if(angle > 0.28) dir = "R";
+    let dir="C";
+    if(angle < -0.28) dir="L";
+    else if(angle > 0.28) dir="R";
     showSpot(dir);
+
     hSelect();
   }
 
   function onTouchEnd(e){
     if(!holding || locked) return;
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
 
-    holding = false;
-    line.style.display = "none";
+    holding=false;
+    line.style.display="none";
 
-    // HOLD bonus: small extra power based on how long finger was down (simple)
-    // we approximate by using current scale effect already captured; keep it simple:
-    const finalPower = clamp(power, 0.15, 1.0);
+    // HOLD bonus based on time pressed (adds FIFA-like "nerves")
+    const holdMs = Date.now() - downAt;
+    const holdBoost = clamp((holdMs-160)/900, 0, 0.35); // up to +0.35
+    const finalPower = clamp(power + holdBoost, 0.15, 1.0);
 
-    let dir = "C";
-    if(currentAngle < -0.28) dir = "L";
-    else if(currentAngle > 0.28) dir = "R";
+    let dir="C";
+    if(currentAngle < -0.28) dir="L";
+    else if(currentAngle > 0.28) dir="R";
 
-    // Keeper choose: biased center + a bit "reading"
-    // stronger shots are harder to save even if guessed
-    const r = Math.random();
-    let keeperDir = "C";
-    if(r < 0.42) keeperDir = "C";
-    else keeperDir = (Math.random() < 0.5) ? "L" : "R";
+    // Keeper choose: biased center, sometimes reads repeated corners
+    const r=Math.random();
+    let keeperDir="C";
+    if(r < 0.42) keeperDir="C";
+    else keeperDir = (Math.random()<0.5) ? "L" : "R";
 
-    // Animate
     resetAnim();
     showSpot(dir);
 
@@ -472,15 +575,17 @@
     sKick();
 
     // Outcome logic
-    // Miss risk increases if very strong AND corner (more realistic)
     const corner = (dir !== "C");
+    // miss risk grows with power and corners
     const missChance = clamp(
-      (finalPower > 0.88 ? 0.10 : 0.04) + (corner && finalPower > 0.82 ? 0.10 : 0) + (corner ? 0.03 : 0),
-      0.03, 0.32
+      (finalPower > 0.90 ? 0.12 : 0.05) +
+      (corner && finalPower > 0.82 ? 0.10 : 0) +
+      (corner ? 0.03 : 0),
+      0.03, 0.34
     );
     const missed = Math.random() < missChance;
 
-    let saved = false;
+    let saved=false;
     if(!missed){
       const guessed = (keeperDir === dir);
       const saveBase = guessed ? 0.55 : 0.18;
@@ -490,51 +595,84 @@
 
     setTimeout(()=>{
       if(missed){
-        msg.textContent = "❌ МИМО!";
-        sub.textContent = `Сила: ${Math.round(finalPower*100)}% • попробуй отпустить чуть раньше.`;
-        setFlash(false);
-        hNote("error"); sMiss();
+        penMsg.textContent="❌ МИМО!";
+        penSub.textContent=`Сила: ${Math.round(finalPower*100)}% — отпусти чуть раньше.`;
+        setFlash(false); hNote("error"); sMiss();
       } else if(saved){
-        msg.textContent = "🧤 СЕЙВ!";
-        sub.textContent = `Вратарь угадал. Сила: ${Math.round(finalPower*100)}%`;
-        setFlash(false);
-        hNote("error"); sSave();
+        penMsg.textContent="🧤 СЕЙВ!";
+        penSub.textContent=`Вратарь угадал. Сила: ${Math.round(finalPower*100)}%`;
+        setFlash(false); hNote("error"); sSave();
       } else {
         goals += 1;
-        msg.textContent = "⚽️ ГОООЛ!";
-        sub.textContent = `Отличный удар. Сила: ${Math.round(finalPower*100)}%`;
-        setFlash(true);
-        hNote("success"); sGoal();
+        addCoins(2);
+        penMsg.textContent="⚽️ ГОООЛ! +2 coins";
+        penSub.textContent=`Сила: ${Math.round(finalPower*100)}%`;
+        setFlash(true); hNote("success"); sGoal();
       }
 
       shot += 1;
-      renderHUD();
+      penRender();
 
       setTimeout(()=>{
         resetAnim();
         if(shot > 5){
           endSeries();
         } else {
-          msg.textContent = "";
-          sub.textContent = "Следующий удар: коснись мяча.";
+          penMsg.textContent="";
+          penSub.textContent="Следующий удар: коснись мяча.";
         }
       }, 260);
 
     }, 220);
   }
 
-  // Attach listeners to the BALL (not document) to avoid page gestures
+  // Attach touch listeners with passive:false
   ball.addEventListener("touchstart", onTouchStart, {passive:false});
   ball.addEventListener("touchmove",  onTouchMove,  {passive:false});
   ball.addEventListener("touchend",   onTouchEnd,   {passive:false});
   ball.addEventListener("touchcancel",onTouchEnd,   {passive:false});
 
-  // Also prevent long-press context menu (some webviews)
-  stage.addEventListener("contextmenu", (e)=>{ e.preventDefault(); }, {passive:false});
+  // Also allow mouse testing on desktop
+  let mouseDown=false;
+  ball.addEventListener("mousedown", (e)=>{
+    if(locked) return;
+    unlockAudio();
+    mouseDown=true;
+    startX=e.clientX; startY=e.clientY; downAt=Date.now();
+    holding=true; power=0; currentAngle=0;
+    line.style.display="block";
+    penSub.textContent="(Desktop) Зажми → веди → отпусти.";
+  });
+  window.addEventListener("mousemove", (e)=>{
+    if(!mouseDown || !holding || locked) return;
+    const dx=e.clientX-startX;
+    const dy=startY-e.clientY;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const visLen=clamp(len,0,150);
+    const safeDy=Math.max(24,dy);
+    const angle=Math.atan2(dx,safeDy);
+    currentAngle=angle;
+    line.style.height=visLen+"px";
+    line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
+    power=clamp(visLen/110,0,1);
+    ball.style.transform=`translateX(-50%) scale(${1+power*0.25})`;
+    let dir="C";
+    if(angle < -0.28) dir="L";
+    else if(angle > 0.28) dir="R";
+    showSpot(dir);
+  });
+  window.addEventListener("mouseup", (e)=>{
+    if(!mouseDown) return;
+    mouseDown=false;
+    if(holding) onTouchEnd({preventDefault(){},stopPropagation(){}});
+  });
 
-  // Init
-  renderHUD();
-  sub.textContent = "Коснись мяча и свайпни вверх.";
+  // ========= Boot =========
+  renderWallet();
+  penRestart();
+
+  const initial=(location.hash||"#games").slice(1);
+  go(pages.includes(initial)?initial:"games");
 </script>
 </body>
 </html>
