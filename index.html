@@ -1,209 +1,540 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Penalty Duel</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Penalty Duel</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<style>
-body{
-  margin:0;
-  background:#0f1115;
-  color:#fff;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-}
-.app{padding:16px; text-align:center;}
-h1{font-size:20px;margin-bottom:6px}
-.muted{color:#9aa3b2;font-size:13px}
+  <style>
+    :root{
+      --bg:#0f1115;--card:#171a22;--muted:#9aa3b2;--text:#fff;
+      --accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;
+      --shadow:0 12px 30px rgba(0,0,0,.35);--r:16px;
+    }
 
-.stage{
-  position:relative;
-  max-width:420px;
-  height:260px;
-  margin:20px auto;
-  background:#0b0d12;
-  border-radius:18px;
-  border:1px solid #252a36;
-  overflow:hidden;
-}
-.goal{
-  position:absolute;
-  top:30px; left:30px; right:30px;
-  height:120px;
-  border:2px solid rgba(255,255,255,.3);
-  border-radius:14px;
-}
-.goal:before{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
-  background-size:24px 24px;
-  opacity:.5;
-}
-.keeper{
-  position:absolute;
-  top:80px;
-  left:50%;
-  width:50px;height:50px;
-  transform:translateX(-50%);
-  border-radius:16px;
-  background:rgba(255,255,255,.18);
-}
-.ball{
-  position:absolute;
-  bottom:18px;
-  left:50%;
-  width:22px;height:22px;
-  transform:translateX(-50%);
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 30%,#fff,#cfd6e6);
-  box-shadow:0 10px 20px rgba(0,0,0,.4);
-  transition:transform .1s ease;
-}
-.line{
-  position:absolute;
-  width:2px;
-  background:rgba(140,255,193,.8);
-  transform-origin:bottom center;
-  bottom:29px;
-  left:50%;
-  display:none;
-}
-.flash{
-  position:absolute; inset:0;
-  opacity:0;
-  transition:opacity .15s ease;
-}
-.score{
-  margin-top:10px;
-  font-weight:700;
-}
-.tip{margin-top:10px;font-size:13px;color:#9aa3b2}
-</style>
+    /* CRITICAL: prevent selection/copy/callout in mobile webview */
+    html, body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
+      overscroll-behavior:none;
+      height:100%;
+    }
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app{min-height:100vh;padding:16px 16px 24px;text-align:center}
+    h1{font-size:20px;margin:0 0 6px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.35}
+
+    .stage{
+      position:relative;
+      max-width:420px;
+      height:290px;
+      margin:18px auto 12px;
+      background:
+        radial-gradient(520px 240px at 50% 10%, rgba(255,255,255,.12), rgba(255,255,255,0)),
+        linear-gradient(180deg, rgba(140,255,193,.06), rgba(0,0,0,0)),
+        #0b0d12;
+      border-radius:18px;
+      border:1px solid var(--line);
+      overflow:hidden;
+
+      /* CRITICAL: disable browser gestures inside playfield */
+      touch-action:none;
+    }
+
+    .goal{
+      position:absolute;
+      top:28px; left:26px; right:26px;
+      height:130px;
+      border:2px solid rgba(255,255,255,.28);
+      border-radius:16px;
+      box-shadow:0 18px 50px rgba(0,0,0,.40) inset;
+    }
+    .goal:before{
+      content:"";
+      position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity:.55;
+      border-radius:16px;
+    }
+    .goalLine{
+      position:absolute;
+      top:160px; left:26px; right:26px;
+      height:2px;
+      background:rgba(255,255,255,.18);
+    }
+
+    .keeper{
+      position:absolute;
+      top:88px;
+      left:50%;
+      width:54px;height:54px;
+      transform:translateX(-50%);
+      border-radius:18px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    .keeper:after{
+      content:"";
+      position:absolute;
+      left:12px; right:12px; bottom:-18px;
+      height:18px;
+      border-radius:0 0 14px 14px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .ball{
+      position:absolute;
+      bottom:18px;
+      left:50%;
+      width:24px;height:24px;
+      transform:translateX(-50%) scale(1);
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
+      box-shadow:0 10px 22px rgba(0,0,0,.45);
+      will-change: transform;
+
+      /* CRITICAL: also disable gestures on the ball itself */
+      touch-action:none;
+      -webkit-user-drag:none;
+    }
+
+    .aimLine{
+      position:absolute;
+      width:2px;
+      background:rgba(140,255,193,.85);
+      box-shadow:0 0 16px rgba(140,255,193,.35);
+      transform-origin:bottom center;
+      bottom:30px;
+      left:50%;
+      height:0;
+      display:none;
+      border-radius:999px;
+      will-change: transform, height;
+    }
+
+    .aimSpot{
+      position:absolute;
+      width:10px;height:10px;border-radius:50%;
+      background:rgba(140,255,193,.95);
+      box-shadow:0 0 18px rgba(140,255,193,.55);
+      opacity:0;
+      transition:opacity .12s ease;
+    }
+    .aimSpot.show{opacity:1}
+
+    .flash{
+      position:absolute; inset:0;
+      opacity:0;
+      transition:opacity .15s ease;
+    }
+
+    .hud{
+      max-width:420px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+    }
+    .pill{
+      flex:1;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.02);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .pill strong{color:#fff;font-size:14px}
+
+    .msg{
+      margin-top:10px;
+      font-size:18px;
+      font-weight:900;
+      min-height:26px;
+    }
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      min-height:18px;
+    }
+
+    .btn{
+      max-width:420px;
+      margin:12px auto 0;
+      width:100%;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:900;
+      font-size:15px;
+      cursor:pointer;
+      background:transparent;
+      color:#fff;
+      border:1px solid var(--line);
+    }
+    .btn.primary{
+      background:var(--accent);
+      color:#07110c;
+      border:none;
+    }
+    .note{
+      max-width:420px;
+      margin:10px auto 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    @keyframes kickL { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-210%) translateY(-190px) scale(.55)} }
+    @keyframes kickC { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-50%) translateY(-205px) scale(.55)} }
+    @keyframes kickR { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(110%) translateY(-190px) scale(.55)} }
+
+    @keyframes keepL { from{transform:translateX(-50%)} to{transform:translateX(-150%)} }
+    @keyframes keepC { from{transform:translateX(-50%)} to{transform:translateX(-50%)} }
+    @keyframes keepR { from{transform:translateX(-50%)} to{transform:translateX(50%)} }
+
+    .helpHand{
+      max-width:420px;
+      margin:8px auto 0;
+      font-size:12px;
+      color:var(--muted);
+      opacity:.9;
+    }
+  </style>
 </head>
 
 <body>
 <div class="app">
   <h1>⚽ Penalty Duel</h1>
-  <div class="muted">Свайпни по мячу и держи — отпусти, чтобы ударить</div>
+  <div class="muted">Управление: коснись мяча → свайпни вверх (направление) → держи (сила) → отпусти (удар).</div>
 
   <div class="stage" id="stage">
     <div class="goal"></div>
+    <div class="goalLine"></div>
+
+    <!-- Aim spots (visual hint where you're aiming) -->
+    <div id="spotL" class="aimSpot" style="left:64px; top:58px;"></div>
+    <div id="spotC" class="aimSpot" style="left:50%; top:46px; transform:translateX(-50%);"></div>
+    <div id="spotR" class="aimSpot" style="right:64px; top:58px;"></div>
+
     <div class="keeper" id="keeper"></div>
-    <div class="line" id="aimLine"></div>
+    <div class="aimLine" id="aimLine"></div>
     <div class="ball" id="ball"></div>
     <div class="flash" id="flash"></div>
   </div>
 
-  <div class="score" id="score">Удар 1 / 5 · Голы: 0</div>
-  <div class="tip" id="tip">Коснись мяча</div>
+  <div class="hud">
+    <div class="pill"><span>🎯 Удар</span><strong id="shotTxt">1/5</strong></div>
+    <div class="pill"><span>🥅 Голы</span><strong id="goalsTxt">0</strong></div>
+  </div>
+
+  <div class="msg" id="msg"></div>
+  <div class="sub" id="sub"></div>
+
+  <button class="btn" id="restartBtn">Заново серию</button>
+  <div class="note">Сильнее держишь — мощнее удар, но выше риск промаха (перекладина/мимо). Вратарь иногда угадывает направление.</div>
 </div>
 
 <script>
-const tg = window.Telegram?.WebApp;
-try{tg?.ready();tg?.expand();}catch(e){}
+  // Telegram
+  const tg = window.Telegram?.WebApp;
+  try { tg?.ready(); tg?.expand(); } catch(e) {}
 
-const ball = document.getElementById("ball");
-const keeper = document.getElementById("keeper");
-const line = document.getElementById("aimLine");
-const flash = document.getElementById("flash");
-const scoreEl = document.getElementById("score");
-const tip = document.getElementById("tip");
+  // Haptics helpers
+  function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
+  function hImpact(type="light"){ try{ tg?.HapticFeedback?.impactOccurred(type); }catch(e){} }
+  function hNote(type="success"){ try{ tg?.HapticFeedback?.notificationOccurred(type); }catch(e){} }
 
-let startX=0,startY=0,startT=0;
-let holding=false;
-let power=0;
-let shot=1,goals=0;
+  // Audio (minimal, no spam)
+  let audioUnlocked=false, audioCtx=null;
+  function unlockAudio(){
+    if(audioUnlocked) return;
+    try{
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      g.gain.value = 0.0001; o.start(); o.stop(audioCtx.currentTime + 0.01);
+      audioUnlocked = true;
+    }catch(e){}
+  }
+  function beep(freq=440,dur=0.07,vol=0.06,type="sine"){
+    if(!audioCtx) return;
+    const t=audioCtx.currentTime;
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  }
+  const sKick=()=>{beep(140,0.06,0.08,"triangle");beep(90,0.08,0.05,"sine");};
+  const sGoal=()=>{beep(660,0.08,0.08,"sine");beep(880,0.10,0.08,"sine");};
+  const sSave=()=>{beep(220,0.10,0.06,"square");};
+  const sMiss=()=>{beep(180,0.14,0.05,"sawtooth");};
 
-function h(type){ try{tg?.HapticFeedback?.impactOccurred(type);}catch(e){} }
+  // DOM
+  const stage = document.getElementById("stage");
+  const ball = document.getElementById("ball");
+  const keeper = document.getElementById("keeper");
+  const line = document.getElementById("aimLine");
+  const flash = document.getElementById("flash");
+  const spotL = document.getElementById("spotL");
+  const spotC = document.getElementById("spotC");
+  const spotR = document.getElementById("spotR");
+  const shotTxt = document.getElementById("shotTxt");
+  const goalsTxt = document.getElementById("goalsTxt");
+  const msg = document.getElementById("msg");
+  const sub = document.getElementById("sub");
+  const restartBtn = document.getElementById("restartBtn");
 
-function resetBall(){
-  ball.style.transform="translateX(-50%) scale(1)";
-  line.style.display="none";
-  keeper.style.transform="translateX(-50%)";
-}
+  // Game state
+  let shot = 1, goals = 0;
+  let holding = false;
+  let startX = 0, startY = 0;
+  let currentAngle = 0;
+  let power = 0;
+  let locked = false;
 
-ball.addEventListener("touchstart",e=>{
-  const t=e.touches[0];
-  startX=t.clientX;
-  startY=t.clientY;
-  startT=Date.now();
-  holding=true;
-  power=0;
-  line.style.display="block";
-  h("light");
-  tip.textContent="Держи палец — отпусти для удара";
-});
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-ball.addEventListener("touchmove",e=>{
-  if(!holding) return;
-  const t=e.touches[0];
-  const dx=t.clientX-startX;
-  const dy=startY-t.clientY;
-  const angle=Math.atan2(dx,dy);
-  const len=Math.min(120,Math.sqrt(dx*dx+dy*dy));
-  line.style.height=len+"px";
-  line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
-  power=Math.min(1,len/100);
-  ball.style.transform=`translateX(-50%) scale(${1+power*0.25})`;
-});
+  function renderHUD(){
+    shotTxt.textContent = `${Math.min(shot,5)}/5`;
+    goalsTxt.textContent = `${goals}`;
+  }
 
-ball.addEventListener("touchend",()=>{
-  if(!holding) return;
-  holding=false;
-  line.style.display="none";
-  h("medium");
+  function hideSpots(){
+    spotL.classList.remove("show");
+    spotC.classList.remove("show");
+    spotR.classList.remove("show");
+  }
+  function showSpot(dir){
+    hideSpots();
+    if(dir==="L") spotL.classList.add("show");
+    if(dir==="C") spotC.classList.add("show");
+    if(dir==="R") spotR.classList.add("show");
+  }
 
-  const angleDeg=parseFloat(line.style.transform.match(/rotate\((.*)rad/)[1])||0;
-  let dir="C";
-  if(angleDeg<-0.25) dir="L";
-  if(angleDeg>0.25) dir="R";
+  function resetAnim(){
+    ball.style.animation = "";
+    ball.style.transform = "translateX(-50%) scale(1)";
+    keeper.style.animation = "";
+    keeper.style.transform = "translateX(-50%)";
+    line.style.display = "none";
+    line.style.height = "0px";
+    flash.style.opacity = "0";
+    hideSpots();
+  }
 
-  const keeperDir=Math.random()<0.4?"C":(Math.random()<0.5?"L":"R");
-  keeper.style.transform =
-    keeperDir==="L"?"translateX(-140%)":
-    keeperDir==="R"?"translateX(40%)":
-    "translateX(-50%)";
+  function setFlash(ok){
+    flash.style.background = ok ? "rgba(140,255,193,.18)" : "rgba(255,92,92,.18)";
+    flash.style.opacity = "1";
+    setTimeout(()=>flash.style.opacity="0", 140);
+  }
 
-  let miss = power>0.9 && Math.random()<0.3;
-  let save = !miss && dir===keeperDir && Math.random()<(0.6-power*0.4);
-
-  setTimeout(()=>{
-    if(miss){
-      flash.style.background="rgba(255,92,92,.2)";
-      flash.style.opacity=1;
-      tip.textContent="❌ Мимо";
-      h("error");
-    }else if(save){
-      flash.style.background="rgba(255,92,92,.2)";
-      flash.style.opacity=1;
-      tip.textContent="🧤 Сейв";
-      h("error");
-    }else{
-      goals++;
-      flash.style.background="rgba(140,255,193,.2)";
-      flash.style.opacity=1;
-      tip.textContent="⚽️ Гол!";
-      h("success");
+  function endSeries(){
+    locked = true;
+    if(goals >= 3){
+      msg.textContent = `🏆 Победа серии! ${goals}/5`;
+      sub.textContent = "Отлично сыграно.";
+      hNote("success"); sGoal();
+    } else {
+      msg.textContent = `Серия окончена: ${goals}/5`;
+      sub.textContent = "Попробуй ещё раз — чуть точнее и сильнее.";
+      hNote("error"); sMiss();
     }
-    setTimeout(()=>flash.style.opacity=0,150);
+  }
 
-    shot++;
-    scoreEl.textContent=`Удар ${Math.min(shot,5)} / 5 · Голы: ${goals}`;
-    resetBall();
+  function restart(){
+    unlockAudio();
+    shot = 1; goals = 0;
+    locked = false;
+    holding = false;
+    msg.textContent = "";
+    sub.textContent = "Коснись мяча и свайпни вверх.";
+    renderHUD();
+    resetAnim();
+  }
+  restartBtn.addEventListener("click", restart);
 
-    if(shot>5){
-      tip.textContent = goals>=3 ? "🏆 Победа серии!" : "Серия окончена";
+  // Touch handling: IMPORTANT: passive:false + preventDefault
+  function onTouchStart(e){
+    if(locked) return;
+    unlockAudio();
+    e.preventDefault();
+    e.stopPropagation();
+
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    holding = true;
+    power = 0;
+    currentAngle = 0;
+
+    line.style.display = "block";
+    line.style.height = "0px";
+    line.style.transform = "translateX(-50%) rotate(0rad)";
+
+    msg.textContent = "";
+    sub.textContent = "Держи палец (сила растёт) → отпусти для удара.";
+    hImpact("light");
+  }
+
+  function onTouchMove(e){
+    if(!holding || locked) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const t = e.touches[0];
+    const dx = t.clientX - startX;
+    const dy = startY - t.clientY; // up is positive
+
+    // Require some upward intention, otherwise keep stable
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const maxLen = 140;
+    const visLen = clamp(len, 0, maxLen);
+
+    // Angle (left/right), if dy small, clamp to avoid wild values
+    const safeDy = Math.max(20, dy);
+    const angle = Math.atan2(dx, safeDy);
+    currentAngle = angle;
+
+    line.style.height = visLen + "px";
+    line.style.transform = `translateX(-50%) rotate(${angle}rad)`;
+
+    // power from length + small hold bonus (handled via pulse timer below)
+    power = clamp(visLen / 110, 0, 1);
+
+    // Visual: ball pulse by power
+    ball.style.transform = `translateX(-50%) scale(${1 + power*0.25})`;
+
+    // Direction hint spots
+    let dir = "C";
+    if(angle < -0.28) dir = "L";
+    else if(angle > 0.28) dir = "R";
+    showSpot(dir);
+    hSelect();
+  }
+
+  function onTouchEnd(e){
+    if(!holding || locked) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    holding = false;
+    line.style.display = "none";
+
+    // HOLD bonus: small extra power based on how long finger was down (simple)
+    // we approximate by using current scale effect already captured; keep it simple:
+    const finalPower = clamp(power, 0.15, 1.0);
+
+    let dir = "C";
+    if(currentAngle < -0.28) dir = "L";
+    else if(currentAngle > 0.28) dir = "R";
+
+    // Keeper choose: biased center + a bit "reading"
+    // stronger shots are harder to save even if guessed
+    const r = Math.random();
+    let keeperDir = "C";
+    if(r < 0.42) keeperDir = "C";
+    else keeperDir = (Math.random() < 0.5) ? "L" : "R";
+
+    // Animate
+    resetAnim();
+    showSpot(dir);
+
+    const animBall = dir==="L" ? "kickL" : dir==="C" ? "kickC" : "kickR";
+    const animKeeper = keeperDir==="L" ? "keepL" : keeperDir==="C" ? "keepC" : "keepR";
+    ball.style.animation = `${animBall} .34s ease-out forwards`;
+    keeper.style.animation = `${animKeeper} .30s ease-out forwards`;
+
+    hImpact("medium");
+    sKick();
+
+    // Outcome logic
+    // Miss risk increases if very strong AND corner (more realistic)
+    const corner = (dir !== "C");
+    const missChance = clamp(
+      (finalPower > 0.88 ? 0.10 : 0.04) + (corner && finalPower > 0.82 ? 0.10 : 0) + (corner ? 0.03 : 0),
+      0.03, 0.32
+    );
+    const missed = Math.random() < missChance;
+
+    let saved = false;
+    if(!missed){
+      const guessed = (keeperDir === dir);
+      const saveBase = guessed ? 0.55 : 0.18;
+      const saveChance = clamp(saveBase - finalPower*0.35, 0.06, 0.65);
+      saved = Math.random() < saveChance;
     }
-  },200);
-});
+
+    setTimeout(()=>{
+      if(missed){
+        msg.textContent = "❌ МИМО!";
+        sub.textContent = `Сила: ${Math.round(finalPower*100)}% • попробуй отпустить чуть раньше.`;
+        setFlash(false);
+        hNote("error"); sMiss();
+      } else if(saved){
+        msg.textContent = "🧤 СЕЙВ!";
+        sub.textContent = `Вратарь угадал. Сила: ${Math.round(finalPower*100)}%`;
+        setFlash(false);
+        hNote("error"); sSave();
+      } else {
+        goals += 1;
+        msg.textContent = "⚽️ ГОООЛ!";
+        sub.textContent = `Отличный удар. Сила: ${Math.round(finalPower*100)}%`;
+        setFlash(true);
+        hNote("success"); sGoal();
+      }
+
+      shot += 1;
+      renderHUD();
+
+      setTimeout(()=>{
+        resetAnim();
+        if(shot > 5){
+          endSeries();
+        } else {
+          msg.textContent = "";
+          sub.textContent = "Следующий удар: коснись мяча.";
+        }
+      }, 260);
+
+    }, 220);
+  }
+
+  // Attach listeners to the BALL (not document) to avoid page gestures
+  ball.addEventListener("touchstart", onTouchStart, {passive:false});
+  ball.addEventListener("touchmove",  onTouchMove,  {passive:false});
+  ball.addEventListener("touchend",   onTouchEnd,   {passive:false});
+  ball.addEventListener("touchcancel",onTouchEnd,   {passive:false});
+
+  // Also prevent long-press context menu (some webviews)
+  stage.addEventListener("contextmenu", (e)=>{ e.preventDefault(); }, {passive:false});
+
+  // Init
+  renderHUD();
+  sub.textContent = "Коснись мяча и свайпни вверх.";
 </script>
 </body>
 </html>
-
-
-
-
