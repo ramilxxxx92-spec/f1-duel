@@ -2,21 +2,108 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>F1 Duel</title>
+<title>F1 Reaction Duel</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+body {
+    font-family: system-ui, sans-serif;
+    background: #0f1115;
+    color: white;
+    text-align: center;
+    padding-top: 40px;
+}
+#light {
+    width: 120px;
+    height: 120px;
+    margin: 40px auto;
+    border-radius: 50%;
+    background: red;
+    box-shadow: 0 0 20px red;
+}
+button {
+    font-size: 18px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+#result {
+    margin-top: 30px;
+    font-size: 22px;
+}
+</style>
 </head>
 
-<body style="text-align:center; font-family:sans-serif;">
+<body>
 
 <h1>🏁 F1 Reaction Duel</h1>
-<button onclick="startGame()">Начать старт</button>
+<div id="player"></div>
+
+<div id="light"></div>
+
+<button id="startBtn">Ждать старт</button>
+
+<div id="result"></div>
 
 <script>
-function startGame() {
-    alert("GO будет тут позже 😄");
+const tg = window.Telegram.WebApp;
+tg.ready();
+
+const playerDiv = document.getElementById("player");
+const light = document.getElementById("light");
+const button = document.getElementById("startBtn");
+const result = document.getElementById("result");
+
+const user = tg.initDataUnsafe?.user;
+
+if (user) {
+    playerDiv.innerText = `Игрок: ${user.username || user.first_name}`;
 }
 
-window.Telegram.WebApp.ready();
+let startTime = 0;
+let waiting = false;
+let timer;
+
+button.onclick = () => {
+    if (waiting) return;
+
+    result.innerText = "";
+    light.style.background = "red";
+    light.style.boxShadow = "0 0 20px red";
+
+    waiting = true;
+    button.innerText = "ЖДИ...";
+
+    const delay = 2000 + Math.random() * 3000;
+
+    timer = setTimeout(() => {
+        light.style.background = "lime";
+        light.style.boxShadow = "0 0 30px lime";
+        startTime = Date.now();
+    }, delay);
+};
+
+light.onclick = () => {
+    if (!waiting) return;
+
+    if (!startTime) {
+        clearTimeout(timer);
+        result.innerText = "❌ Фальстарт!";
+        reset();
+        return;
+    }
+
+    const reaction = Date.now() - startTime;
+    result.innerText = `⚡ Реакция: ${reaction} мс`;
+    reset();
+};
+
+function reset() {
+    waiting = false;
+    startTime = 0;
+    button.innerText = "Ещё раз";
+}
 </script>
 
 </body>
