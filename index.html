@@ -6,47 +6,152 @@
   <title>F1 Duel</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root{--bg:#0f1115;--card:#171a22;--muted:#9aa3b2;--text:#fff;--accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;--shadow:0 12px 30px rgba(0,0,0,.35);--r:16px}
-    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    :root{
+      --bg:#0f1115;--card:#171a22;--muted:#9aa3b2;--text:#fff;
+      --accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;--shadow:0 12px 30px rgba(0,0,0,.35);
+      --r:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
     .app{min-height:100vh;padding-bottom:86px}
     .topbar{position:sticky;top:0;z-index:10;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
     .chip{font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);white-space:nowrap}
-    .container{padding:16px}.row{display:flex;gap:12px;flex-wrap:wrap}
+    .container{padding:16px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
-    .card h2{margin:0 0 8px 0;font-size:16px}.muted{color:var(--muted)}
-    .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:800;width:100%}
-    .btn.primary{background:var(--accent);color:#07110c}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}.btn.danger{background:var(--danger);color:#1a0b0b}
+    .card h2{margin:0 0 8px 0;font-size:16px}
+    .muted{color:var(--muted)}
+    .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:900;width:100%}
+    .btn.primary{background:var(--accent);color:#07110c}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+    .btn.danger{background:var(--danger);color:#1a0b0b}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .tile{background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));border:1px solid var(--line);border-radius:var(--r);padding:14px;min-height:120px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;user-select:none}
-    .tile .t{font-weight:900}.tile .d{font-size:12px;color:var(--muted);margin-top:6px}
+    .tile{
+      background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));
+      border:1px solid var(--line);border-radius:var(--r);padding:14px;min-height:120px;
+      display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;user-select:none
+    }
+    .tile .t{font-weight:950}
+    .tile .d{font-size:12px;color:var(--muted);margin-top:6px}
     .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
     .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.kv:first-child{border-top:none;padding-top:0}
-    .nav{position:fixed;left:0;right:0;bottom:0;height:72px;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:10px 10px 14px;gap:10px;z-index:20}
-    .nav button{flex:1;border:none;background:transparent;color:var(--muted);border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+    .nav{
+      position:fixed;left:0;right:0;bottom:0;height:72px;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);
+      border-top:1px solid var(--line);display:flex;padding:10px 10px 14px;gap:10px;z-index:20
+    }
+    .nav button{
+      flex:1;border:none;background:transparent;color:var(--muted);border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
+    }
     .nav button.active{color:var(--text);background:rgba(140,255,193,.12);border:1px solid rgba(140,255,193,.25)}
-    .icon{font-size:18px;line-height:1}.hidden{display:none!important}
+    .icon{font-size:18px;line-height:1}
+    .hidden{display:none!important}
     .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
-    .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);font-size:13px;z-index:999;max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .18s ease}
+    .toast{
+      position:fixed;left:50%;bottom:86px;transform:translateX(-50%);
+      background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+      box-shadow:var(--shadow);font-size:13px;z-index:999;max-width:90vw;text-align:center;
+      opacity:0;pointer-events:none;transition:opacity .18s ease
+    }
     .toast.show{opacity:1}
 
-    /* Penalty FIFA-ish animations */
-    @keyframes kickToLeft { from { transform: translateX(-50%) translateY(0) scale(1); } to { transform: translateX(-220%) translateY(-160px) scale(.55);} }
-    @keyframes kickToCenter{ from { transform: translateX(-50%) translateY(0) scale(1);} to { transform: translateX(-50%) translateY(-175px) scale(.55);} }
-    @keyframes kickToRight{ from { transform: translateX(-50%) translateY(0) scale(1);} to { transform: translateX(120%) translateY(-160px) scale(.55);} }
+    /* --- Penalty visuals --- */
+    .stage{
+      position:relative;width:100%;max-width:420px;margin:0 auto 14px;height:260px;border-radius:16px;border:1px solid var(--line);overflow:hidden;
+      background:
+        radial-gradient(500px 240px at 50% 15%, rgba(255,255,255,.12), rgba(255,255,255,0)),
+        linear-gradient(180deg, rgba(140,255,193,.07), rgba(0,0,0,0)),
+        #0b0d12;
+    }
+    .net{
+      position:absolute;left:24px;right:24px;top:26px;height:120px;border-radius:16px;
+      border:2px solid rgba(255,255,255,.25);
+      box-shadow:0 18px 50px rgba(0,0,0,.45) inset;
+    }
+    .net:before{
+      content:"";position:absolute;inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity:.55;border-radius:16px;
+    }
+    .goalLine{
+      position:absolute;left:24px;right:24px;top:146px;height:2px;background:rgba(255,255,255,.20);
+    }
+    .keeper{
+      position:absolute;top:78px;left:50%;transform:translateX(-50%);
+      width:52px;height:52px;border-radius:18px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    .keeper:after{
+      content:"";position:absolute;left:10px;right:10px;bottom:-18px;height:18px;border-radius:0 0 14px 14px;
+      background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10);
+    }
+    .ball{
+      position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+      width:22px;height:22px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
+      box-shadow:0 10px 20px rgba(0,0,0,.35);
+    }
+    .flash{position:absolute;inset:0;opacity:0;transition:opacity .15s ease}
+    .aimDot{
+      position:absolute;width:10px;height:10px;border-radius:50%;
+      background:rgba(140,255,193,.9);box-shadow:0 0 18px rgba(140,255,193,.6);
+      opacity:.0;transition:opacity .12s ease;
+    }
+    .aimDot.show{opacity:1}
+    .hudSmall{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 
-    @keyframes keeperLeft  { from { transform: translateX(-50%); } to { transform: translateX(-160%); } }
-    @keyframes keeperCenter{ from { transform: translateX(-50%); } to { transform: translateX(-50%); } }
-    @keyframes keeperRight { from { transform: translateX(-50%); } to { transform: translateX(60%); } }
+    @keyframes kickL { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-220%) translateY(-175px) scale(.55)} }
+    @keyframes kickC { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-50%) translateY(-190px) scale(.55)} }
+    @keyframes kickR { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(120%) translateY(-175px) scale(.55)} }
+    @keyframes keepL { from{transform:translateX(-50%)} to{transform:translateX(-155%)} }
+    @keyframes keepC { from{transform:translateX(-50%)} to{transform:translateX(-50%)} }
+    @keyframes keepR { from{transform:translateX(-50%)} to{transform:translateX(55%)} }
 
-    @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-2px)} 50%{transform:translateX(2px)} 75%{transform:translateX(-2px)} 100%{transform:translateX(0)} }
-    .shake { animation: shake .18s ease; }
+    /* Integrated timing bar (overlay) */
+    .timingWrap{
+      position:absolute;left:14px;right:14px;bottom:10px;
+      border:1px solid rgba(255,255,255,.12);border-radius:14px;
+      padding:10px;background:rgba(0,0,0,.25);
+      backdrop-filter: blur(6px);
+    }
+    .timingBar{height:10px;border-radius:999px;background:rgba(255,255,255,.10);position:relative;overflow:hidden}
+    .timingIdeal{position:absolute;top:0;bottom:0;border-radius:999px;background:rgba(140,255,193,.32)}
+    .timingNeedle{position:absolute;top:-6px;width:2px;height:22px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.35)}
+    .timingHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:12px;color:var(--muted)}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted)}
 
-    /* Power bar */
-    .barWrap{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(0,0,0,.18)}
-    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
-    .bar .ideal{position:absolute;top:0;bottom:0;border-radius:999px;background:rgba(140,255,193,.35)}
-    .bar .needle{position:absolute;top:-6px;width:2px;height:22px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.35)}
+    /* D-pad */
+    .pad{
+      width:160px;margin: 8px auto 0;
+      display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:10px;
+    }
+    .pad button{
+      border:none;border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      color:#fff;font-weight:950;font-size:16px;padding:12px 0;
+      cursor:pointer;
+    }
+    .pad button:active{transform:scale(.98)}
+    .pad .c{grid-column:2;grid-row:2}
+    .pad .u{grid-column:2;grid-row:1}
+    .pad .l{grid-column:1;grid-row:2}
+    .pad .r{grid-column:3;grid-row:2}
+
+    /* --- Pong: field look --- */
+    .pongCanvas{
+      width:100%;max-width:440px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      display:block;margin:0 auto;
+      background:#0b0d12;
+    }
   </style>
 </head>
 <body>
@@ -61,7 +166,7 @@
       <section id="page-games">
         <div class="card" style="margin-bottom:12px;">
           <h2>Выбор игры</h2>
-          <div class="muted">Reaction • Penalty (FIFA-тайминг + визуал + звук) • Ping Pong.</div>
+          <div class="muted">Reaction • Penalty (FIFA-style управление + тайминг) • Ping Pong (поле + “человечный” бот).</div>
         </div>
 
         <div class="grid">
@@ -70,11 +175,11 @@
             <div class="muted" style="font-size:12px;">Открыть</div>
           </div>
           <div class="tile" onclick="openGame('penalty')">
-            <div><div class="t">⚽️ Penalty Duel</div><div class="d">Тайминг + сила + зона идеала</div></div>
+            <div><div class="t">⚽️ Penalty Duel</div><div class="d">D-pad + тайминг за время</div></div>
             <div class="muted" style="font-size:12px;">Открыть</div>
           </div>
           <div class="tile" onclick="openGame('pong')">
-            <div><div class="t">🏓 Ping Pong</div><div class="d">Ускорение • power-shot • комбо</div></div>
+            <div><div class="t">🏓 Ping Pong</div><div class="d">Поле + бот как человек</div></div>
             <div class="muted" style="font-size:12px;">Открыть</div>
           </div>
           <div class="tile" onclick="toast('Скоро 🙂')">
@@ -83,7 +188,7 @@
           </div>
         </div>
 
-        <div class="note">Penalty: выбери направление → нажми “Бить” → поймай тайминг на шкале (сила/точность). Вибрации+звуки включаются после первого тапа.</div>
+        <div class="note">Звук и вибрации включаются после первого тапа (так устроены браузеры).</div>
       </section>
 
       <!-- WALLET -->
@@ -132,17 +237,19 @@
         <div class="card">
           <div id="light" style="width:120px;height:120px;border-radius:50%;margin:8px auto 18px;background:red;box-shadow:0 0 20px red;"></div>
           <button id="startBtn" class="btn primary">Ждать старт</button>
-          <div id="result" style="margin-top:14px;font-size:20px;font-weight:900;"></div>
+          <div id="result" style="margin-top:14px;font-size:20px;font-weight:950;"></div>
           <div class="note">+5 coins (и +3 если &lt;250ms). Фальстарт −2.</div>
           <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад</button>
         </div>
       </section>
 
-      <!-- PENALTY (FIFA-ish) -->
+      <!-- PENALTY -->
       <section id="page-penalty" class="hidden">
         <div class="card" style="margin-bottom:12px;">
           <h2>⚽️ Penalty Duel</h2>
-          <div class="muted">Выбери направление → «Бить» → поймай тайминг. Сила+точность влияют на гол/сейв/мимо.</div>
+          <div class="muted">
+            Как в FIFA: выбираешь направление (геймпад) → тайминг идёт сразу → за ограниченное время жмёшь «УДАР».
+          </div>
         </div>
 
         <div class="card">
@@ -151,42 +258,52 @@
             <div class="pill" style="flex:1; justify-content:space-between;"><span>🎯 Удар</span><strong id="penShot">1/5</strong></div>
           </div>
 
-          <div id="penStage" style="position:relative;width:100%;max-width:420px;margin:0 auto 14px;height:240px;border-radius:16px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(600px 260px at 50% 20%, rgba(255,255,255,.10), rgba(255,255,255,0)),linear-gradient(180deg, rgba(140,255,193,.06), rgba(0,0,0,0)),#0b0d12;">
-            <div style="position:absolute; inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);background-size:26px 26px;opacity:.35;"></div>
+          <div id="penStage" class="stage">
+            <div class="net"></div>
+            <div class="goalLine"></div>
 
-            <div id="keeper" style="position:absolute;top:48px;left:50%;width:42px;height:42px;transform:translateX(-50%);border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px rgba(0,0,0,.35);"></div>
+            <div id="penAimL" class="aimDot" style="left:74px; top:58px;"></div>
+            <div id="penAimC" class="aimDot" style="left:50%; top:48px; transform:translateX(-50%);"></div>
+            <div id="penAimR" class="aimDot" style="right:74px; top:58px;"></div>
 
-            <div id="ball" style="position:absolute;left:50%;bottom:18px;width:20px;height:20px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);box-shadow:0 10px 20px rgba(0,0,0,.35);"></div>
+            <div id="keeper" class="keeper"></div>
+            <div id="ball" class="ball"></div>
+            <div id="penFlash" class="flash"></div>
 
-            <div id="penFlash" style="position:absolute; inset:0;background:rgba(140,255,193,.18);opacity:0;transition:opacity .15s ease;"></div>
-          </div>
-
-          <div class="row" style="margin-bottom:10px;">
-            <button class="btn ghost" onclick="penPick('L')">⬅️ Лево</button>
-            <button class="btn ghost" onclick="penPick('C')">⬆️ Центр</button>
-            <button class="btn ghost" onclick="penPick('R')">➡️ Право</button>
-          </div>
-
-          <button id="penShootBtn" class="btn primary" onclick="penShootStart()">Бить</button>
-
-          <div id="penBarWrap" class="barWrap hidden">
-            <div class="muted" style="display:flex;justify-content:space-between;gap:10px;">
-              <span>Тайминг удара</span>
-              <span id="penBarHint">поймай зону</span>
-            </div>
-            <div class="bar" id="penBar">
-              <div class="ideal" id="penIdeal"></div>
-              <div class="needle" id="penNeedle"></div>
+            <!-- timing overlay -->
+            <div id="timingWrap" class="timingWrap hidden">
+              <div class="timingHead">
+                <span id="timingText">Тайминг</span>
+                <span class="badge" id="timingTimer">1.2s</span>
+              </div>
+              <div class="timingBar">
+                <div class="timingIdeal" id="timingIdeal"></div>
+                <div class="timingNeedle" id="timingNeedle"></div>
+              </div>
             </div>
           </div>
 
-          <div id="penMsg" style="margin-top:12px;text-align:center;font-size:18px;font-weight:900;"></div>
+          <div class="hudSmall" id="penHint">Выбери направление на геймпаде ниже.</div>
+
+          <div class="pad" style="margin-top:10px;">
+            <button class="u" onclick="penPick('C')">⬆️</button>
+            <button class="l" onclick="penPick('L')">⬅️</button>
+            <button class="c" onclick="penPick('C')">🎯</button>
+            <button class="r" onclick="penPick('R')">➡️</button>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button id="penShootBtn" class="btn primary" onclick="penShootTap()">УДАР</button>
+            <button class="btn ghost" onclick="penRestart()">Заново серию</button>
+          </div>
+
+          <div id="penMsg" style="margin-top:12px;text-align:center;font-size:18px;font-weight:950;"></div>
           <div id="penSub" class="muted" style="margin-top:6px;text-align:center;"></div>
 
           <div class="note">
-            Награды: гол +2 coins, победа (3+ из 5) +10 coins и +1 win.
-            Тайминг влияет: идеал → сильнее/точнее; мимо зоны → слабее / риск промаха.
+            Гол: +2 coins; Победа (3+ из 5): +10 coins и +1 win.
           </div>
+
           <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад</button>
         </div>
       </section>
@@ -195,7 +312,7 @@
       <section id="page-pong" class="hidden">
         <div class="card" style="margin-bottom:12px;">
           <h2>🏓 Ping Pong</h2>
-          <div class="muted">Двигай платформу. Power-shot: тап по полю в момент удара. Комбо даёт coins.</div>
+          <div class="muted">Поле как поле, платформы скруглены, бот двигается “по-человечески”. Победа до 3 очков.</div>
         </div>
         <div class="card">
           <div class="row" style="margin:0 0 12px;">
@@ -203,18 +320,19 @@
             <div class="pill" style="flex:1; justify-content:space-between;"><span>🤖 Бот</span><strong id="pongAi">0</strong></div>
           </div>
           <div class="row" style="margin:0 0 12px;">
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>🔥 Комбо</span><strong id="pongCombo">0</strong></div>
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>⚡ Скорость</span><strong id="pongSpeed">x1.0</strong></div>
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>🔥 Розыгрыш</span><strong id="pongRally">0</strong></div>
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>⚡ Сложность</span><strong id="pongDiff">1.0</strong></div>
           </div>
-          <canvas id="pongCanvas" width="420" height="520" style="width:100%;max-width:420px;border:1px solid var(--line);border-radius:16px;background:#0b0d12;display:block;margin:0 auto;"></canvas>
+          <canvas id="pongCanvas" class="pongCanvas" width="440" height="560"></canvas>
           <div class="row" style="margin-top:12px;">
             <button id="pongStartBtn" class="btn primary" onclick="pongStart()">Старт</button>
             <button class="btn ghost" onclick="pongReset()">Сброс</button>
           </div>
           <button style="margin-top:12px;" class="btn ghost" onclick="pongStop(); go('games')">← Назад</button>
-          <div class="note">Победа (5:?) +15 coins и +1 win. Комбо 3/5/8 → +1/+2/+4 coins.</div>
+          <div class="note">Тап по полю = power-shot (когда мяч близко). Сложность растёт плавно внутри розыгрыша, поэтому игра идёт быстрее.</div>
         </div>
       </section>
+
     </main>
   </div>
 
@@ -228,14 +346,15 @@
 
 <script>
   // Telegram
-  const tg = window.Telegram?.WebApp; try{tg?.ready();tg?.expand()}catch(e){}
+  const tg = window.Telegram?.WebApp;
+  try{ tg?.ready(); tg?.expand(); }catch(e){}
 
   // Haptics
   function hImpact(type="light"){ try{ tg?.HapticFeedback?.impactOccurred(type); }catch(e){} }
   function hNote(type="success"){ try{ tg?.HapticFeedback?.notificationOccurred(type); }catch(e){} }
   function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
 
-  // Audio (WebAudio beeps)
+  // Audio (WebAudio)
   let audioUnlocked=false, audioCtx=null;
   function unlockAudio(){
     if(audioUnlocked) return;
@@ -263,29 +382,47 @@
   const sSave=()=>{beep(220,0.10,0.06,"square");};
   const sMiss=()=>{beep(180,0.14,0.05,"sawtooth");};
 
-  // State
-  const storeKey="f1duel_state_v2", defaultState={coins:0,stars:0,wins:0,plays:0};
-  const state=(()=>{try{const r=localStorage.getItem(storeKey);return r?{...defaultState,...JSON.parse(r)}:{...defaultState}}catch(e){return {...defaultState}}})();
+  // Helpers
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  // Local state
+  const storeKey="f1duel_state_v3";
+  const defaultState={coins:0,stars:0,wins:0,plays:0};
+  const state=(()=>{ try{const r=localStorage.getItem(storeKey); return r?{...defaultState,...JSON.parse(r)}:{...defaultState}; }catch(e){ return {...defaultState}; } })();
   const toastEl=document.getElementById("toast"); let toastTimer=null;
-  function toast(t){toastEl.textContent=t;toastEl.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1600)}
-  function saveState(){localStorage.setItem(storeKey,JSON.stringify(state));renderWallet()}
-  function calcLevel(){const score=state.coins+state.stars*50;return Math.max(1,Math.floor(score/200)+1)}
-  function renderWallet(){document.getElementById("coinsVal").textContent=state.coins;document.getElementById("starsVal").textContent=state.stars;document.getElementById("winsVal").textContent=state.wins;document.getElementById("playsVal").textContent=state.plays;document.getElementById("levelVal").textContent=calcLevel()}
-  function addCoins(n){state.coins=Math.max(0,state.coins+n);saveState()}
-  function convertCoinsToStars(){const rate=100;if(state.coins<rate){toast(`Нужно минимум ${rate} coins`);return;}const s=Math.floor(state.coins/rate);state.coins-=s*rate;state.stars+=s;saveState();toast(`Обмен: +${s} ⭐`)}
-  function resetProgress(){Object.assign(state,{...defaultState});saveState();toast("Прогресс сброшен")}
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1600); }
+  function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); renderWallet(); }
+  function calcLevel(){ const score=state.coins+state.stars*50; return Math.max(1, Math.floor(score/200)+1); }
+  function renderWallet(){
+    document.getElementById("coinsVal").textContent=state.coins;
+    document.getElementById("starsVal").textContent=state.stars;
+    document.getElementById("winsVal").textContent=state.wins;
+    document.getElementById("playsVal").textContent=state.plays;
+    document.getElementById("levelVal").textContent=calcLevel();
+  }
+  function addCoins(n){ state.coins=Math.max(0, state.coins+n); saveState(); }
+  function convertCoinsToStars(){
+    const rate=100;
+    if(state.coins<rate){ toast(`Нужно минимум ${rate} coins`); return; }
+    const s=Math.floor(state.coins/rate);
+    state.coins-=s*rate; state.stars+=s; saveState(); toast(`Обмен: +${s} ⭐`);
+  }
+  function resetProgress(){ Object.assign(state,{...defaultState}); saveState(); toast("Прогресс сброшен"); }
 
   // Routing
   const pages=["games","wallet","profile","reaction","penalty","pong"];
   function go(page){
-    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden",p!==page));
-    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active",t===page));
-    if(page==="reaction"||page==="penalty"||page==="pong"){document.getElementById("tab-games").classList.add("active");["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"))}
+    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden", p!==page));
+    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active", t===page));
+    if(page==="reaction"||page==="penalty"||page==="pong"){
+      document.getElementById("tab-games").classList.add("active");
+      ["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"));
+    }
     location.hash="#"+page;
   }
   function openGame(id){ if(id==="reaction")go("reaction"); if(id==="penalty")go("penalty"); if(id==="pong")go("pong"); }
 
-  // Header
+  // Header info
   const envChip=document.getElementById("envChip"), userChip=document.getElementById("userChip");
   envChip.textContent=tg?"Telegram WebApp":"Browser";
   const user=tg?.initDataUnsafe?.user;
@@ -299,342 +436,582 @@
     document.getElementById("profileLine").textContent="Открой через Telegram, чтобы подтянулся профиль.";
   }
 
+  // =========================
   // REACTION
+  // =========================
   const light=document.getElementById("light"), startBtn=document.getElementById("startBtn"), result=document.getElementById("result");
   let startTime=0, waiting=false, timer=null;
-  function setLight(c){light.style.background=c;light.style.boxShadow=(c==="lime")?"0 0 30px lime":"0 0 20px red";}
-  startBtn.onclick=()=>{unlockAudio();hImpact("light");
-    if(waiting)return; result.textContent=""; setLight("red"); waiting=true; startBtn.textContent="ЖДИ…";
-    timer=setTimeout(()=>{setLight("lime");startTime=Date.now();hImpact("medium");beep(520,0.06,0.05,"sine");}, 2000+Math.random()*3000);
+  function setLight(c){ light.style.background=c; light.style.boxShadow=(c==="lime")?"0 0 30px lime":"0 0 20px red"; }
+  startBtn.onclick=()=>{
+    unlockAudio(); hImpact("light");
+    if(waiting) return;
+    result.textContent=""; setLight("red"); waiting=true; startBtn.textContent="ЖДИ…";
+    timer=setTimeout(()=>{ setLight("lime"); startTime=Date.now(); hImpact("medium"); beep(520,0.06,0.05,"sine"); }, 1800+Math.random()*2600);
   };
-  light.onclick=()=>{unlockAudio();
-    if(!waiting)return;
-    if(!startTime){clearTimeout(timer); result.textContent="❌ Фальстарт! −2 coins"; addCoins(-2); toast("Фальстарт −2"); hNote("error"); sMiss(); waiting=false; startTime=0; startBtn.textContent="Ещё раз"; return;}
-    const r=Date.now()-startTime; state.plays+=1; let reward=5; if(r<250)reward+=3;
+  light.onclick=()=>{
+    unlockAudio();
+    if(!waiting) return;
+    if(!startTime){
+      clearTimeout(timer);
+      result.textContent="❌ Фальстарт! −2 coins";
+      addCoins(-2); toast("Фальстарт −2"); hNote("error"); sMiss();
+      waiting=false; startTime=0; startBtn.textContent="Ещё раз";
+      return;
+    }
+    const r=Date.now()-startTime;
+    state.plays += 1;
+    let reward=5; if(r<250) reward += 3;
     addCoins(reward); saveState();
-    result.textContent=`⚡ ${r} мс  •  +${reward} coins`; toast(`+${reward} coins`); hNote("success"); sGoal();
+    result.textContent=`⚡ ${r} мс  •  +${reward} coins`;
+    toast(`+${reward} coins`); hNote("success"); sGoal();
     waiting=false; startTime=0; startBtn.textContent="Ещё раз";
   };
 
-  // PENALTY FIFA-ish
-  const penScoreEl=document.getElementById("penScore"), penShotEl=document.getElementById("penShot");
-  const penMsgEl=document.getElementById("penMsg"), penSubEl=document.getElementById("penSub");
-  const penStage=document.getElementById("penStage"), ballEl=document.getElementById("ball"), keeperEl=document.getElementById("keeper"), flashEl=document.getElementById("penFlash");
-  const penBarWrap=document.getElementById("penBarWrap"), penBar=document.getElementById("penBar"), penIdeal=document.getElementById("penIdeal"), penNeedle=document.getElementById("penNeedle");
+  // =========================
+  // PENALTY (FIFA-ish control + integrated timing)
+  // =========================
+  const penScoreEl=document.getElementById("penScore");
+  const penShotEl=document.getElementById("penShot");
+  const penMsgEl=document.getElementById("penMsg");
+  const penSubEl=document.getElementById("penSub");
+  const penHint=document.getElementById("penHint");
   const penShootBtn=document.getElementById("penShootBtn");
 
+  const penStage=document.getElementById("penStage");
+  const ballEl=document.getElementById("ball");
+  const keeperEl=document.getElementById("keeper");
+  const flashEl=document.getElementById("penFlash");
+
+  const aimL=document.getElementById("penAimL");
+  const aimC=document.getElementById("penAimC");
+  const aimR=document.getElementById("penAimR");
+
+  const timingWrap=document.getElementById("timingWrap");
+  const timingIdeal=document.getElementById("timingIdeal");
+  const timingNeedle=document.getElementById("timingNeedle");
+  const timingTimer=document.getElementById("timingTimer");
+  const timingText=document.getElementById("timingText");
+
   let penShot=1, penGoals=0, penActive=true;
-  let penDir=null; // L/C/R
-  let barOn=false, barT=0, barV=0, barId=null; // 0..1
-  let idealA=0.42, idealB=0.58; // ideal window
-  let pressure=0; // grows when missing
+
+  let penDir=null;
   let penLocked=false;
+
+  // timing state
+  let barOn=false, barT=0, barV=0, barLastTs=0;
+  let idealA=0.40, idealB=0.60;
+  let timeLeft=1.2; // seconds to tap shot
+  let timeoutHandle=null;
 
   function penRender(){
     penScoreEl.textContent=penGoals;
     penShotEl.textContent=`${Math.min(penShot,5)}/5`;
   }
-  function penResetAnim(){
+  function penRestart(){
+    unlockAudio(); hImpact("light");
+    penShot=1; penGoals=0; penActive=true;
+    penDir=null; penLocked=false;
+    penMsgEl.textContent=""; penSubEl.textContent="";
+    penHint.textContent="Выбери направление на геймпаде ниже.";
+    penShootBtn.disabled=false; penShootBtn.textContent="УДАР";
+    hideAim(); resetPenaltyAnim(); stopTiming(true);
+    penRender();
+    toast("Новая серия");
+  }
+  function hideAim(){ aimL.classList.remove("show"); aimC.classList.remove("show"); aimR.classList.remove("show"); }
+  function showAim(d){
+    hideAim();
+    (d==="L"?aimL:d==="C"?aimC:aimR).classList.add("show");
+  }
+  function resetPenaltyAnim(){
     ballEl.style.animation=""; ballEl.style.transform="translateX(-50%)";
     keeperEl.style.animation=""; keeperEl.style.transform="translateX(-50%)";
-    penStage.classList.remove("shake");
-  }
-  function penNewIdeal(){
-    // ideal window shifts; pressure makes it smaller
-    const size = Math.max(0.08, 0.16 - pressure*0.02);
-    const center = 0.30 + Math.random()*0.40;
-    idealA = center - size/2;
-    idealB = center + size/2;
-    penIdeal.style.left = (idealA*100)+"%";
-    penIdeal.style.width = ((idealB-idealA)*100)+"%";
-  }
-  function penPick(d){
-    unlockAudio(); hSelect();
-    if(penLocked) return;
-    penDir=d;
-    penMsgEl.textContent = d==="L"?"⬅️ Лево":d==="C"?"⬆️ Центр":"➡️ Право";
-    penSubEl.textContent = "Нажми «Бить», затем останови шкалу в зелёной зоне.";
+    flashEl.style.opacity="0";
   }
 
-  function penShootStart(){
-    unlockAudio();
-    if(penLocked) return;
-    if(!penDir){ toast("Сначала выбери направление"); hNote("error"); sMiss(); return; }
-    // start timing bar
+  function newIdealWindow(){
+    // более "реально": зона идеала не микроскопическая
+    const size = 0.18 + Math.random()*0.06; // 0.18..0.24
+    const center = 0.36 + Math.random()*0.28; // 0.36..0.64
+    idealA = center - size/2; idealB = center + size/2;
+    timingIdeal.style.left = (idealA*100)+"%";
+    timingIdeal.style.width = ((idealB-idealA)*100)+"%";
+  }
+
+  function startTiming(){
+    barOn=true; barT=0; barLastTs=0;
+    timeLeft = 1.25; // немного больше, чтобы "попасть было реально"
+    timingWrap.classList.remove("hidden");
+    newIdealWindow();
     penLocked=true;
-    penShootBtn.textContent="СТОП (тайминг)";
-    penBarWrap.classList.remove("hidden");
-    penNewIdeal();
-    barOn=true; barT=0; barV=0;
-    penMsgEl.textContent="ТАЙМИНГ!";
-    penSubEl.textContent="Останови стрелку в зелёной зоне";
+    penHint.textContent="Сейчас тайминг идёт. Жми «УДАР» пока не кончилось время.";
+    timingText.textContent="Тайминг удара";
     hImpact("medium"); beep(420,0.06,0.05,"sine");
 
-    const speed = () => 1.8 + pressure*0.18; // more pressure faster bar
-    const tick=(ts)=>{
+    // ticking
+    function tick(ts){
       if(!barOn) return;
-      if(!barId) barId = ts;
-      const dt = (ts - barId)/1000;
-      barId = ts;
-      barT += dt * speed();
-      // ping-pong needle
-      barV = 0.5 + 0.5*Math.sin(barT*2.2*Math.PI);
-      penNeedle.style.left = (barV*100)+"%";
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+      if(!barLastTs) barLastTs = ts;
+      const dt = (ts - barLastTs)/1000;
+      barLastTs = ts;
 
-    // second click/tap on button stops and shoots
-    penShootBtn.onclick = penShootStop;
+      // needle speed (FIFA-ish)
+      const speed = 2.1;
+      barT += dt * speed;
+      barV = 0.5 + 0.5*Math.sin(barT*2.2*Math.PI);
+      timingNeedle.style.left = (barV*100)+"%";
+
+      timeLeft = Math.max(0, timeLeft - dt);
+      timingTimer.textContent = timeLeft.toFixed(1) + "s";
+
+      if(timeLeft<=0){
+        // auto-shot if user didn't tap
+        penShootTap(true);
+        return;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
-  function penShootStop(){
-    unlockAudio();
-    if(!barOn) return;
+  function stopTiming(hide){
     barOn=false;
-    penShootBtn.onclick = penShootStart; // restore handler later
-    penShootBtn.textContent="Бить";
-    penBarWrap.classList.add("hidden");
+    if(timeoutHandle){ clearTimeout(timeoutHandle); timeoutHandle=null; }
+    if(hide) timingWrap.classList.add("hidden");
+  }
 
-    // compute "quality"
-    const inIdeal = (barV >= idealA && barV <= idealB);
-    const dist = inIdeal ? 0 : Math.min(Math.abs(barV-idealA), Math.abs(barV-idealB)); // 0.. ~0.5
-    // power: closer to center of ideal => stronger and more accurate
-    const idealCenter = (idealA+idealB)/2;
-    const centerDist = Math.abs(barV - idealCenter); // 0..0.5
-    let power = 1.0 - clamp(centerDist*2.2, 0, 1); // 0..1
-    power = clamp(power + (inIdeal?0.15: -dist*1.2), 0, 1);
+  function chooseKeeper(){
+    // keeper human-ish: чаще центр, но не всегда
+    const r=Math.random();
+    if(r<0.42) return "C";
+    return Math.random()<0.5 ? "L" : "R";
+  }
 
-    // keeper chooses (slightly biased to center when low power)
-    const keeper = chooseKeeper(power);
-    animatePenalty(penDir, keeper);
+  function animatePenalty(dir, keeper){
+    resetPenaltyAnim();
+    void ballEl.offsetWidth;
 
-    // determine outcome:
-    // miss chance rises if out of ideal AND high power
-    const missChance = clamp((inIdeal?0:0.18 + dist*1.2) + (power>0.82?0.10:0), 0, 0.55);
-    const rnd = Math.random();
+    const animBall = dir==="L" ? "kickL" : dir==="C" ? "kickC" : "kickR";
+    const animKeeper = keeper==="L" ? "keepL" : keeper==="C" ? "keepC" : "keepR";
+    ballEl.style.animation = `${animBall} .34s ease-out forwards`;
+    keeperEl.style.animation = `${animKeeper} .30s ease-out forwards`;
 
-    // save chance depends on keeper direction + power (stronger harder to save)
-    let saved = false, missed = false;
-    if(rnd < missChance){
-      missed = true;
-    } else {
-      const sameDir = keeper === penDir;
-      const saveChance = clamp((sameDir?0.58:0.18) - power*0.35, 0.06, 0.72);
-      saved = Math.random() < saveChance;
+    hImpact("medium"); sKick();
+  }
+
+  // public pick
+  window.penPick = (d)=>{
+    unlockAudio(); hSelect();
+    if(!penActive) return;
+    if(penLocked) return;
+
+    penDir=d;
+    showAim(d);
+    penMsgEl.textContent = d==="L"?"⬅️ Лево":d==="C"?"⬆️ Центр":"➡️ Право";
+    penSubEl.textContent = "Сейчас начнётся тайминг — будь готов.";
+    startTiming();
+  };
+
+  // tap to shoot (user must hit during timing)
+  window.penShootTap = (auto=false)=>{
+    unlockAudio();
+    if(!penActive) return;
+
+    // if no direction picked -> do nothing
+    if(!penDir){
+      toast("Сначала выбери направление");
+      hNote("error"); sMiss();
+      return;
+    }
+    // if timing not running -> ignore
+    if(!penLocked || !barOn){
+      toast("Тайминг ещё не идёт");
+      return;
     }
 
-    // finalize a bit later to match animation
+    stopTiming(true);
+
+    const inIdeal = (barV>=idealA && barV<=idealB);
+    const center = (idealA+idealB)/2;
+    const centerDist = Math.abs(barV-center);
+    let power = 1.0 - clamp(centerDist*2.2, 0, 1); // 0..1
+    power = clamp(power + (inIdeal?0.10:-0.10), 0, 1);
+
+    const keeper = chooseKeeper();
+    animatePenalty(penDir, keeper);
+
+    // more realistic outcome:
+    // miss chance low unless far from ideal or too much power
+    const out = inIdeal ? 0 : Math.min(Math.abs(barV-idealA), Math.abs(barV-idealB));
+    const missChance = clamp((inIdeal?0.03:0.10 + out*0.65) + (power>0.88?0.06:0), 0.03, 0.36);
+
+    let missed=false, saved=false;
+    if(Math.random() < missChance){
+      missed=true;
+    } else {
+      const sameDir = (keeper===penDir);
+      const saveBase = sameDir ? 0.48 : 0.18;
+      const saveChance = clamp(saveBase - power*0.28, 0.08, 0.62);
+      saved = (Math.random() < saveChance);
+    }
+
+    // feedback a bit later
     setTimeout(()=>{
       if(missed){
-        pressure = clamp(pressure+1, 0, 5);
-        penStage.classList.add("shake");
-        penMsgEl.textContent = "❌ МИМО!";
-        penSubEl.textContent = `Тайминг: ${inIdeal?"идеал":"мимо зоны"} • сила: ${Math.round(power*100)}%`;
+        penMsgEl.textContent = auto ? "⏱️ ВРЕМЯ ВЫШЛО — МИМО!" : "❌ МИМО!";
+        penSubEl.textContent = `Тайминг: ${inIdeal?"идеал":"мимо"} • сила: ${Math.round(power*100)}%`;
+        flashEl.style.background="rgba(255,92,92,.18)"; flashEl.style.opacity="1"; setTimeout(()=>flashEl.style.opacity="0",120);
         hNote("error"); sMiss();
       } else if(saved){
-        pressure = clamp(pressure+1, 0, 5);
         penMsgEl.textContent = "🧤 СЕЙВ!";
-        penSubEl.textContent = `Вратарь угадал: ${dirText(keeper)} • сила: ${Math.round(power*100)}%`;
+        penSubEl.textContent = `Вратарь: ${keeper==="L"?"лево":keeper==="C"?"центр":"право"} • сила: ${Math.round(power*100)}%`;
+        flashEl.style.background="rgba(255,92,92,.18)"; flashEl.style.opacity="1"; setTimeout(()=>flashEl.style.opacity="0",120);
         hNote("error"); sSave();
       } else {
-        pressure = clamp(pressure-1, 0, 5);
         penGoals += 1;
         addCoins(2);
         penMsgEl.textContent = "⚽️ ГОООЛ! +2 coins";
         penSubEl.textContent = `Тайминг: ${inIdeal?"идеал":"норм"} • сила: ${Math.round(power*100)}%`;
+        flashEl.style.background="rgba(140,255,193,.18)"; flashEl.style.opacity="1"; setTimeout(()=>flashEl.style.opacity="0",120);
         hNote("success"); sGoal();
       }
 
       penShot += 1;
       penRender();
 
-      // end series
-      if(penShot === 6){
-        penActive=false;
-        state.plays += 1;
-        if(penGoals >= 3){
-          state.wins += 1;
-          addCoins(10);
-          penMsgEl.textContent = `🏆 Победа! ${penGoals}/5 • +10 coins`;
-          penSubEl.textContent = "Хорошая серия.";
-          hNote("success"); sGoal();
-        } else {
-          penMsgEl.textContent = `Серия окончена: ${penGoals}/5`;
-          penSubEl.textContent = "Попробуй ещё раз.";
-        }
-        saveState();
-      }
-
-      // reset per-shot
+      // reset shot state
       setTimeout(()=>{
-        penResetAnim();
+        resetPenaltyAnim();
+        penDir=null; hideAim();
         penLocked=false;
-        penDir=null;
-        flashEl.style.opacity="0";
-        if(!penActive){
-          // lock shooting if finished
-          penShootBtn.disabled = true;
-          penShootBtn.classList.add("ghost");
-          penShootBtn.classList.remove("primary");
-          penShootBtn.textContent = "Серия завершена";
+        penHint.textContent="Выбери направление на геймпаде ниже.";
+        if(penShot===6){
+          penActive=false;
+          state.plays += 1;
+          if(penGoals>=3){
+            state.wins += 1;
+            addCoins(10);
+            penMsgEl.textContent = `🏆 Победа! ${penGoals}/5 • +10 coins`;
+            hNote("success"); sGoal();
+          } else {
+            penMsgEl.textContent = `Серия окончена: ${penGoals}/5`;
+          }
+          saveState();
+          penShootBtn.disabled=true;
         }
       }, 280);
     }, 220);
-  }
+  };
 
-  function animatePenalty(dir, keeper){
-    penResetAnim();
-    void ballEl.offsetWidth;
-    const animBall = dir==="L" ? "kickToLeft" : dir==="C" ? "kickToCenter" : "kickToRight";
-    const animKeeper = keeper==="L" ? "keeperLeft" : keeper==="C" ? "keeperCenter" : "keeperRight";
-    ballEl.style.animation = `${animBall} .34s ease-out forwards`;
-    keeperEl.style.animation = `${animKeeper} .30s ease-out forwards`;
-    hImpact("medium"); sKick();
+  // =========================
+  // PONG (field + human-like AI + smoother difficulty)
+  // =========================
+  const canvas=document.getElementById("pongCanvas");
+  const ctx=canvas.getContext("2d");
 
-    flashEl.style.background = "rgba(140,255,193,.18)";
-    flashEl.style.opacity = "1";
-    setTimeout(()=>flashEl.style.opacity="0", 120);
-  }
+  const pongMeEl=document.getElementById("pongMe");
+  const pongAiEl=document.getElementById("pongAi");
+  const pongRallyEl=document.getElementById("pongRally");
+  const pongDiffEl=document.getElementById("pongDiff");
+  const pongStartBtn=document.getElementById("pongStartBtn");
 
-  function chooseKeeper(power){
-    // lower power => keeper more central; higher => more random
-    const r = Math.random();
-    const biasCenter = clamp(0.46 - power*0.22, 0.18, 0.48);
-    if(r < biasCenter) return "C";
-    return (Math.random()<0.5) ? "L" : "R";
-  }
-  function dirText(d){ return d==="L"?"лево":d==="C"?"центр":"право"; }
-  function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
-
-  // PONG (tasty)
-  const canvas=document.getElementById("pongCanvas"), ctx=canvas.getContext("2d");
-  const pongMeEl=document.getElementById("pongMe"), pongAiEl=document.getElementById("pongAi"), pongComboEl=document.getElementById("pongCombo"), pongSpeedEl=document.getElementById("pongSpeed"), pongStartBtn=document.getElementById("pongStartBtn");
-  let pongRunning=false, rafId=null;
   const W=canvas.width, H=canvas.height;
-  const paddle={w:96,h:12,x:W/2-48,y:H-28}, aiPaddle={w:96,h:12,x:W/2-48,y:16};
-  const ball={r:7,x:W/2,y:H/2,vx:3.2,vy:3.6};
-  let meScore=0, aiScore=0, speedMult=1.0, rally=0, powerUntil=0, lastHitByPlayer=false;
 
-  function collideRectCircle(px,py,pw,ph,cx,cy,cr){
-    const closestX=clamp(cx,px,px+pw), closestY=clamp(cy,py,py+ph);
-    const dx=cx-closestX, dy=cy-closestY; return (dx*dx+dy*dy)<=cr*cr;
+  let pongRunning=false, rafId=null;
+
+  const p1={w:110,h:14,x:W/2-55,y:H-34};   // player (rounded)
+  const p2={w:110,h:14,x:W/2-55,y:22};     // AI (rounded)
+  const ball={r:7,x:W/2,y:H/2,vx:3.1,vy:3.6};
+
+  let me=0, ai=0;
+  let rally=0;           // within a point
+  let diff=1.0;          // shown difficulty
+  let powerUntil=0;      // power-shot window
+  let aiLag=0.10;        // human reaction delay seconds
+  let aiError=10;        // px error
+  let aiBias=0;          // drift
+  let lastPointTime=0;
+
+  function roundRect(x,y,w,h,r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
   }
-  function pongHud(){pongMeEl.textContent=meScore;pongAiEl.textContent=aiScore;pongComboEl.textContent=rally;pongSpeedEl.textContent="x"+speedMult.toFixed(1)}
-  function pongResetBall(towardsPlayer){
-    ball.x=W/2; ball.y=H/2; speedMult=1.0; rally=0; lastHitByPlayer=false;
-    const base=3.0+Math.random()*1.0;
-    ball.vx=(Math.random()>.5?1:-1)*base;
-    ball.vy=(towardsPlayer?1:-1)*(3.2+Math.random()*1.2);
-    pongHud();
+  function clampX(v){ return clamp(v, 0, W); }
+
+  function resetBall(towardsPlayer){
+    ball.x=W/2; ball.y=H/2;
+    rally=0;
+    diff=1.0;
+    // human-like ai params reset
+    aiLag = 0.09 + Math.random()*0.10;
+    aiError = 10 + Math.random()*10;
+    aiBias = (Math.random()*2-1)*14;
+
+    const base=3.0 + Math.random()*0.8;
+    ball.vx = (Math.random()>.5?1:-1)*base;
+    ball.vy = (towardsPlayer?1:-1)*(3.2 + Math.random()*1.0);
+    lastPointTime=performance.now();
+    hudPong();
   }
-  function pongReset(){
-    pongStop(); meScore=0; aiScore=0;
-    paddle.x=W/2-paddle.w/2; aiPaddle.x=W/2-aiPaddle.w/2;
-    pongResetBall(true);
-    pongStartBtn.textContent="Старт";
-    pongHud(); drawPong();
+  function hudPong(){
+    pongMeEl.textContent=me;
+    pongAiEl.textContent=ai;
+    pongRallyEl.textContent=rally;
+    pongDiffEl.textContent=diff.toFixed(1);
   }
-  function pongStart(){unlockAudio(); if(pongRunning)return; pongRunning=true; pongStartBtn.textContent="Идёт…"; toast("Поехали!"); loop(); }
-  function pongStop(){pongRunning=false; if(rafId)cancelAnimationFrame(rafId); rafId=null;}
-  function comboBonus(){
-    let b=0; if(rally===3)b=1; if(rally===5)b=2; if(rally===8)b=4;
-    if(b){addCoins(b); toast(`Комбо ${rally}! +${b} coins`); hNote("success"); beep(740,0.06,0.05,"sine")}
-  }
-  function aiSpeed(){
-    const base=2.8, scoreBoost=(aiScore+meScore)*0.12, speedBoost=(speedMult-1.0)*0.9;
-    return clamp(base+scoreBoost+speedBoost,2.8,5.6);
-  }
-  function drawPong(){
+
+  function drawField(){
+    // grass
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle="#0b0d12"; ctx.fillRect(0,0,W,H);
-    ctx.globalAlpha=.35; ctx.fillStyle="#fff";
-    for(let y=0;y<H;y+=18) ctx.fillRect(W/2-2,y,4,10);
+    ctx.fillStyle="#0b2a15";
+    ctx.fillRect(0,0,W,H);
+
+    // stripes
+    ctx.globalAlpha=.08;
+    for(let i=0;i<10;i++){
+      ctx.fillStyle = (i%2===0) ? "#ffffff" : "#000000";
+      ctx.fillRect(0, i*(H/10), W, H/10);
+    }
     ctx.globalAlpha=1;
-    ctx.fillStyle="#8cffc1"; ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
-    ctx.fillStyle="#9aa3b2"; ctx.fillRect(aiPaddle.x,aiPaddle.y,aiPaddle.w,aiPaddle.h);
-    const now=performance.now(), powerActive=now<powerUntil;
-    if(powerActive){ctx.globalAlpha=.18;ctx.fillStyle="#8cffc1";ctx.fillRect(0,H-90,W,90);ctx.globalAlpha=1;}
-    ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
-    ctx.fillStyle=powerActive?"#8cffc1":"#fff"; ctx.fill();
-    ctx.globalAlpha=.9; ctx.font="800 16px system-ui"; ctx.fillStyle="#fff";
-    ctx.fillText(`x${speedMult.toFixed(1)}  🔥${rally}`, W-92, 26);
-    ctx.globalAlpha=1;
+
+    // lines
+    ctx.strokeStyle="rgba(255,255,255,.22)";
+    ctx.lineWidth=2;
+
+    // outer border
+    ctx.strokeRect(14,14,W-28,H-28);
+
+    // center line
+    ctx.beginPath();
+    ctx.moveTo(14, H/2);
+    ctx.lineTo(W-14, H/2);
+    ctx.stroke();
+
+    // center circle
+    ctx.beginPath();
+    ctx.arc(W/2, H/2, 54, 0, Math.PI*2);
+    ctx.stroke();
+
+    // center dot
+    ctx.fillStyle="rgba(255,255,255,.22)";
+    ctx.beginPath();
+    ctx.arc(W/2, H/2, 3, 0, Math.PI*2);
+    ctx.fill();
   }
+
+  function drawPong(){
+    drawField();
+
+    // paddles
+    ctx.fillStyle="#8cffc1";
+    roundRect(p1.x, p1.y, p1.w, p1.h, 10);
+    ctx.fill();
+
+    ctx.fillStyle="rgba(255,255,255,.25)";
+    roundRect(p2.x, p2.y, p2.w, p2.h, 10);
+    ctx.fill();
+
+    // ball
+    const now=performance.now();
+    const powerActive = now < powerUntil;
+    ctx.fillStyle = powerActive ? "#8cffc1" : "#ffffff";
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+    ctx.fill();
+
+    // little glow on power
+    if(powerActive){
+      ctx.globalAlpha=.18;
+      ctx.fillStyle="#8cffc1";
+      ctx.fillRect(14, H-110, W-28, 96);
+      ctx.globalAlpha=1;
+    }
+  }
+
+  function collide(p, b){
+    return (b.x + b.r > p.x && b.x - b.r < p.x + p.w && b.y + b.r > p.y && b.y - b.r < p.y + p.h);
+  }
+
+  function aiHumanMove(dt){
+    // difficulty grows smoothly within a rally (faster earlier so game doesn't drag)
+    // curve: diff = 1 + 0.10*rally + timeSincePoint*0.15, capped
+    const t = (performance.now() - lastPointTime)/1000;
+    diff = clamp(1.0 + rally*0.10 + t*0.16, 1.0, 2.0);
+
+    // "human" target: slightly lagged and with error + bias
+    const targetX = ball.x - p2.w/2 + aiBias;
+
+    // reaction lag: sometimes bot "hesitates" a bit when ball changes direction
+    const speed = (3.2 + diff*1.8); // px per frame-ish
+    // add micro random walk (human hand jitter)
+    const jitter = (Math.random()*2-1) * (0.6 + diff*0.5);
+
+    // error increases when ball fast: simulate misses
+    const err = aiError + (Math.abs(ball.vy)*0.8);
+
+    // move toward target with smoothing and "wrong-way" feint sometimes
+    let desired = targetX + (Math.random()*2-1)*err;
+    // occasional feint (rare)
+    if(Math.random() < 0.012 * diff){
+      desired += (Math.random()<0.5 ? -1 : 1) * (18 + Math.random()*24);
+    }
+
+    const dx = (desired - p2.x);
+    const step = clamp(dx, -speed, speed);
+    p2.x = clamp(p2.x + step + jitter, 14, W-14 - p2.w);
+  }
+
+  function pongReset(){
+    pongStop();
+    me=0; ai=0;
+    p1.x=W/2-p1.w/2; p2.x=W/2-p2.w/2;
+    resetBall(true);
+    pongStartBtn.textContent="Старт";
+    hudPong();
+    drawPong();
+  }
+
+  function pongStart(){
+    unlockAudio();
+    if(pongRunning) return;
+    pongRunning=true;
+    pongStartBtn.textContent="Идёт…";
+    toast("Поехали!");
+    loop();
+  }
+  function pongStop(){
+    pongRunning=false;
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId=null;
+  }
+
   function endPong(){
-    pongStop(); state.plays+=1;
-    if(meScore>=5){state.wins+=1; addCoins(15); saveState(); toast("🏆 Победа! +15 coins"); hNote("success"); sGoal()}
-    else{saveState(); toast("Поражение 😄"); hNote("error"); sMiss()}
+    pongStop();
+    state.plays += 1;
+    if(me >= 3){
+      state.wins += 1;
+      addCoins(15);
+      toast("🏆 Победа! +15 coins");
+      hNote("success"); sGoal();
+    } else {
+      toast("Поражение 😄");
+      hNote("error"); sMiss();
+    }
+    saveState();
     pongStartBtn.textContent="Сыграть ещё";
   }
-  function loop(){
+
+  let lastTs=0;
+  function loop(ts){
     if(!pongRunning) return;
-    const target=ball.x-aiPaddle.w/2, s=aiSpeed();
-    aiPaddle.x += clamp(target-aiPaddle.x, -s, s);
-    aiPaddle.x = clamp(aiPaddle.x, 0, W-aiPaddle.w);
+    if(!lastTs) lastTs=ts;
+    const dt = Math.min(0.035, (ts-lastTs)/1000);
+    lastTs=ts;
 
-    ball.x += ball.vx*speedMult;
-    ball.y += ball.vy*speedMult;
+    // AI
+    aiHumanMove(dt);
 
-    if(ball.x-ball.r<=0 || ball.x+ball.r>=W){ ball.vx*=-1; ball.x=clamp(ball.x, ball.r, W-ball.r); }
+    // ball move (smooth difficulty: speed multiplier grows with diff)
+    const speedMul = 1.0 + (diff-1.0)*0.9;
+    ball.x += ball.vx * speedMul;
+    ball.y += ball.vy * speedMul;
 
-    if(ball.vy>0 && collideRectCircle(paddle.x,paddle.y,paddle.w,paddle.h,ball.x,ball.y,ball.r)){
-      ball.vy*=-1;
-      const hit=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
-      ball.vx += hit*1.25;
-      speedMult = clamp(speedMult + 0.06, 1.0, 2.1);
-      rally += 1; lastHitByPlayer=true; comboBonus();
+    // walls
+    if(ball.x - ball.r <= 14 || ball.x + ball.r >= W-14){
+      ball.vx *= -1;
+      ball.x = clamp(ball.x, 14+ball.r, (W-14)-ball.r);
+      beep(260,0.04,0.03,"sine");
+    }
 
-      const now=performance.now();
-      if(now<powerUntil){
-        ball.vx += hit*1.8;
-        speedMult = clamp(speedMult + 0.18, 1.0, 2.4);
-        hImpact("medium"); beep(520,0.06,0.06,"triangle");
+    // collisions
+    if(ball.vy > 0 && collide(p1, ball)){
+      ball.vy *= -1;
+      const hit = (ball.x - (p1.x + p1.w/2)) / (p1.w/2);
+      ball.vx += hit * 1.15;
+      ball.vx = clamp(ball.vx, -6.2, 6.2);
+      rally += 1;
+      hImpact("light");
+      beep(520,0.04,0.03,"triangle");
+
+      // power-shot if active
+      if(performance.now() < powerUntil){
+        ball.vx += hit * 1.6;
+        ball.vy *= 1.06;
+        hImpact("medium");
+        beep(740,0.05,0.05,"triangle");
         toast("⚡ Power-shot!");
-        powerUntil=0;
-      } else {
-        hImpact("light");
+        powerUntil = 0;
       }
-      ball.vx = clamp(ball.vx, -6.2, 6.2);
-      pongHud();
+      hudPong();
     }
 
-    if(ball.vy<0 && collideRectCircle(aiPaddle.x,aiPaddle.y,aiPaddle.w,aiPaddle.h,ball.x,ball.y,ball.r)){
-      ball.vy*=-1;
-      const hit=(ball.x-(aiPaddle.x+aiPaddle.w/2))/(aiPaddle.w/2);
-      ball.vx += hit*0.8;
-      speedMult = clamp(speedMult + 0.03, 1.0, 2.2);
-      if(lastHitByPlayer) lastHitByPlayer=false;
+    if(ball.vy < 0 && collide(p2, ball)){
+      ball.vy *= -1;
+      const hit = (ball.x - (p2.x + p2.w/2)) / (p2.w/2);
+      ball.vx += hit * 0.85;
       ball.vx = clamp(ball.vx, -6.2, 6.2);
-      pongHud();
+      beep(360,0.04,0.03,"square");
+      hudPong();
     }
 
-    if(ball.y-ball.r<=0){ meScore += 1; toast("Очко тебе!"); beep(740,0.05,0.05,"sine"); pongResetBall(false); }
-    if(ball.y+ball.r>=H){ aiScore += 1; toast("Очко боту"); beep(190,0.08,0.05,"square"); pongResetBall(true); }
-    pongHud();
+    // scoring
+    if(ball.y - ball.r <= 14){
+      me += 1;
+      toast("Очко тебе!");
+      beep(840,0.06,0.04,"sine");
+      resetBall(false);
+    }
+    if(ball.y + ball.r >= H-14){
+      ai += 1;
+      toast("Очко боту");
+      beep(180,0.08,0.04,"square");
+      resetBall(true);
+    }
+    hudPong();
 
-    if(meScore>=5 || aiScore>=5){ endPong(); drawPong(); return; }
+    if(me >= 3 || ai >= 3){
+      endPong();
+      drawPong();
+      return;
+    }
 
     drawPong();
     rafId = requestAnimationFrame(loop);
   }
 
+  // Player control
   function setPaddleFromClientX(clientX){
     const rect=canvas.getBoundingClientRect();
     const x=(clientX-rect.left)*(W/rect.width);
-    paddle.x=clamp(x-paddle.w/2,0,W-paddle.w);
+    p1.x = clamp(x - p1.w/2, 14, W-14 - p1.w);
   }
   canvas.addEventListener("mousemove",(e)=>setPaddleFromClientX(e.clientX));
   canvas.addEventListener("touchmove",(e)=>{e.preventDefault();setPaddleFromClientX(e.touches[0].clientX)},{passive:false});
-  function triggerPower(){ if(!pongRunning) return; powerUntil=performance.now()+220; hImpact("light"); }
+
+  // Power-shot
+  function triggerPower(){
+    if(!pongRunning) return;
+    powerUntil = performance.now() + 220;
+    hImpact("light");
+  }
   canvas.addEventListener("mousedown",()=>{unlockAudio();triggerPower();});
   canvas.addEventListener("touchstart",(e)=>{e.preventDefault();unlockAudio();triggerPower();},{passive:false});
 
   // Boot
-  renderWallet(); penRender(); pongReset();
-  const initial=(location.hash||"#games").slice(1); go(pages.includes(initial)?initial:"games");
+  renderWallet();
+  penRender();
+  pongReset();
+  const initial=(location.hash||"#games").slice(1);
+  go(pages.includes(initial)?initial:"games");
 </script>
 </body>
 </html>
+
 
 
