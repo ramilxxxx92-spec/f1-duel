@@ -1,110 +1,489 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>F1 Reaction Duel</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<style>
-body {
-    font-family: system-ui, sans-serif;
-    background: #0f1115;
-    color: white;
-    text-align: center;
-    padding-top: 40px;
-}
-#light {
-    width: 120px;
-    height: 120px;
-    margin: 40px auto;
-    border-radius: 50%;
-    background: red;
-    box-shadow: 0 0 20px red;
-}
-button {
-    font-size: 18px;
-    padding: 12px 20px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-}
-#result {
-    margin-top: 30px;
-    font-size: 22px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>F1 Duel</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --card:#171a22;
+      --muted:#9aa3b2;
+      --text:#ffffff;
+      --accent:#8cffc1;
+      --danger:#ff5c5c;
+      --line:#252a36;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .app{
+      min-height: 100vh;
+      padding-bottom: 86px; /* место под нижнее меню */
+    }
+    .topbar{
+      position: sticky;
+      top:0;
+      z-index: 10;
+      background: rgba(15,17,21,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .chip{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+    }
+    .container{ padding: 16px; }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; }
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .card h2{ margin:0 0 8px 0; font-size:16px; }
+    .muted{ color: var(--muted); }
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 650;
+      width: 100%;
+    }
+    .btn.primary{ background: var(--accent); color:#07110c; }
+    .btn.ghost{ background: transparent; border:1px solid var(--line); color: var(--text); }
+    .btn.danger{ background: var(--danger); color:#1a0b0b; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .game-tile{
+      background: linear-gradient(180deg, rgba(140,255,193,.10), rgba(255,255,255,0));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 120px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      cursor:pointer;
+      user-select:none;
+    }
+    .game-tile .title{ font-weight: 750; }
+    .game-tile .tag{ font-size:12px; color: var(--muted); }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+    }
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      border-top:1px solid var(--line);
+    }
+    .kv:first-child{ border-top:none; padding-top:0; }
+    .nav{
+      position: fixed;
+      left:0; right:0; bottom:0;
+      height: 72px;
+      background: rgba(15,17,21,.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+      display:flex;
+      padding: 10px 10px 14px;
+      gap:10px;
+      z-index: 20;
+    }
+    .nav button{
+      flex:1;
+      border:none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 14px;
+      padding: 10px 8px;
+      font-size: 12px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .nav button.active{
+      color: var(--text);
+      background: rgba(140,255,193,.12);
+      border:1px solid rgba(140,255,193,.25);
+    }
+    .icon{ font-size:18px; line-height:1; }
+    .hidden{ display:none !important; }
+    .note{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <span>🏁 F1 Duel</span>
+        <span id="envChip" class="chip">WebApp</span>
+      </div>
+      <div class="chip" id="userChip">Гость</div>
+    </div>
 
-<h1>🏁 F1 Reaction Duel</h1>
-<div id="player"></div>
+    <!-- PAGES -->
+    <main class="container">
 
-<div id="light"></div>
+      <!-- GAMES -->
+      <section id="page-games">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>Выбор игры</h2>
+          <div class="muted">Выбери режим и соревнуйся. Пока подключим 1–2 игры, потом расширим.</div>
+        </div>
 
-<button id="startBtn">Ждать старт</button>
+        <div class="grid">
+          <div class="game-tile" onclick="openGame('reaction')">
+            <div>
+              <div class="title">⚡ Reaction Duel</div>
+              <div class="tag">Скорость реакции • 1 игрок (пока)</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Нажми, чтобы открыть</div>
+          </div>
 
-<div id="result"></div>
+          <div class="game-tile" onclick="toast('Скоро добавим 🙂')">
+            <div>
+              <div class="title">🧠 Quiz Sprint</div>
+              <div class="tag">Вопросы • PvP позже</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Скоро</div>
+          </div>
+
+          <div class="game-tile" onclick="toast('Скоро добавим 🙂')">
+            <div>
+              <div class="title">🎯 Tap Rush</div>
+              <div class="tag">Тап-гонка • рейтинги</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Скоро</div>
+          </div>
+
+          <div class="game-tile" onclick="toast('Скоро добавим 🙂')">
+            <div>
+              <div class="title">🃏 Lucky Draw</div>
+              <div class="tag">Риск/награда • валюта</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Скоро</div>
+          </div>
+        </div>
+
+        <div class="note">Совет: сначала делаем 1 игру идеально (UX, баланс, награды), потом клонируем механику.</div>
+      </section>
+
+      <!-- WALLET -->
+      <section id="page-wallet" class="hidden">
+        <div class="card">
+          <h2>Баланс</h2>
+
+          <div class="row" style="margin: 10px 0 14px;">
+            <div class="pill" style="flex:1; justify-content:space-between;">
+              <span>🪙 Coins</span>
+              <strong id="coinsVal">0</strong>
+            </div>
+            <div class="pill" style="flex:1; justify-content:space-between;">
+              <span>⭐ Stars</span>
+              <strong id="starsVal">0</strong>
+            </div>
+          </div>
+
+          <div class="kv"><span class="muted">Уровень</span><strong id="levelVal">1</strong></div>
+          <div class="kv"><span class="muted">Победы</span><strong id="winsVal">0</strong></div>
+          <div class="kv"><span class="muted">Игры</span><strong id="playsVal">0</strong></div>
+
+          <div style="margin-top:14px;" class="row">
+            <button class="btn primary" onclick="addCoins(10)">+10 coins (тест)</button>
+            <button class="btn ghost" onclick="convertCoinsToStars()">Обменять coins → stars</button>
+          </div>
+
+          <button style="margin-top:10px;" class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
+          <div class="note">Пока это локально (в твоём телефоне). Для PvP и реальных «звёзд/крипты» нужен сервер.</div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="page-profile" class="hidden">
+        <div class="card">
+          <h2>Личный кабинет</h2>
+          <div class="muted" id="profileLine">—</div>
+
+          <div style="margin-top:14px;">
+            <div class="kv"><span class="muted">Ник</span><strong id="nickVal">—</strong></div>
+            <div class="kv"><span class="muted">Telegram ID</span><strong id="tgidVal">—</strong></div>
+            <div class="kv"><span class="muted">Статус</span><strong id="statusVal">Новичок</strong></div>
+          </div>
+
+          <div style="margin-top:14px;" class="row">
+            <button class="btn ghost" onclick="toast('Скоро: аватар, достижения, история матчей')">Настройки (скоро)</button>
+            <button class="btn primary" onclick="go('games')">Играть</button>
+          </div>
+
+          <div class="note">Позже сюда добавим: рефералы, достижения, историю дуэлей, привязку кошелька.</div>
+        </div>
+      </section>
+
+      <!-- GAME: REACTION -->
+      <section id="page-reaction" class="hidden">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>⚡ Reaction Duel</h2>
+          <div class="muted">Жми «Ждать старт», затем тапни по сигналу. Фальстарт — штраф.</div>
+        </div>
+
+        <div class="card">
+          <div id="light" style="
+            width:120px;height:120px;border-radius:50%;
+            margin: 8px auto 18px;
+            background:red; box-shadow: 0 0 20px red;"></div>
+
+          <button id="startBtn" class="btn primary">Ждать старт</button>
+          <div id="result" style="margin-top:14px; font-size:20px; font-weight:700;"></div>
+
+          <div class="note">Награда: +5 coins за валидную попытку. Быстро (<250ms): +3 бонус.</div>
+          <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад к играм</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <button id="tab-games" onclick="go('games')">
+      <div class="icon">🎮</div>
+      <div>Игры</div>
+    </button>
+    <button id="tab-wallet" onclick="go('wallet')">
+      <div class="icon">💰</div>
+      <div>Баланс</div>
+    </button>
+    <button id="tab-profile" onclick="go('profile')">
+      <div class="icon">👤</div>
+      <div>Кабинет</div>
+    </button>
+  </nav>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.ready();
+  // --- Telegram init ---
+  const tg = window.Telegram?.WebApp;
+  try { tg?.ready(); } catch(e){}
 
-const playerDiv = document.getElementById("player");
-const light = document.getElementById("light");
-const button = document.getElementById("startBtn");
-const result = document.getElementById("result");
+  // Expand for nicer UI
+  try { tg?.expand(); } catch(e){}
 
-const user = tg.initDataUnsafe?.user;
+  // --- State (local) ---
+  const storeKey = "f1duel_state_v1";
+  const defaultState = { coins: 0, stars: 0, wins: 0, plays: 0 };
+  const state = loadState();
 
-if (user) {
-    playerDiv.innerText = `Игрок: ${user.username || user.first_name}`;
-}
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(storeKey);
+      return raw ? { ...defaultState, ...JSON.parse(raw) } : { ...defaultState };
+    } catch(e){
+      return { ...defaultState };
+    }
+  }
+  function saveState(){
+    localStorage.setItem(storeKey, JSON.stringify(state));
+    renderWallet();
+  }
 
-let startTime = 0;
-let waiting = false;
-let timer;
+  // --- Routing ---
+  const pages = ["games","wallet","profile","reaction"];
+  function go(page){
+    pages.forEach(p => {
+      document.getElementById("page-" + p).classList.toggle("hidden", p !== page);
+    });
+    // Tabs active
+    ["games","wallet","profile"].forEach(t => {
+      const el = document.getElementById("tab-" + t);
+      el.classList.toggle("active", t === page);
+    });
+    // If inside a game page, keep games tab active
+    if(page === "reaction"){
+      document.getElementById("tab-games").classList.add("active");
+      ["wallet","profile"].forEach(t => document.getElementById("tab-"+t).classList.remove("active"));
+    }
+    // simple hash
+    location.hash = "#" + page;
+  }
 
-button.onclick = () => {
+  function openGame(id){
+    if(id === "reaction") go("reaction");
+  }
+
+  // --- Header / User ---
+  const user = tg?.initDataUnsafe?.user;
+  const userChip = document.getElementById("userChip");
+  const envChip = document.getElementById("envChip");
+
+  envChip.textContent = tg ? "Telegram WebApp" : "Browser";
+  if(user){
+    const nick = user.username || user.first_name || "Player";
+    userChip.textContent = "@" + nick;
+    document.getElementById("nickVal").textContent = nick;
+    document.getElementById("tgidVal").textContent = user.id;
+    document.getElementById("profileLine").textContent = `Привет, ${nick}. Здесь будут твои достижения и статистика.`;
+  } else {
+    document.getElementById("profileLine").textContent = "Открой через Telegram, чтобы подтянулся профиль.";
+  }
+
+  // --- Wallet render ---
+  function calcLevel(){
+    // примитивный уровень по coins+stars
+    const score = state.coins + state.stars * 50;
+    return Math.max(1, Math.floor(score / 200) + 1);
+  }
+
+  function renderWallet(){
+    document.getElementById("coinsVal").textContent = state.coins;
+    document.getElementById("starsVal").textContent = state.stars;
+    document.getElementById("winsVal").textContent = state.wins;
+    document.getElementById("playsVal").textContent = state.plays;
+    document.getElementById("levelVal").textContent = calcLevel();
+  }
+
+  function addCoins(n){
+    state.coins = Math.max(0, state.coins + n);
+    saveState();
+    toast(`Баланс: ${state.coins} coins`);
+  }
+
+  function convertCoinsToStars(){
+    // правило: 100 coins = 1 star
+    const rate = 100;
+    if(state.coins < rate){
+      toast(`Нужно минимум ${rate} coins`);
+      return;
+    }
+    const starsToAdd = Math.floor(state.coins / rate);
+    state.coins -= starsToAdd * rate;
+    state.stars += starsToAdd;
+    saveState();
+    toast(`Обмен: +${starsToAdd} ⭐`);
+  }
+
+  function resetProgress(){
+    Object.assign(state, { ...defaultState });
+    saveState();
+    toast("Прогресс сброшен");
+  }
+
+  // --- Toast (mini) ---
+  function toast(text){
+    // Telegram haptic (optional)
+    try{ tg?.HapticFeedback?.impactOccurred("light"); }catch(e){}
+    alert(text);
+  }
+
+  // --- Reaction game ---
+  const light = document.getElementById("light");
+  const startBtn = document.getElementById("startBtn");
+  const result = document.getElementById("result");
+
+  let startTime = 0;
+  let waiting = false;
+  let timer = null;
+
+  function setLight(color){
+    light.style.background = color;
+    light.style.boxShadow = color === "lime" ? "0 0 30px lime" : "0 0 20px red";
+  }
+
+  startBtn.onclick = () => {
     if (waiting) return;
-
-    result.innerText = "";
-    light.style.background = "red";
-    light.style.boxShadow = "0 0 20px red";
-
+    result.textContent = "";
+    setLight("red");
     waiting = true;
-    button.innerText = "ЖДИ...";
+    startBtn.textContent = "ЖДИ…";
 
     const delay = 2000 + Math.random() * 3000;
 
     timer = setTimeout(() => {
-        light.style.background = "lime";
-        light.style.boxShadow = "0 0 30px lime";
-        startTime = Date.now();
+      setLight("lime");
+      startTime = Date.now();
+      try{ tg?.HapticFeedback?.impactOccurred("medium"); }catch(e){}
     }, delay);
-};
+  };
 
-light.onclick = () => {
+  light.onclick = () => {
     if (!waiting) return;
 
-    if (!startTime) {
-        clearTimeout(timer);
-        result.innerText = "❌ Фальстарт!";
-        reset();
-        return;
+    // false start
+    if (!startTime){
+      clearTimeout(timer);
+      result.textContent = "❌ Фальстарт! −2 coins";
+      addCoins(-2);
+      resetRound();
+      return;
     }
 
     const reaction = Date.now() - startTime;
-    result.innerText = `⚡ Реакция: ${reaction} мс`;
-    reset();
-};
+    state.plays += 1;
 
-function reset() {
+    let reward = 5;
+    if(reaction < 250) reward += 3;
+
+    addCoins(reward);
+    result.textContent = `⚡ ${reaction} мс  •  +${reward} coins`;
+    try{ tg?.HapticFeedback?.notificationOccurred("success"); }catch(e){}
+    resetRound();
+  };
+
+  function resetRound(){
     waiting = false;
     startTime = 0;
-    button.innerText = "Ещё раз";
-}
-</script>
+    startBtn.textContent = "Ещё раз";
+    saveState();
+  }
 
+  // --- Boot ---
+  renderWallet();
+
+  // open from hash
+  const initial = (location.hash || "#games").slice(1);
+  go(pages.includes(initial) ? initial : "games");
+</script>
 </body>
 </html>
