@@ -7,292 +7,617 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root{
-      --bg:#0f1115;--card:#171a22;--muted:#9aa3b2;--text:#fff;
-      --accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;--shadow:0 12px 30px rgba(0,0,0,.35);
-      --r:16px;
+      --bg1:#0E0F13; --bg2:#121624;
+
+      --glass-bg: rgba(255,255,255,.06);
+      --glass-border: rgba(255,255,255,.10);
+      --glass-bg-strong: rgba(255,255,255,.08);
+      --blur: 16px;
+
+      --text:#fff;
+      --text2: rgba(255,255,255,.68);
+      --muted: rgba(255,255,255,.46);
+
+      --accent:#8CFFC1;
+      --accent-soft: rgba(140,255,193,.18);
+      --accent-glow: rgba(140,255,193,.45);
+
+      --danger:#FF7A7A;
+      --danger-soft: rgba(255,92,92,.18);
+
+      --line: rgba(255,255,255,.10);
+      --shadow: 0 20px 40px rgba(0,0,0,.40);
+
+      --r: 22px;
     }
 
-    /* prevent selection/copy on mobile webviews */
-    html, body{
-      margin:0;
-      background:var(--bg);
+    html,body{
+      margin:0; height:100%;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
       color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      -webkit-user-select:none;
-      user-select:none;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-user-select:none; user-select:none;
       -webkit-touch-callout:none;
       overscroll-behavior:none;
-      height:100%;
     }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+    a{color:inherit}
 
-    .app{min-height:100vh;padding-bottom:86px}
+    /* Subtle grain (optional) */
+    body:before{
+      content:"";
+      position:fixed; inset:0; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      opacity:.22;
+      mix-blend-mode: overlay;
+    }
+
+    .app{min-height:100vh; padding-bottom:86px}
     .topbar{
-      position:sticky;top:0;z-index:10;
-      background:rgba(15,17,21,.92);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
+      position:sticky; top:0; z-index:20;
       padding:14px 16px;
-      display:flex;align-items:center;justify-content:space-between;gap:12px
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      background: rgba(10,12,18,.45);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.07);
     }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
-    .chip{font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);white-space:nowrap}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.2px}
+    .chip{
+      font-size:12px; padding:7px 10px; border-radius:999px;
+      background: var(--glass-bg); border:1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur));
+      color:var(--text2);
+      white-space:nowrap;
+    }
     .container{padding:16px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
-    .card h2{margin:0 0 8px 0;font-size:16px}
-    .muted{color:var(--muted);line-height:1.35}
-    .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:900;width:100%}
-    .btn.primary{background:var(--accent);color:#07110c}
-    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
-    .btn.danger{background:var(--danger);color:#1a0b0b}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .tile{
-      background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));
-      border:1px solid var(--line);border-radius:var(--r);padding:14px;min-height:120px;
-      display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;user-select:none
+    .row{display:flex; gap:12px; flex-wrap:wrap}
+    .glass{
+      background: var(--glass-bg);
+      border:1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur));
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
     }
-    .tile .t{font-weight:950}
-    .tile .d{font-size:12px;color:var(--muted);margin-top:6px}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
-    .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-    .kv:first-child{border-top:none;padding-top:0}
+    .card{padding:14px}
+    .card h2{margin:0 0 8px 0; font-size:16px; letter-spacing:.2px}
+    .muted{color:var(--muted); line-height:1.35}
+    .text2{color:var(--text2)}
+
+    .btn{
+      width:100%;
+      border:none; cursor:pointer;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:15px;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    .btn:active{transform: scale(.98)}
+    .btn.primary{background: linear-gradient(135deg, #8CFFC1, #4DFF9A); color:#07110c; box-shadow: 0 0 18px rgba(140,255,193,.25)}
+    .btn.ghost{
+      background: var(--glass-bg-strong);
+      border:1px solid var(--glass-border);
+      color:var(--text);
+      backdrop-filter: blur(var(--blur));
+    }
+    .btn.danger{
+      background: var(--danger-soft);
+      border:1px solid rgba(255,92,92,.30);
+      color: var(--danger);
+      backdrop-filter: blur(var(--blur));
+    }
+    .btn[disabled]{opacity:.45; cursor:not-allowed; transform:none !important}
+
     .nav{
-      position:fixed;left:0;right:0;bottom:0;height:72px;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);
-      border-top:1px solid var(--line);display:flex;padding:10px 10px 14px;gap:10px;z-index:20
+      position:fixed; left:0; right:0; bottom:0; height:72px;
+      padding:10px 10px 14px;
+      display:flex; gap:10px;
+      background: rgba(10,12,18,.45);
+      backdrop-filter: blur(18px);
+      border-top:1px solid rgba(255,255,255,.07);
+      z-index:25;
     }
     .nav button{
-      flex:1;border:none;background:transparent;color:var(--muted);border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
+      flex:1;
+      border:none; cursor:pointer;
+      border-radius:16px;
+      background: transparent;
+      color: var(--muted);
+      padding:10px 8px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+      font-size:12px;
     }
-    .nav button.active{color:var(--text);background:rgba(140,255,193,.12);border:1px solid rgba(140,255,193,.25)}
-    .icon{font-size:18px;line-height:1}
+    .nav button.active{
+      background: rgba(140,255,193,.10);
+      border:1px solid rgba(140,255,193,.22);
+      color: var(--text);
+    }
+    .icon{font-size:18px; line-height:1}
+
     .hidden{display:none!important}
-    .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
+    .divider{height:1px; background: rgba(255,255,255,.08); margin:12px 0}
+    .kv{display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid rgba(255,255,255,.08)}
+    .kv:first-child{border-top:none; padding-top:0}
+    .pill{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      background: var(--glass-bg-strong);
+      border:1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur));
+    }
+
+    /* chips row */
+    .chipRow{
+      display:flex; gap:10px;
+      overflow:auto; padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+    }
+    .chipBet{
+      flex:0 0 auto;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      font-weight:900;
+      cursor:pointer;
+      scroll-snap-align:start;
+      transition: transform .12s ease, box-shadow .18s ease, background .18s ease, color .18s ease, opacity .18s ease;
+    }
+    .chipBet:active{transform: scale(.97)}
+    .chipBet.selected{
+      background: linear-gradient(135deg, #8CFFC1, #4DFF9A);
+      color:#0B0E0C;
+      box-shadow: 0 0 18px rgba(140,255,193,.35);
+      border-color: rgba(140,255,193,.38);
+    }
+    .chipBet.disabled{
+      opacity:.35; cursor:not-allowed;
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.08);
+    }
+
+    /* toast */
     .toast{
-      position:fixed;left:50%;bottom:86px;transform:translateX(-50%);
-      background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
-      box-shadow:var(--shadow);font-size:13px;z-index:999;max-width:90vw;text-align:center;
-      opacity:0;pointer-events:none;transition:opacity .18s ease
+      position:fixed; left:50%; bottom:86px; transform:translateX(-50%);
+      max-width:92vw; text-align:center;
+      padding:10px 12px; border-radius:14px;
+      background: rgba(0,0,0,.65);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      opacity:0; pointer-events:none;
+      transition: opacity .16s ease;
+      z-index:99;
+      font-size:13px;
     }
     .toast.show{opacity:1}
 
-    /* Pong canvas */
-    .pongCanvas{
-      width:100%;max-width:440px;
-      border:1px solid var(--line);
-      border-radius:18px;
-      display:block;margin:0 auto;
-      background:#0b0d12;
-      touch-action:none; /* important for mobile */
+    /* modal */
+    .modalWrap{
+      position:fixed; inset:0; z-index:100;
+      display:none;
+      align-items:center; justify-content:center;
+      padding:16px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
     }
+    .modalWrap.show{display:flex}
+    .modal{
+      width:min(520px, 100%);
+      padding:16px;
+      border-radius:24px;
+      background: rgba(20,24,36,.55);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 30px 70px rgba(0,0,0,.55);
+      backdrop-filter: blur(18px);
+    }
+    .modal h3{margin:0 0 6px 0}
+    .modal .muted{font-size:13px}
 
-    /* Penalty stage */
-    .stage{
-      position:relative;width:100%;max-width:420px;margin:0 auto;height:300px;
-      border-radius:18px;border:1px solid var(--line);overflow:hidden;
-      background:
-        radial-gradient(520px 240px at 50% 10%, rgba(255,255,255,.12), rgba(255,255,255,0)),
-        linear-gradient(180deg, rgba(140,255,193,.06), rgba(0,0,0,0)),
-        #0b0d12;
-      box-shadow:var(--shadow);
-      touch-action:none; /* critical */
+    /* input */
+    .field{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      outline:none;
+      font-size:15px;
     }
-    .goal{
-      position:absolute;top:28px;left:26px;right:26px;height:130px;
-      border:2px solid rgba(255,255,255,.28);border-radius:16px;
-      box-shadow:0 18px 50px rgba(0,0,0,.40) inset;
+    .field::placeholder{color: rgba(255,255,255,.35)}
+    .checkboxRow{display:flex; gap:10px; align-items:flex-start}
+    .checkboxRow input{margin-top:3px}
+
+    /* online badge */
+    .onlineBadge{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(16px);
     }
-    .goal:before{
-      content:"";position:absolute;inset:0;border-radius:16px;
-      background-image:
-        linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
-      background-size:24px 24px;opacity:.55;
+    .dot{
+      width:9px; height:9px; border-radius:50%;
+      background: #3DFF9E;
+      box-shadow: 0 0 12px rgba(61,255,158,.60);
+      flex:0 0 auto;
     }
-    .goalLine{position:absolute;top:160px;left:26px;right:26px;height:2px;background:rgba(255,255,255,.18)}
-    .keeper{
-      position:absolute;top:88px;left:50%;width:54px;height:54px;transform:translateX(-50%);
-      border-radius:18px;background:rgba(255,255,255,.16);
-      border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.35);
+    .bigNumber{font-weight:950; letter-spacing:.2px}
+    .small{font-size:12px; color:var(--muted)}
+    .titleXL{font-size:22px; font-weight:950; letter-spacing:.2px; margin:0 0 2px 0}
+    .subtitle{color:var(--text2); margin:0; font-size:13px}
+
+    /* match status pills */
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text2);
+      font-size:12px;
     }
-    .keeper:after{
-      content:"";position:absolute;left:12px;right:12px;bottom:-18px;height:18px;
-      border-radius:0 0 14px 14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.08);
-    }
-    .ball{
-      position:absolute;bottom:18px;left:50%;width:24px;height:24px;transform:translateX(-50%) scale(1);
-      border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
-      box-shadow:0 10px 22px rgba(0,0,0,.45);will-change:transform;
-      touch-action:none;-webkit-user-drag:none;
-    }
-    .aimLine{
-      position:absolute;width:2px;background:rgba(140,255,193,.85);
-      box-shadow:0 0 16px rgba(140,255,193,.35);transform-origin:bottom center;
-      bottom:30px;left:50%;height:0;display:none;border-radius:999px;will-change:transform,height;
-    }
-    .aimSpot{
-      position:absolute;width:10px;height:10px;border-radius:50%;
-      background:rgba(140,255,193,.95);box-shadow:0 0 18px rgba(140,255,193,.55);
-      opacity:0;transition:opacity .12s ease;
-    }
-    .aimSpot.show{opacity:1}
-    .flash{position:absolute;inset:0;opacity:0;transition:opacity .15s ease}
-    .centerText{text-align:center}
-    .bigMsg{margin-top:12px;font-size:18px;font-weight:950;min-height:26px}
-    .smallMsg{margin-top:6px;color:var(--muted);font-size:13px;min-height:18px}
-    @keyframes kickL { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-210%) translateY(-190px) scale(.55)} }
-    @keyframes kickC { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-50%) translateY(-205px) scale(.55)} }
-    @keyframes kickR { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(110%) translateY(-190px) scale(.55)} }
-    @keyframes keepL { from{transform:translateX(-50%)} to{transform:translateX(-150%)} }
-    @keyframes keepC { from{transform:translateX(-50%)} to{transform:translateX(-50%)} }
-    @keyframes keepR { from{transform:translateX(-50%)} to{transform:translateX(50%)} }
+    .tag.win{border-color: rgba(140,255,193,.28); background: rgba(140,255,193,.12); color: #d7ffe9}
+    .tag.lose{border-color: rgba(255,122,122,.28); background: rgba(255,122,122,.12); color: #ffe0e0}
   </style>
 </head>
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="brand"><span>🏁 F1 Duel</span><span id="envChip" class="chip">WebApp</span></div>
+      <div class="brand">
+        <span>🏁 F1 Duel</span>
+        <span id="envChip" class="chip">WebApp</span>
+      </div>
       <div class="chip" id="userChip">Гость</div>
     </div>
 
     <main class="container">
-      <!-- GAMES -->
-      <section id="page-games">
-        <div class="card" style="margin-bottom:12px;">
-          <h2>Выбор игры</h2>
-          <div class="muted">Reaction Duel • Ping Pong • Penalty</div>
-        </div>
 
-        <div class="grid">
-          <div class="tile" onclick="openGame('reaction')">
-            <div><div class="t">⚡ Reaction Duel</div><div class="d">Скорость реакции</div></div>
-            <div class="muted" style="font-size:12px;">Открыть</div>
+      <!-- ONBOARDING: Rules -->
+      <section id="page-onb-rules" class="hidden">
+        <div class="glass card">
+          <h2 class="titleXL">Правила дуэлей</h2>
+          <p class="subtitle">Покажем один раз при регистрации</p>
+          <div class="divider"></div>
+          <div class="muted" style="font-size:14px">
+            • Матчи начинаются автоматически после подбора соперника;<br>
+            • Ставка блокируется на время матча;<br>
+            • Победитель получает выплату (комиссия уже учтена);<br>
+            • Выход или сдача считаются поражением;<br>
+            • При выходе может применяться штраф;<br>
+            • Честная игра — без намеренных выходов.
           </div>
-          <div class="tile" onclick="openGame('pong')">
-            <div><div class="t">🏓 Ping Pong</div><div class="d">Победа до 3 очков</div></div>
-            <div class="muted" style="font-size:12px;">Открыть</div>
+
+          <div class="divider"></div>
+
+          <div class="checkboxRow">
+            <input id="rulesCheck" type="checkbox"/>
+            <div>
+              <div style="font-weight:800">Я принимаю правила</div>
+              <div class="small">Без согласия нельзя пользоваться сервисом</div>
+            </div>
           </div>
-          <div class="tile" onclick="openGame('penalty')" style="grid-column: 1 / -1;">
-            <div><div class="t">⚽ Penalty</div><div class="d">Swipe + Hold: направление + сила</div></div>
-            <div class="muted" style="font-size:12px;">Открыть</div>
+
+          <div style="margin-top:14px">
+            <button id="rulesContinue" class="btn primary" disabled>Продолжить</button>
           </div>
         </div>
-
-        <div class="note">Звук/вибрации включатся после первого касания (ограничение браузера).</div>
       </section>
 
-      <!-- WALLET (старый баланс) -->
-      <section id="page-wallet" class="hidden">
-        <div class="card">
-          <h2>Баланс</h2>
-          <div class="row" style="margin: 10px 0 14px;">
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>🪙 Coins</span><strong id="coinsVal">0</strong></div>
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>⭐ Stars</span><strong id="starsVal">0</strong></div>
-          </div>
-          <div class="kv"><span class="muted">Уровень</span><strong id="levelVal">1</strong></div>
-          <div class="kv"><span class="muted">Победы</span><strong id="winsVal">0</strong></div>
-          <div class="kv"><span class="muted">Игры</span><strong id="playsVal">0</strong></div>
+      <!-- ONBOARDING: Nickname -->
+      <section id="page-onb-nick" class="hidden">
+        <div class="glass card">
+          <h2 class="titleXL">Выбери ник</h2>
+          <p class="subtitle">Его будут видеть другие игроки (не Telegram username)</p>
+          <div class="divider"></div>
 
-          <div style="margin-top:14px;" class="row">
-            <button class="btn primary" onclick="addCoins(10); toast('+10 coins')">+10 coins (тест)</button>
-            <button class="btn ghost" onclick="convertCoinsToStars()">coins → stars</button>
+          <input id="nickInput" class="field" placeholder="Например: NightFox" maxlength="16" />
+
+          <div class="small" style="margin-top:10px">
+            3–16 символов • латиница/цифры/_ • без пробелов
           </div>
-          <button style="margin-top:10px;" class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
-          <div class="note">Пока всё локально (localStorage). Для PvP нужен backend.</div>
+
+          <div style="margin-top:14px" class="row">
+            <button id="nickSave" class="btn primary">Сохранить</button>
+            <button id="nickSkip" class="btn ghost">Пропустить</button>
+          </div>
+
+          <div class="note small" id="nickError" style="margin-top:10px; color: var(--danger); display:none"></div>
+        </div>
+      </section>
+
+      <!-- ONBOARDING: Referral -->
+      <section id="page-onb-ref" class="hidden">
+        <div class="glass card">
+          <h2 class="titleXL">Есть код приглашения?</h2>
+          <p class="subtitle">Если друг поделился кодом — введи его сейчас (один раз)</p>
+          <div class="divider"></div>
+
+          <input id="refInput" class="field" placeholder="Код (необязательно)" maxlength="10" />
+
+          <div class="small" style="margin-top:10px">
+            За приглашённого друга пригласивший получает <b>+100 coins</b> (после первой дуэли приглашённого).
+          </div>
+
+          <div style="margin-top:14px" class="row">
+            <button id="refApply" class="btn primary">Применить</button>
+            <button id="refSkip" class="btn ghost">Пропустить</button>
+          </div>
+
+          <div class="note small" id="refError" style="margin-top:10px; color: var(--danger); display:none"></div>
+        </div>
+      </section>
+
+      <!-- HOME / GAMES -->
+      <section id="page-games" class="hidden">
+        <div class="glass card" style="margin-bottom:12px;">
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div>
+              <div class="titleXL" style="margin:0">Игры</div>
+              <div class="subtitle">Выбери игру и ставку</div>
+            </div>
+            <div class="onlineBadge">
+              <div class="dot"></div>
+              <div>
+                <div class="small">Онлайн сейчас</div>
+                <div class="bigNumber" id="onlineNow">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass card">
+          <h2>Ping Pong (дуэль)</h2>
+          <div class="muted">Ставка → поиск соперника → авто-старт</div>
+          <div class="divider"></div>
+
+          <div class="small">Выбери ставку</div>
+          <div style="margin-top:10px" class="chipRow" id="betRow"></div>
+
+          <div class="divider"></div>
+
+          <div class="row" style="align-items:flex-start;">
+            <div class="pill" style="flex:1">
+              <span class="text2">Ставка</span>
+              <strong id="uiStake">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Победа</span>
+              <strong id="uiPayout" style="color:var(--accent)">—</strong>
+            </div>
+          </div>
+          <div class="small" style="margin-top:10px">Комиссия уже учтена</div>
+
+          <div style="margin-top:14px">
+            <button id="findBtn" class="btn primary" disabled>Найти соперника</button>
+          </div>
+          <div class="small" id="insufText" style="margin-top:8px; display:none; color:var(--danger)">Недостаточно coins</div>
+        </div>
+      </section>
+
+      <!-- SEARCHING -->
+      <section id="page-search" class="hidden">
+        <div class="glass card">
+          <h2 class="titleXL">Ищем соперника…</h2>
+          <p class="subtitle" id="searchGameLine">Ping Pong</p>
+          <div class="divider"></div>
+
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Ставка</span>
+              <strong id="searchStake">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Победа</span>
+              <strong id="searchPayout" style="color:var(--accent)">—</strong>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row" style="justify-content:space-between; align-items:center">
+            <div class="tag">⌛ Поиск</div>
+            <div class="tag"><span class="small">таймер</span> <strong id="searchTimer">01:00</strong></div>
+          </div>
+
+          <div style="margin-top:14px">
+            <button id="cancelSearch" class="btn ghost">Отменить поиск</button>
+          </div>
+          <div class="small" style="margin-top:10px">Ставка уже заблокирована на время поиска</div>
+        </div>
+      </section>
+
+      <!-- MATCH (auto-started) -->
+      <section id="page-match" class="hidden">
+        <div class="glass card">
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div>
+              <div class="titleXL" style="margin:0">Матч начался</div>
+              <div class="subtitle">Ping Pong • авто-старт</div>
+            </div>
+            <div class="tag" id="matchNet">🟢 online</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Ты</span>
+              <strong id="meLine">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Соперник</span>
+              <strong id="oppLine">—</strong>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Ставка</span>
+              <strong id="matchStake">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Победа</span>
+              <strong id="matchPayout" style="color:var(--accent)">—</strong>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="muted">
+            Здесь позже будет игра. Сейчас — тестовый режим результата.
+          </div>
+
+          <div class="row" style="margin-top:14px">
+            <button id="btnWin" class="btn primary">Тест: я победил</button>
+            <button id="btnLose" class="btn ghost">Тест: я проиграл</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <button id="btnSurrender" class="btn danger">Сдаться</button>
+            <div class="small" style="margin-top:8px">Выход/сдача = поражение. Потеря ставки + возможный штраф.</div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="small">
+            Симуляция выхода соперника: <button id="btnOppLeaves" class="btn ghost" style="width:auto; padding:8px 10px; font-size:13px">Соперник вышел</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="page-result" class="hidden">
+        <div class="glass card">
+          <div class="titleXL" id="resTitle">Результат</div>
+          <div class="subtitle" id="resSub">—</div>
+          <div class="divider"></div>
+
+          <div class="pill">
+            <span class="text2">Итог</span>
+            <strong id="resDelta">—</strong>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <button id="resAgain" class="btn primary">Сыграть ещё</button>
+            <button id="resToMatches" class="btn ghost">В историю</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WALLET -->
+      <section id="page-wallet" class="hidden">
+        <div class="glass card">
+          <h2 class="titleXL">Баланс</h2>
+          <p class="subtitle">Coins • Stars (скоро)</p>
+          <div class="divider"></div>
+
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">🪙 Coins</span>
+              <strong id="coinsVal">0</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">⭐ Stars</span>
+              <strong id="starsVal">0</strong>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="muted">История операций (локально)</div>
+          <div id="txList" style="margin-top:10px; display:flex; flex-direction:column; gap:10px"></div>
+
+          <div class="divider"></div>
+          <button class="btn danger" id="resetBtn">Сбросить прогресс (тест)</button>
+        </div>
+      </section>
+
+      <!-- MATCHES -->
+      <section id="page-matches" class="hidden">
+        <div class="glass card">
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div>
+              <div class="titleXL" style="margin:0">Матчи</div>
+              <div class="subtitle">История дуэлей</div>
+            </div>
+            <div class="tag">Ping Pong</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="matchesEmpty" class="muted">
+            Матчей пока нет.<br>
+            Сыграй первую дуэль — и история появится здесь.
+            <div style="margin-top:12px">
+              <button class="btn primary" onclick="go('games')">Перейти к играм</button>
+            </div>
+          </div>
+
+          <div id="matchesList" style="display:none; flex-direction:column; gap:10px"></div>
         </div>
       </section>
 
       <!-- PROFILE -->
       <section id="page-profile" class="hidden">
-        <div class="card">
-          <h2>Личный кабинет</h2>
-          <div class="muted" id="profileLine">—</div>
-          <div style="margin-top:14px;">
-            <div class="kv"><span class="muted">Ник</span><strong id="nickVal">—</strong></div>
-            <div class="kv"><span class="muted">Telegram ID</span><strong id="tgidVal">—</strong></div>
-            <div class="kv"><span class="muted">Статус</span><strong id="statusVal">Новичок</strong></div>
-          </div>
-          <div style="margin-top:14px;" class="row">
-            <button class="btn ghost" onclick="toast('Скоро 🙂')">Настройки</button>
-            <button class="btn primary" onclick="go('games')">Играть</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- REACTION -->
-      <section id="page-reaction" class="hidden">
-        <div class="card" style="margin-bottom:12px;">
-          <h2>⚡ Reaction Duel</h2><div class="muted">Жми «Ждать старт», затем тап по сигналу. Фальстарт — штраф.</div>
-        </div>
-        <div class="card">
-          <div id="light" style="width:120px;height:120px;border-radius:50%;margin:8px auto 18px;background:red;box-shadow:0 0 20px red;"></div>
-          <button id="startBtn" class="btn primary">Ждать старт</button>
-          <div id="result" style="margin-top:14px;font-size:20px;font-weight:950;"></div>
-          <div class="note">+5 coins (и +3 если &lt;250ms). Фальстарт −2.</div>
-          <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад</button>
-        </div>
-      </section>
-
-      <!-- PONG -->
-      <section id="page-pong" class="hidden">
-        <div class="card" style="margin-bottom:12px;">
-          <h2>🏓 Ping Pong</h2>
-          <div class="muted">Победа до 3 очков. Управление: мышь/палец.</div>
-        </div>
-        <div class="card">
-          <div class="row" style="margin:0 0 12px;">
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>🙂 Ты</span><strong id="pongMe">0</strong></div>
-            <div class="pill" style="flex:1; justify-content:space-between;"><span>🤖 Бот</span><strong id="pongAi">0</strong></div>
-          </div>
-          <canvas id="pongCanvas" class="pongCanvas" width="440" height="560"></canvas>
-          <div class="row" style="margin-top:12px;">
-            <button id="pongStartBtn" class="btn primary" onclick="pongStart()">Старт</button>
-            <button class="btn ghost" onclick="pongReset()">Сброс</button>
-          </div>
-          <button style="margin-top:12px;" class="btn ghost" onclick="pongStop(); go('games')">← Назад</button>
-          <div class="note">Тап по полю = power-shot на короткое время.</div>
-        </div>
-      </section>
-
-      <!-- PENALTY -->
-      <section id="page-penalty" class="hidden">
-        <div class="card" style="margin-bottom:12px;">
-          <h2>⚽ Penalty</h2>
-          <div class="muted">Коснись мяча → свайпни вверх (направление) → держи (сила) → отпусти (удар).</div>
-        </div>
-
-        <div class="card">
-          <div class="row" style="margin:0 0 12px;">
-            <div class="pill" style="flex:1;justify-content:space-between;"><span>🎯 Удар</span><strong id="penShotTxt">1/5</strong></div>
-            <div class="pill" style="flex:1;justify-content:space-between;"><span>🥅 Голы</span><strong id="penGoalsTxt">0</strong></div>
+        <div class="glass card">
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div>
+              <div class="titleXL" id="profNick">—</div>
+              <div class="subtitle" id="profId">—</div>
+            </div>
+            <button class="btn ghost" style="width:auto; padding:10px 12px; font-size:13px" id="editNickBtn">Edit</button>
           </div>
 
-          <div class="stage" id="penStage">
-            <div class="goal"></div>
-            <div class="goalLine"></div>
+          <div class="divider"></div>
 
-            <div id="spotL" class="aimSpot" style="left:64px; top:58px;"></div>
-            <div id="spotC" class="aimSpot" style="left:50%; top:46px; transform:translateX(-50%);"></div>
-            <div id="spotR" class="aimSpot" style="right:64px; top:58px;"></div>
-
-            <div class="keeper" id="keeper"></div>
-            <div class="aimLine" id="aimLine"></div>
-            <div class="ball" id="ball"></div>
-            <div class="flash" id="flash"></div>
+          <div class="row">
+            <div class="pill" style="flex:1"><span class="text2">Победы</span><strong id="stWins">0</strong></div>
+            <div class="pill" style="flex:1"><span class="text2">Поражения</span><strong id="stLoss">0</strong></div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="pill" style="flex:1"><span class="text2">Матчи</span><strong id="stMatches">0</strong></div>
+            <div class="pill" style="flex:1"><span class="text2">Серия</span><strong id="stStreak">0</strong></div>
           </div>
 
-          <div class="centerText">
-            <div class="bigMsg" id="penMsg"></div>
-            <div class="smallMsg" id="penSub"></div>
+          <div class="divider"></div>
+
+          <div class="kv">
+            <span class="text2">Правила дуэлей</span>
+            <span class="small" id="rulesAcceptedLine">—</span>
           </div>
 
-          <div class="row" style="margin-top:12px;">
-            <button class="btn ghost" onclick="penRestart()">Заново серию</button>
-            <button class="btn primary" onclick="go('games')">← Назад</button>
+          <div class="divider"></div>
+
+          <h2 style="margin:0 0 8px 0; font-size:16px">Рефералы</h2>
+          <div class="pill">
+            <span class="text2">Твой код</span>
+            <strong id="myRefCode">—</strong>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn ghost" id="copyRefBtn">Скопировать код</button>
+            <button class="btn primary" id="shareRefBtn">Поделиться</button>
+          </div>
+          <div class="small" style="margin-top:8px">
+            За друга: +100 coins (после его первой дуэли). Реальные начисления — через сервер.
           </div>
 
-          <div class="note">Гол: +2 coins. Победа серии (3+ из 5): +10 coins и +1 win.</div>
+          <div class="divider"></div>
+
+          <h2 style="margin:0 0 8px 0; font-size:16px">Настройки</h2>
+          <div class="kv">
+            <span class="text2">Звук</span>
+            <input type="checkbox" id="setSound" />
+          </div>
+          <div class="kv">
+            <span class="text2">Вибрация</span>
+            <input type="checkbox" id="setHaptic" />
+          </div>
         </div>
       </section>
 
@@ -302,525 +627,773 @@
   <nav class="nav">
     <button id="tab-games" onclick="go('games')"><div class="icon">🎮</div><div>Игры</div></button>
     <button id="tab-wallet" onclick="go('wallet')"><div class="icon">💰</div><div>Баланс</div></button>
-    <button id="tab-profile" onclick="go('profile')"><div class="icon">👤</div><div>Кабинет</div></button>
+    <button id="tab-matches" onclick="go('matches')"><div class="icon">🧾</div><div>Матчи</div></button>
+    <button id="tab-profile" onclick="go('profile')"><div class="icon">👤</div><div>Профиль</div></button>
   </nav>
 
   <div id="toast" class="toast"></div>
 
+  <!-- Modal confirm surrender -->
+  <div id="modalWrap" class="modalWrap">
+    <div class="modal">
+      <h3 id="modalTitle">Подтвердить</h3>
+      <div class="muted" id="modalText">—</div>
+      <div class="row" style="margin-top:14px">
+        <button id="modalOk" class="btn danger">Ок</button>
+        <button id="modalCancel" class="btn ghost">Отмена</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-  // Telegram
+  // ===== Telegram + Haptics
   const tg = window.Telegram?.WebApp;
   try{ tg?.ready(); tg?.expand(); }catch(e){}
+  const envChip = document.getElementById("envChip");
+  envChip.textContent = tg ? "Telegram WebApp" : "Browser";
 
-  // Haptics
-  function hImpact(type="light"){ try{ tg?.HapticFeedback?.impactOccurred(type); }catch(e){} }
-  function hNote(type="success"){ try{ tg?.HapticFeedback?.notificationOccurred(type); }catch(e){} }
-  function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
+  function hImpact(type="light"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.impactOccurred(type);}catch(e){} }
+  function hNote(type="success"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.notificationOccurred(type);}catch(e){} }
+  function hSelect(){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.selectionChanged();}catch(e){} }
 
-  // Audio (WebAudio)
-  let audioUnlocked=false, audioCtx=null;
-  function unlockAudio(){
-    if(audioUnlocked) return;
+  // ===== Toast
+  const toastEl = document.getElementById("toast"); let toastTimer=null;
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1500); }
+
+  // ===== State (local)
+  const KEY="f1duel_mvp_state_v1";
+  const now = ()=>Date.now();
+
+  function randCode(len=6){
+    const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let s=""; for(let i=0;i<len;i++) s+=a[Math.floor(Math.random()*a.length)];
+    return s;
+  }
+  function shortId(){
+    return randCode(4);
+  }
+
+  const defaultState = {
+    onboarding: { rulesAccepted:false, nicknameSet:false, referralAsked:false },
+    profile: {
+      publicId: shortId(),
+      nickname: "",
+      rulesAcceptedAt: 0,
+      nicknameChangedAt: 0,
+      myRefCode: randCode(6),
+      referredBy: "",          // code entered at registration
+      refStatus: "none",       // none | pending | activated
+      refRewardGiven: false
+    },
+    wallet: { coins: 120, stars: 0, lockedCoins: 0 }, // give some coins for testing
+    settings: { sound:true, haptic:true },
+    stats: { wins:0, losses:0, matches:0, streak:0 },
+    tx: [], // {ts,type,amount,label}
+    matches: [], // {ts, game, stake, payout, opp, status, delta}
+    session: {
+      selectedStake: 0,
+      current: null // {matchId, opp, stake, payout, startedAt}
+    }
+  };
+
+  const state = (()=> {
     try{
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-      o.connect(g); g.connect(audioCtx.destination);
-      g.gain.value=0.0001; o.start(); o.stop(audioCtx.currentTime+0.01);
-      audioUnlocked=true;
-    }catch(e){}
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return structuredClone(defaultState);
+      const s = JSON.parse(raw);
+      // shallow merge (simple)
+      return {
+        ...defaultState,
+        ...s,
+        onboarding:{...defaultState.onboarding, ...(s.onboarding||{})},
+        profile:{...defaultState.profile, ...(s.profile||{})},
+        wallet:{...defaultState.wallet, ...(s.wallet||{})},
+        settings:{...defaultState.settings, ...(s.settings||{})},
+        stats:{...defaultState.stats, ...(s.stats||{})},
+        tx: Array.isArray(s.tx)? s.tx : [],
+        matches: Array.isArray(s.matches)? s.matches : [],
+        session:{...defaultState.session, ...(s.session||{})}
+      };
+    }catch(e){
+      return structuredClone(defaultState);
+    }
+  })();
+
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); renderAll(); }
+
+  function addTx(type, amount, label){
+    state.tx.unshift({ts: now(), type, amount, label});
+    state.tx = state.tx.slice(0, 40);
   }
-  function beep(freq=440,dur=0.08,vol=0.06,type="sine"){
-    if(!audioCtx) return;
-    const t=audioCtx.currentTime;
-    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
-    o.type=type; o.frequency.value=freq;
-    g.gain.setValueAtTime(0.0001,t);
-    g.gain.exponentialRampToValueAtTime(vol,t+0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(t); o.stop(t+dur+0.02);
+
+  function coinsDelta(n, label){
+    state.wallet.coins = Math.max(0, state.wallet.coins + n);
+    addTx("coins", n, label);
   }
 
-  const sKick=()=>{beep(140,0.06,0.08,"triangle");beep(90,0.08,0.05,"sine");};
-  const sGoal=()=>{beep(660,0.08,0.08,"sine");beep(880,0.10,0.08,"sine");};
-  const sSave=()=>{beep(220,0.10,0.06,"square");};
-  const sMiss=()=>{beep(180,0.14,0.05,"sawtooth");};
-
-  // Helpers
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-
-  // Local state (старый баланс)
-  const storeKey="f1duel_state_v3";
-  const defaultState={coins:0,stars:0,wins:0,plays:0};
-  const state=(()=>{ try{const r=localStorage.getItem(storeKey); return r?{...defaultState,...JSON.parse(r)}:{...defaultState}; }catch(e){ return {...defaultState}; } })();
-
-  const toastEl=document.getElementById("toast"); let toastTimer=null;
-  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1600); }
-
-  function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); renderWallet(); }
-  function calcLevel(){ const score=state.coins+state.stars*50; return Math.max(1, Math.floor(score/200)+1); }
-  function renderWallet(){
-    document.getElementById("coinsVal").textContent=state.coins;
-    document.getElementById("starsVal").textContent=state.stars;
-    document.getElementById("winsVal").textContent=state.wins;
-    document.getElementById("playsVal").textContent=state.plays;
-    document.getElementById("levelVal").textContent=calcLevel();
-  }
-  function addCoins(n){ state.coins=Math.max(0, state.coins+n); saveState(); }
-  function convertCoinsToStars(){
-    const rate=100;
-    if(state.coins<rate){ toast(`Нужно минимум ${rate} coins`); return; }
-    const s=Math.floor(state.coins/rate);
-    state.coins-=s*rate; state.stars+=s; saveState(); toast(`Обмен: +${s} ⭐`);
-  }
-  function resetProgress(){ Object.assign(state,{...defaultState}); saveState(); toast("Прогресс сброшен"); }
-
-  // Routing
-  const pages=["games","wallet","profile","reaction","pong","penalty"];
+  // ===== UI routing
+  const pages = ["onb-rules","onb-nick","onb-ref","games","search","match","result","wallet","matches","profile"];
   function go(page){
-    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden", p!==page));
-    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active", t===page));
-    if(page==="reaction"||page==="pong"||page==="penalty"){
-      document.getElementById("tab-games").classList.add("active");
-      ["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"));
-    }
-    location.hash="#"+page;
-  }
-  function openGame(id){
-    if(id==="reaction")go("reaction");
-    if(id==="pong")go("pong");
-    if(id==="penalty")go("penalty");
+    pages.forEach(p=>{
+      const el = document.getElementById("page-"+p);
+      if(el) el.classList.toggle("hidden", p!==page);
+    });
+    ["games","wallet","matches","profile"].forEach(t=>{
+      const tab = document.getElementById("tab-"+t);
+      if(tab) tab.classList.toggle("active", t===page);
+    });
+    location.hash = "#"+page;
   }
 
-  // Header info
-  const envChip=document.getElementById("envChip"), userChip=document.getElementById("userChip");
-  envChip.textContent=tg?"Telegram WebApp":"Browser";
-  const user=tg?.initDataUnsafe?.user;
-  if(user){
-    const nick=user.username||user.first_name||"Player";
-    userChip.textContent="@"+nick;
-    document.getElementById("nickVal").textContent=nick;
-    document.getElementById("tgidVal").textContent=user.id;
-    document.getElementById("profileLine").textContent=`Привет, ${nick}.`;
-  } else {
-    document.getElementById("profileLine").textContent="Открой через Telegram, чтобы подтянулся профиль.";
+  // ===== Onboarding gating
+  function needsOnboarding(){
+    if(!state.onboarding.rulesAccepted) return "onb-rules";
+    if(!state.onboarding.nicknameSet) return "onb-nick";
+    if(!state.onboarding.referralAsked) return "onb-ref";
+    return null;
   }
 
-  // =========================
-  // REACTION
-  // =========================
-  const light=document.getElementById("light"), startBtn=document.getElementById("startBtn"), result=document.getElementById("result");
-  let startTime=0, waiting=false, timer=null;
-  function setLight(c){ light.style.background=c; light.style.boxShadow=(c==="lime")?"0 0 30px lime":"0 0 20px red"; }
-  startBtn.onclick=()=>{
-    unlockAudio(); hImpact("light");
-    if(waiting) return;
-    result.textContent=""; setLight("red"); waiting=true; startBtn.textContent="ЖДИ…";
-    timer=setTimeout(()=>{ setLight("lime"); startTime=Date.now(); hImpact("medium"); beep(520,0.06,0.05,"sine"); }, 1800+Math.random()*2600);
-  };
-  light.onclick=()=>{
-    unlockAudio();
-    if(!waiting) return;
-    if(!startTime){
-      clearTimeout(timer);
-      result.textContent="❌ Фальстарт! −2 coins";
-      addCoins(-2); toast("Фальстарт −2"); hNote("error"); beep(180,0.12,0.05,"square");
-      waiting=false; startTime=0; startBtn.textContent="Ещё раз";
+  // ===== User chip (hide TG username)
+  const userChip = document.getElementById("userChip");
+  const tgUser = tg?.initDataUnsafe?.user;
+  const displayNick = ()=> (state.profile.nickname || "Player");
+  function displayMe(){
+    return `${displayNick()} #${state.profile.publicId}`;
+  }
+
+  // ===== Bets and payout
+  const BETS = [5,10,20,50,100];
+  const FEE_RATE = 0.05; // 5% of pot (2*stake)
+  function calcPayout(stake){
+    const pot = stake*2;
+    const fee = Math.floor(pot * FEE_RATE);
+    return pot - fee;
+  }
+
+  // ===== Bet chips render
+  const betRow = document.getElementById("betRow");
+  const uiStake = document.getElementById("uiStake");
+  const uiPayout = document.getElementById("uiPayout");
+  const findBtn = document.getElementById("findBtn");
+  const insufText = document.getElementById("insufText");
+
+  function renderBets(){
+    betRow.innerHTML="";
+    const available = state.wallet.coins;
+    BETS.forEach(v=>{
+      const b = document.createElement("button");
+      b.className="chipBet";
+      b.textContent = v;
+      const disabled = available < v;
+      if(disabled) b.classList.add("disabled");
+      if(state.session.selectedStake === v) b.classList.add("selected");
+
+      b.onclick = ()=>{
+        if(disabled) { hImpact("light"); toast("Недостаточно coins"); return; }
+        state.session.selectedStake = v;
+        hSelect();
+        save();
+      };
+      betRow.appendChild(b);
+    });
+
+    const stake = state.session.selectedStake || 0;
+    if(!stake){
+      uiStake.textContent="—";
+      uiPayout.textContent="—";
+      findBtn.disabled=true;
+      insufText.style.display="none";
       return;
     }
-    const r=Date.now()-startTime;
-    state.plays += 1;
-    let reward=5; if(r<250) reward += 3;
-    addCoins(reward); saveState();
-    result.textContent=`⚡ ${r} мс  •  +${reward} coins`;
-    toast(`+${reward} coins`); hNote("success"); beep(880,0.08,0.06,"sine");
-    waiting=false; startTime=0; startBtn.textContent="Ещё раз";
-  };
+    uiStake.textContent = `${stake} coins`;
+    uiPayout.textContent = `${calcPayout(stake)} coins`;
 
-  // =========================
-  // PONG
-  // =========================
-  const canvas=document.getElementById("pongCanvas");
-  const ctx=canvas.getContext("2d");
-  const pongMeEl=document.getElementById("pongMe");
-  const pongAiEl=document.getElementById("pongAi");
-  const pongStartBtn=document.getElementById("pongStartBtn");
-
-  const W=canvas.width, H=canvas.height;
-
-  let pongRunning=false, rafId=null;
-  const p1={w:110,h:14,x:W/2-55,y:H-34};
-  const p2={w:110,h:14,x:W/2-55,y:22};
-  const pb={r:7,x:W/2,y:H/2,vx:3.2,vy:3.6};
-
-  let me=0, ai=0;
-  let powerUntil=0;
-
-  function hudPong(){ pongMeEl.textContent=me; pongAiEl.textContent=ai; }
-  function resetBall(towardsPlayer){
-    pb.x=W/2; pb.y=H/2;
-    const base=3.1 + Math.random()*0.8;
-    pb.vx = (Math.random()>.5?1:-1)*base;
-    pb.vy = (towardsPlayer?1:-1)*(3.2 + Math.random()*1.0);
-  }
-  function drawPong(){
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle="#0b0d12";
-    ctx.fillRect(0,0,W,H);
-
-    ctx.globalAlpha=.18;
-    ctx.fillStyle="#ffffff";
-    ctx.fillRect(W/2-1, 16, 2, H-32);
-    ctx.globalAlpha=1;
-
-    ctx.fillStyle="#8cffc1";
-    ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
-    ctx.fillStyle="rgba(255,255,255,.25)";
-    ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
-
-    const now=performance.now();
-    const powerActive = now < powerUntil;
-    ctx.fillStyle = powerActive ? "#8cffc1" : "#ffffff";
-    ctx.beginPath();
-    ctx.arc(pb.x, pb.y, pb.r, 0, Math.PI*2);
-    ctx.fill();
-  }
-  function collide(p, b){
-    return (b.x + b.r > p.x && b.x - b.r < p.x + p.w && b.y + b.r > p.y && b.y - b.r < p.y + p.h);
-  }
-  function aiMove(){
-    const target = pb.x - p2.w/2 + (Math.random()*2-1)*8;
-    const dx = target - p2.x;
-    p2.x += clamp(dx, -4.6, 4.6);
-    p2.x = clamp(p2.x, 0, W-p2.w);
-  }
-  function loop(){
-    if(!pongRunning) return;
-
-    aiMove();
-
-    pb.x += pb.vx;
-    pb.y += pb.vy;
-
-    if(pb.x - pb.r <= 0 || pb.x + pb.r >= W){
-      pb.vx *= -1;
-      pb.x = clamp(pb.x, pb.r, W-pb.r);
-      beep(260,0.04,0.03,"sine");
-    }
-
-    if(pb.vy > 0 && collide(p1, pb)){
-      pb.vy *= -1;
-      const hit = (pb.x - (p1.x + p1.w/2)) / (p1.w/2);
-      pb.vx += hit * 1.15;
-      pb.vx = clamp(pb.vx, -6.0, 6.0);
-      hImpact("light");
-      beep(520,0.04,0.03,"triangle");
-      if(performance.now() < powerUntil){
-        pb.vx += hit * 1.6;
-        pb.vy *= 1.06;
-        hImpact("medium");
-        beep(740,0.05,0.05,"triangle");
-        powerUntil = 0;
-      }
-    }
-    if(pb.vy < 0 && collide(p2, pb)){
-      pb.vy *= -1;
-      const hit = (pb.x - (p2.x + p2.w/2)) / (p2.w/2);
-      pb.vx += hit * 0.85;
-      pb.vx = clamp(pb.vx, -6.0, 6.0);
-      beep(360,0.04,0.03,"square");
-    }
-
-    if(pb.y - pb.r <= 0){
-      me += 1; toast("Очко тебе!"); beep(840,0.06,0.04,"sine");
-      resetBall(false); hudPong();
-    }
-    if(pb.y + pb.r >= H){
-      ai += 1; toast("Очко боту"); beep(180,0.08,0.04,"square");
-      resetBall(true); hudPong();
-    }
-
-    if(me >= 3 || ai >= 3){
-      pongRunning=false;
-      state.plays += 1;
-      if(me >= 3){
-        state.wins += 1;
-        addCoins(15);
-        toast("🏆 Победа! +15 coins");
-        hNote("success");
-      } else {
-        toast("Поражение 😄");
-        hNote("error");
-      }
-      saveState();
-      pongStartBtn.textContent="Сыграть ещё";
-      drawPong();
-      return;
-    }
-
-    drawPong();
-    rafId = requestAnimationFrame(loop);
-  }
-  function pongStart(){
-    unlockAudio();
-    if(pongRunning) return;
-    pongRunning=true;
-    pongStartBtn.textContent="Идёт…";
-    toast("Поехали!");
-    rafId = requestAnimationFrame(loop);
-  }
-  function pongStop(){
-    pongRunning=false;
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId=null;
-  }
-  function pongReset(){
-    pongStop();
-    me=0; ai=0;
-    p1.x=W/2-p1.w/2; p2.x=W/2-p2.w/2;
-    resetBall(true);
-    pongStartBtn.textContent="Старт";
-    hudPong();
-    drawPong();
-  }
-  function setPaddleFromClientX(clientX){
-    const rect=canvas.getBoundingClientRect();
-    const x=(clientX-rect.left)*(W/rect.width);
-    p1.x = clamp(x - p1.w/2, 0, W - p1.w);
-  }
-  canvas.addEventListener("mousemove",(e)=>setPaddleFromClientX(e.clientX));
-  canvas.addEventListener("touchmove",(e)=>{e.preventDefault();setPaddleFromClientX(e.touches[0].clientX)},{passive:false});
-
-  function triggerPower(){
-    if(!pongRunning) return;
-    powerUntil = performance.now() + 220;
-    hImpact("light");
-  }
-  canvas.addEventListener("mousedown",()=>{unlockAudio();triggerPower();});
-  canvas.addEventListener("touchstart",(e)=>{e.preventDefault();unlockAudio();triggerPower();},{passive:false});
-
-  // =========================
-  // PENALTY (Swipe + Hold)
-  // =========================
-  const penShotTxt=document.getElementById("penShotTxt");
-  const penGoalsTxt=document.getElementById("penGoalsTxt");
-  const penMsg=document.getElementById("penMsg");
-  const penSub=document.getElementById("penSub");
-
-  const penStage=document.getElementById("penStage");
-  const ball=document.getElementById("ball");
-  const keeper=document.getElementById("keeper");
-  const line=document.getElementById("aimLine");
-  const flash=document.getElementById("flash");
-
-  const spotL=document.getElementById("spotL");
-  const spotC=document.getElementById("spotC");
-  const spotR=document.getElementById("spotR");
-
-  let shot=1, goals=0;
-  let holding=false;
-  let startX=0,startY=0;
-  let currentAngle=0;
-  let power=0;
-  let locked=false;
-  let downAt=0;
-
-  function penRender(){
-    penShotTxt.textContent=`${Math.min(shot,5)}/5`;
-    penGoalsTxt.textContent=`${goals}`;
-  }
-  function hideSpots(){ spotL.classList.remove("show");spotC.classList.remove("show");spotR.classList.remove("show"); }
-  function showSpot(dir){
-    hideSpots();
-    if(dir==="L") spotL.classList.add("show");
-    if(dir==="C") spotC.classList.add("show");
-    if(dir==="R") spotR.classList.add("show");
-  }
-  function resetAnim(){
-    ball.style.animation="";
-    ball.style.transform="translateX(-50%) scale(1)";
-    keeper.style.animation="";
-    keeper.style.transform="translateX(-50%)";
-    line.style.display="none";
-    line.style.height="0px";
-    flash.style.opacity="0";
-    hideSpots();
-  }
-  function setFlash(ok){
-    flash.style.background = ok ? "rgba(140,255,193,.18)" : "rgba(255,92,92,.18)";
-    flash.style.opacity="1";
-    setTimeout(()=>flash.style.opacity="0", 140);
-  }
-  function penRestart(){
-    unlockAudio();
-    shot=1; goals=0; locked=false; holding=false;
-    penMsg.textContent=""; penSub.textContent="Коснись мяча и свайпни вверх.";
-    penRender(); resetAnim();
-    toast("Новая серия");
-  }
-  function endSeries(){
-    locked=true;
-    state.plays += 1;
-
-    if(goals>=3){
-      state.wins += 1;
-      addCoins(10);
-      penMsg.textContent=`🏆 Победа серии! ${goals}/5`;
-      penSub.textContent="+10 coins • +1 win";
-      hNote("success"); sGoal();
-    }else{
-      penMsg.textContent=`Серия окончена: ${goals}/5`;
-      penSub.textContent="Ещё раз — и будет лучше.";
-      hNote("error"); sMiss();
-    }
-    saveState();
+    const ok = state.wallet.coins >= stake;
+    findBtn.disabled = !ok;
+    insufText.style.display = ok ? "none" : "block";
   }
 
-  // block browser gestures on penalty stage (extra-robust)
-  penStage.addEventListener("contextmenu", (e)=>{ e.preventDefault(); }, {passive:false});
-  function stageBlock(e){ e.preventDefault(); }
-  penStage.addEventListener("touchstart", stageBlock, {passive:false});
-  penStage.addEventListener("touchmove", stageBlock, {passive:false});
-  penStage.addEventListener("touchend", stageBlock, {passive:false});
+  // ===== SEARCH flow (MVP simulation)
+  let searchInterval=null;
+  let searchLeft=60;
+  const searchStake = document.getElementById("searchStake");
+  const searchPayout = document.getElementById("searchPayout");
+  const searchTimer = document.getElementById("searchTimer");
+  const cancelSearch = document.getElementById("cancelSearch");
 
-  function onTouchStart(e){
-    if(locked) return;
-    unlockAudio();
-    e.preventDefault(); e.stopPropagation();
-
-    const t=e.touches[0];
-    startX=t.clientX; startY=t.clientY;
-    downAt=Date.now();
-
-    holding=true; power=0; currentAngle=0;
-    line.style.display="block";
-    line.style.height="0px";
-    line.style.transform="translateX(-50%) rotate(0rad)";
-    penMsg.textContent="";
-    penSub.textContent="Держи палец (сила растёт) → отпусти для удара.";
-    hImpact("light");
+  function fmtTime(sec){
+    const m = String(Math.floor(sec/60)).padStart(2,"0");
+    const s = String(sec%60).padStart(2,"0");
+    return `${m}:${s}`;
   }
-  function onTouchMove(e){
-    if(!holding || locked) return;
-    e.preventDefault(); e.stopPropagation();
 
-    const t=e.touches[0];
-    const dx=t.clientX-startX;
-    const dy=startY-t.clientY;
-
-    const len=Math.sqrt(dx*dx+dy*dy);
-    const maxLen=150;
-    const visLen=clamp(len,0,maxLen);
-
-    const safeDy=Math.max(24, dy);
-    const angle=Math.atan2(dx, safeDy);
-    currentAngle=angle;
-
-    line.style.height=visLen+"px";
-    line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
-
-    power = clamp(visLen/110, 0, 1);
-    ball.style.transform=`translateX(-50%) scale(${1 + power*0.25})`;
-
-    let dir="C";
-    if(angle < -0.28) dir="L";
-    else if(angle > 0.28) dir="R";
-    showSpot(dir);
-    hSelect();
+  function lockStake(stake){
+    // lock immediately (A)
+    state.wallet.coins -= stake;
+    state.wallet.lockedCoins += stake;
+    addTx("lock", -stake, `Ставка заблокирована (${stake})`);
   }
-  function onTouchEnd(e){
-    if(!holding || locked) return;
-    e.preventDefault(); e.stopPropagation();
+  function unlockStake(stake, reason="Ставка возвращена"){
+    state.wallet.lockedCoins = Math.max(0, state.wallet.lockedCoins - stake);
+    state.wallet.coins += stake;
+    addTx("unlock", +stake, reason);
+  }
 
-    holding=false;
-    line.style.display="none";
+  function startSearch(){
+    const stake = state.session.selectedStake;
+    if(!stake) return;
+    if(state.wallet.coins < stake){ toast("Недостаточно coins"); return; }
 
-    const holdMs = Date.now() - downAt;
-    const holdBoost = clamp((holdMs-160)/900, 0, 0.35);
-    const finalPower = clamp(power + holdBoost, 0.15, 1.0);
+    lockStake(stake);
+    save();
 
-    let dir="C";
-    if(currentAngle < -0.28) dir="L";
-    else if(currentAngle > 0.28) dir="R";
-
-    // keeper choice
-    const r=Math.random();
-    let keeperDir="C";
-    if(r < 0.42) keeperDir="C";
-    else keeperDir = (Math.random()<0.5) ? "L" : "R";
-
-    resetAnim();
-    showSpot(dir);
-
-    const animBall = dir==="L" ? "kickL" : dir==="C" ? "kickC" : "kickR";
-    const animKeeper = keeperDir==="L" ? "keepL" : keeperDir==="C" ? "keepC" : "keepR";
-    ball.style.animation = `${animBall} .34s ease-out forwards`;
-    keeper.style.animation = `${animKeeper} .30s ease-out forwards`;
-
+    // show search screen
+    searchLeft = 60;
+    searchStake.textContent = `${stake} coins`;
+    searchPayout.textContent = `${calcPayout(stake)} coins`;
+    searchTimer.textContent = fmtTime(searchLeft);
+    go("search");
     hImpact("medium");
-    sKick();
+    toast("Поиск соперника…");
 
-    const corner = (dir !== "C");
-    const missChance = clamp(
-      (finalPower > 0.90 ? 0.12 : 0.05) +
-      (corner && finalPower > 0.82 ? 0.10 : 0) +
-      (corner ? 0.03 : 0),
-      0.03, 0.34
-    );
-    const missed = Math.random() < missChance;
+    // simulate opponent found between 2..8 sec
+    const foundAt = 2 + Math.floor(Math.random()*7);
+    const startedAt = now();
 
-    let saved=false;
-    if(!missed){
-      const guessed = (keeperDir === dir);
-      const saveBase = guessed ? 0.55 : 0.18;
-      const saveChance = clamp(saveBase - finalPower*0.35, 0.06, 0.65);
-      saved = Math.random() < saveChance;
-    }
+    clearInterval(searchInterval);
+    searchInterval = setInterval(()=>{
+      const elapsed = Math.floor((now()-startedAt)/1000);
+      searchLeft = Math.max(0, 60 - elapsed);
+      searchTimer.textContent = fmtTime(searchLeft);
 
-    setTimeout(()=>{
-      if(missed){
-        penMsg.textContent="❌ МИМО!";
-        penSub.textContent=`Сила: ${Math.round(finalPower*100)}% — отпусти чуть раньше.`;
-        setFlash(false); hNote("error"); sMiss();
-      } else if(saved){
-        penMsg.textContent="🧤 СЕЙВ!";
-        penSub.textContent=`Вратарь угадал. Сила: ${Math.round(finalPower*100)}%`;
-        setFlash(false); hNote("error"); sSave();
-      } else {
-        goals += 1;
-        addCoins(2);
-        penMsg.textContent="⚽️ ГОООЛ! +2 coins";
-        penSub.textContent=`Сила: ${Math.round(finalPower*100)}%`;
-        setFlash(true); hNote("success"); sGoal();
+      if(elapsed >= foundAt){
+        clearInterval(searchInterval);
+        autoStartMatch();
+        return;
       }
-
-      shot += 1;
-      penRender();
-
-      setTimeout(()=>{
-        resetAnim();
-        if(shot > 5){
-          endSeries();
-        } else {
-          penMsg.textContent="";
-          penSub.textContent="Следующий удар: коснись мяча.";
-        }
-      }, 260);
-    }, 220);
+      if(searchLeft<=0){
+        clearInterval(searchInterval);
+        // timeout → unlock
+        unlockStake(stake, "Поиск: соперник не найден");
+        state.session.selectedStake = stake; // keep selected
+        save();
+        toast("Соперник не найден");
+        go("games");
+      }
+    }, 250);
   }
 
-  ball.addEventListener("touchstart", onTouchStart, {passive:false});
-  ball.addEventListener("touchmove",  onTouchMove,  {passive:false});
-  ball.addEventListener("touchend",   onTouchEnd,   {passive:false});
-  ball.addEventListener("touchcancel",onTouchEnd,   {passive:false});
+  cancelSearch.onclick = ()=>{
+    clearInterval(searchInterval);
+    const stake = state.session.selectedStake;
+    unlockStake(stake, "Поиск отменён: ставка возвращена");
+    save();
+    toast("Поиск отменён");
+    go("games");
+  };
 
-  // Boot
-  renderWallet();
-  pongReset();
-  penRestart();
-  const initial=(location.hash||"#games").slice(1);
-  go(pages.includes(initial)?initial:"games");
+  // ===== MATCH (auto-start)
+  const meLine = document.getElementById("meLine");
+  const oppLine = document.getElementById("oppLine");
+  const matchStake = document.getElementById("matchStake");
+  const matchPayout = document.getElementById("matchPayout");
+  const btnWin = document.getElementById("btnWin");
+  const btnLose = document.getElementById("btnLose");
+  const btnSurrender = document.getElementById("btnSurrender");
+  const btnOppLeaves = document.getElementById("btnOppLeaves");
+  const matchNet = document.getElementById("matchNet");
+
+  function genOpponent(){
+    const names=["Ghost","Blitz","Kappa","Nova","Raven","Vega","Pulse","Neon","Drift","Bison"];
+    return `${names[Math.floor(Math.random()*names.length)]} #${shortId()}`;
+  }
+
+  // 10 sec disconnect rule (we simulate by marking "offline" if page hidden too long)
+  let hiddenAt=0;
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.hidden) hiddenAt = now();
+    else{
+      if(hiddenAt && state.session.current && (now()-hiddenAt) > 10000){
+        // treat as you left
+        finishMatch("YOU_LEFT_TIMEOUT");
+      }
+      hiddenAt=0;
+    }
+  });
+
+  function autoStartMatch(){
+    const stake = state.session.selectedStake;
+    const payout = calcPayout(stake);
+    const opp = genOpponent();
+    const matchId = "m_"+randCode(8);
+
+    state.session.current = {matchId, opp, stake, payout, startedAt: now()};
+    save();
+
+    meLine.textContent = displayMe();
+    oppLine.textContent = opp;
+    matchStake.textContent = `${stake} coins`;
+    matchPayout.textContent = `${payout} coins`;
+    matchNet.textContent = "🟢 online";
+
+    go("match");
+    hNote("success");
+    toast("Матч начался");
+  }
+
+  // ===== Result + History
+  const resTitle = document.getElementById("resTitle");
+  const resSub = document.getElementById("resSub");
+  const resDelta = document.getElementById("resDelta");
+  const resAgain = document.getElementById("resAgain");
+  const resToMatches = document.getElementById("resToMatches");
+
+  function pushMatch(status, delta, label){
+    const cur = state.session.current;
+    state.matches.unshift({
+      ts: now(),
+      game:"Ping Pong",
+      stake: cur?.stake || 0,
+      payout: cur?.payout || 0,
+      opp: cur?.opp || "—",
+      status,
+      delta,
+      label
+    });
+    state.matches = state.matches.slice(0, 50);
+  }
+
+  function finishMatch(type){
+    const cur = state.session.current;
+    if(!cur) return;
+
+    const stake = cur.stake;
+    const payout = cur.payout;
+
+    // Resolve locked stake (always remove from locked)
+    state.wallet.lockedCoins = Math.max(0, state.wallet.lockedCoins - stake);
+
+    let title="Результат", subtitle="—", delta=0, status="";
+
+    const pot = stake*2;
+    const fee = Math.floor(pot * FEE_RATE);
+    const penalty = fee*2;
+
+    if(type==="WIN"){
+      // winner gets payout (stake already locked -> not in coins). Give payout to available.
+      coinsDelta(+payout, `Победа (выплата ${payout})`);
+      title="Победа";
+      subtitle=`Ping Pong • ставка ${stake}`;
+      delta = +payout;
+      status="WIN";
+      state.stats.wins += 1;
+      state.stats.matches += 1;
+      state.stats.streak = Math.max(0, state.stats.streak) + 1;
+      pushMatch(status, delta, "Победа");
+
+      // referral activation trigger (invitee first duel)
+      maybeActivateReferralAfterFirstDuel();
+
+    } else if(type==="LOSE"){
+      // you lose your locked stake (already removed from locked). No coins returned.
+      addTx("lose", 0, `Поражение (ставка ${stake} сгорела)`);
+      title="Поражение";
+      subtitle=`Ping Pong • ставка ${stake}`;
+      delta = -stake;
+      status="LOSE";
+      state.stats.losses += 1;
+      state.stats.matches += 1;
+      state.stats.streak = 0;
+      pushMatch(status, delta, "Поражение");
+
+      maybeActivateReferralAfterFirstDuel();
+
+    } else if(type==="OPP_LEFT"){
+      // opponent left: return your stake
+      coinsDelta(+stake, `Соперник вышел (ставка возвращена ${stake})`);
+      title="Соперник покинул матч";
+      subtitle="Твоя ставка возвращена";
+      delta = +stake;
+      status="OPPONENT_LEFT";
+      state.stats.matches += 1;
+      // streak not affected
+      pushMatch(status, delta, "Соперник вышел");
+
+    } else if(type==="YOU_LEFT" || type==="YOU_LEFT_TIMEOUT"){
+      // you left: lose stake + penalty
+      // stake already gone; apply penalty from available coins
+      const before = state.wallet.coins;
+      state.wallet.coins = Math.max(0, state.wallet.coins - penalty);
+      addTx("penalty", -penalty, `Штраф за выход (${penalty})`);
+      title="Ты покинул матч";
+      subtitle = type==="YOU_LEFT_TIMEOUT" ? "Отключение > 10 сек" : "Сдача";
+      delta = -(stake + penalty);
+      status="YOU_LEFT";
+      state.stats.losses += 1;
+      state.stats.matches += 1;
+      state.stats.streak = 0;
+      pushMatch(status, delta, "Выход/сдача");
+
+      // return stake to the other player (we don't track them). In real backend.
+      // house takes fee*2 (penalty) in real backend.
+    }
+
+    // clear current match
+    state.session.current = null;
+
+    // UI
+    resTitle.textContent = title;
+    resSub.textContent = subtitle;
+    resDelta.textContent = `${delta>0?"+":""}${delta} coins`;
+    resDelta.style.color = delta>=0 ? "var(--accent)" : "var(--danger)";
+
+    save();
+    go("result");
+    hNote(delta>=0 ? "success" : "error");
+  }
+
+  btnWin.onclick = ()=> finishMatch("WIN");
+  btnLose.onclick = ()=> finishMatch("LOSE");
+  btnOppLeaves.onclick = ()=> {
+    // return your stake and end
+    finishMatch("OPP_LEFT");
+  };
+
+  // ===== Modal confirm surrender
+  const modalWrap = document.getElementById("modalWrap");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalText = document.getElementById("modalText");
+  const modalOk = document.getElementById("modalOk");
+  const modalCancel = document.getElementById("modalCancel");
+
+  function openModal(title, text, onOk){
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+    modalWrap.classList.add("show");
+    modalOk.onclick = ()=>{
+      modalWrap.classList.remove("show");
+      onOk?.();
+    };
+    modalCancel.onclick = ()=> modalWrap.classList.remove("show");
+  }
+  btnSurrender.onclick = ()=>{
+    const cur = state.session.current;
+    if(!cur) return;
+    const pot = cur.stake*2;
+    const fee = Math.floor(pot * FEE_RATE);
+    const penalty = fee*2;
+    openModal(
+      "Сдаться?",
+      `Ты потеряешь ставку и получишь штраф ${penalty} coins.`,
+      ()=> finishMatch("YOU_LEFT")
+    );
+  };
+
+  resAgain.onclick = ()=> go("games");
+  resToMatches.onclick = ()=> go("matches");
+
+  // ===== Referral (MVP UI)
+  // Note: Without backend, we can't credit inviter across users. We still store referredBy + pending.
+  function normalizeRef(code){ return (code||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,""); }
+
+  function maybeActivateReferralAfterFirstDuel(){
+    // If user entered referral code at registration, mark activated after first duel (any result)
+    if(state.profile.referredBy && state.profile.refStatus==="pending"){
+      state.profile.refStatus="activated";
+      addTx("ref", 0, "Реферал активирован (начисление пригласившему — на сервере)");
+      toast("Реферал активирован");
+    }
+  }
+
+  // ===== Profile screen
+  const profNick = document.getElementById("profNick");
+  const profId = document.getElementById("profId");
+  const rulesAcceptedLine = document.getElementById("rulesAcceptedLine");
+  const myRefCode = document.getElementById("myRefCode");
+  const copyRefBtn = document.getElementById("copyRefBtn");
+  const shareRefBtn = document.getElementById("shareRefBtn");
+  const editNickBtn = document.getElementById("editNickBtn");
+
+  function formatDate(ts){
+    try{
+      const d=new Date(ts);
+      return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"short",year:"numeric"});
+    }catch(e){ return "—"; }
+  }
+
+  editNickBtn.onclick = ()=>{
+    openModal(
+      "Изменить ник",
+      "Введи новый ник в следующем окне.",
+      ()=>{
+        const next = prompt("Новый ник (3–16, латиница/цифры/_):", state.profile.nickname || "");
+        if(next===null) return;
+        const nick = next.trim();
+        if(!/^[A-Za-z0-9_]{3,16}$/.test(nick)){
+          toast("Неверный формат ника");
+          return;
+        }
+        state.profile.nickname = nick;
+        state.profile.nicknameChangedAt = now();
+        save();
+        toast("Ник обновлён");
+      }
+    );
+  };
+
+  copyRefBtn.onclick = async ()=>{
+    try{
+      await navigator.clipboard.writeText(state.profile.myRefCode);
+      toast("Код скопирован");
+    }catch(e){
+      toast("Не удалось скопировать");
+    }
+  };
+
+  shareRefBtn.onclick = ()=>{
+    const text = `Мой реф-код в F1 Duel: ${state.profile.myRefCode}`;
+    try{
+      if(tg?.shareText) tg.shareText(text);
+      else {
+        navigator.clipboard?.writeText(text);
+        toast("Текст скопирован");
+      }
+    }catch(e){
+      toast("Поделиться не получилось");
+    }
+  };
+
+  // ===== Wallet render
+  const coinsVal = document.getElementById("coinsVal");
+  const starsVal = document.getElementById("starsVal");
+  const txList = document.getElementById("txList");
+  const resetBtn = document.getElementById("resetBtn");
+
+  resetBtn.onclick = ()=>{
+    localStorage.removeItem(KEY);
+    location.reload();
+  };
+
+  function renderWallet(){
+    coinsVal.textContent = state.wallet.coins;
+    starsVal.textContent = state.wallet.stars;
+
+    txList.innerHTML="";
+    if(state.tx.length===0){
+      const d=document.createElement("div");
+      d.className="muted";
+      d.textContent="Операций пока нет.";
+      txList.appendChild(d);
+      return;
+    }
+    state.tx.slice(0,12).forEach(t=>{
+      const item=document.createElement("div");
+      item.className="pill";
+      const sign = t.amount>0 ? "+" : "";
+      item.innerHTML = `
+        <div>
+          <div style="font-weight:800">${t.label}</div>
+          <div class="small">${new Date(t.ts).toLocaleString("ru-RU")}</div>
+        </div>
+        <div style="font-weight:950; color:${t.amount>=0?'var(--accent)':'var(--danger)'}">${sign}${t.amount}</div>
+      `;
+      txList.appendChild(item);
+    });
+  }
+
+  // ===== Matches render
+  const matchesEmpty = document.getElementById("matchesEmpty");
+  const matchesList = document.getElementById("matchesList");
+  function renderMatches(){
+    if(state.matches.length===0){
+      matchesEmpty.style.display="block";
+      matchesList.style.display="none";
+      return;
+    }
+    matchesEmpty.style.display="none";
+    matchesList.style.display="flex";
+    matchesList.innerHTML="";
+
+    state.matches.slice(0,20).forEach(m=>{
+      const card=document.createElement("div");
+      card.className="pill";
+      const color = m.delta>=0 ? "var(--accent)" : "var(--danger)";
+      const sign = m.delta>0 ? "+" : "";
+      const tagClass = m.status==="WIN" ? "win" : (m.status==="LOSE" || m.status==="YOU_LEFT" ? "lose" : "");
+      const statusLabel =
+        m.status==="WIN" ? "Победа" :
+        m.status==="LOSE" ? "Поражение" :
+        m.status==="OPPONENT_LEFT" ? "Соперник вышел" :
+        m.status==="YOU_LEFT" ? "Выход/сдача" : "Матч";
+
+      card.innerHTML = `
+        <div style="min-width:0">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+            <strong>${m.game}</strong>
+            <span class="tag ${tagClass}">${statusLabel}</span>
+          </div>
+          <div class="small">vs ${m.opp} • ставка ${m.stake} • ${new Date(m.ts).toLocaleString("ru-RU")}</div>
+        </div>
+        <div style="font-weight:950; color:${color}">${sign}${m.delta} coins</div>
+      `;
+      matchesList.appendChild(card);
+    });
+  }
+
+  // ===== Settings
+  const setSound = document.getElementById("setSound");
+  const setHaptic = document.getElementById("setHaptic");
+  setSound.onchange = ()=>{ state.settings.sound = !!setSound.checked; save(); };
+  setHaptic.onchange = ()=>{ state.settings.haptic = !!setHaptic.checked; save(); };
+
+  // ===== Online counter (simulated)
+  const onlineNow = document.getElementById("onlineNow");
+  let onlineBase = 80 + Math.floor(Math.random()*140);
+  function tickOnline(){
+    const wobble = Math.floor((Math.random()*10)-5);
+    onlineBase = Math.max(20, onlineBase + wobble);
+    onlineNow.textContent = onlineBase;
+  }
+  setInterval(tickOnline, 8000);
+
+  // ===== Onboarding actions
+  const rulesCheck = document.getElementById("rulesCheck");
+  const rulesContinue = document.getElementById("rulesContinue");
+  rulesCheck.onchange = ()=>{ rulesContinue.disabled = !rulesCheck.checked; };
+  rulesContinue.onclick = ()=>{
+    state.onboarding.rulesAccepted = true;
+    state.profile.rulesAcceptedAt = now();
+    save();
+    go("onb-nick");
+  };
+
+  const nickInput = document.getElementById("nickInput");
+  const nickSave = document.getElementById("nickSave");
+  const nickSkip = document.getElementById("nickSkip");
+  const nickError = document.getElementById("nickError");
+
+  function setNick(nick){
+    nickError.style.display="none";
+    const n = (nick||"").trim();
+    if(!n){
+      // allow skip -> random
+      const auto = "Player_"+randCode(3);
+      state.profile.nickname = auto;
+    } else {
+      if(!/^[A-Za-z0-9_]{3,16}$/.test(n)){
+        nickError.textContent="Неверный формат. Только латиница/цифры/_ (3–16)";
+        nickError.style.display="block";
+        return false;
+      }
+      state.profile.nickname = n;
+    }
+    state.onboarding.nicknameSet = true;
+    state.profile.nicknameChangedAt = now();
+    return true;
+  }
+
+  nickSave.onclick = ()=>{
+    if(setNick(nickInput.value)){
+      save();
+      go("onb-ref");
+    }
+  };
+  nickSkip.onclick = ()=>{
+    if(setNick("")){
+      save();
+      go("onb-ref");
+    }
+  };
+
+  const refInput = document.getElementById("refInput");
+  const refApply = document.getElementById("refApply");
+  const refSkip = document.getElementById("refSkip");
+  const refError = document.getElementById("refError");
+
+  function applyReferral(){
+    refError.style.display="none";
+    const code = normalizeRef(refInput.value);
+    if(!code){
+      state.onboarding.referralAsked = true;
+      save();
+      go("games");
+      return;
+    }
+    if(code === normalizeRef(state.profile.myRefCode)){
+      refError.textContent="Нельзя использовать свой код";
+      refError.style.display="block";
+      return;
+    }
+    // In MVP we accept any non-empty code (backend will validate).
+    state.profile.referredBy = code;
+    state.profile.refStatus = "pending";
+    addTx("ref_pending", 0, `Реф-код применён: ${code}`);
+    state.onboarding.referralAsked = true;
+    save();
+    toast("Код применён");
+    go("games");
+  }
+
+  refApply.onclick = applyReferral;
+  refSkip.onclick = ()=>{
+    state.onboarding.referralAsked = true;
+    save();
+    go("games");
+  };
+
+  // ===== Main button
+  findBtn.onclick = startSearch;
+
+  // ===== Render all
+  function renderProfile(){
+    profNick.textContent = displayNick();
+    profId.textContent = `#${state.profile.publicId}`;
+    rulesAcceptedLine.textContent = state.profile.rulesAcceptedAt ? `Приняты: ${formatDate(state.profile.rulesAcceptedAt)}` : "—";
+    myRefCode.textContent = state.profile.myRefCode;
+
+    document.getElementById("stWins").textContent = state.stats.wins;
+    document.getElementById("stLoss").textContent = state.stats.losses;
+    document.getElementById("stMatches").textContent = state.stats.matches;
+    document.getElementById("stStreak").textContent = state.stats.streak;
+
+    setSound.checked = !!state.settings.sound;
+    setHaptic.checked = !!state.settings.haptic;
+  }
+
+  function renderTopUserChip(){
+    userChip.textContent = displayMe();
+  }
+
+  function renderAll(){
+    renderTopUserChip();
+    renderBets();
+    renderWallet();
+    renderMatches();
+    renderProfile();
+    tickOnline();
+  }
+
+  // ===== Init navigation + start page
+  function initNav(){
+    const required = needsOnboarding();
+    if(required){
+      go(required);
+      return;
+    }
+    const hash = (location.hash||"#games").slice(1);
+    if(pages.includes(hash)) go(hash);
+    else go("games");
+  }
+
+  // ===== Start
+  renderAll();
+  initNav();
+
+  // If telegram user exists, keep hidden info only for backend later (we don't show username)
+  if(tgUser){
+    // could store tg_id locally for debug (not shown)
+    // state.profile.tgId = tgUser.id; // optional
+  }
 </script>
 </body>
 </html>
-
