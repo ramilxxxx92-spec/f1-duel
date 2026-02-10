@@ -5,30 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>F1 Duel</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
     :root{
       --bg:#0f1115;--card:#171a22;--muted:#9aa3b2;--text:#fff;
-      --accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;
-      --shadow:0 12px 30px rgba(0,0,0,.35);--r:16px;
+      --accent:#8cffc1;--danger:#ff5c5c;--line:#252a36;--shadow:0 12px 30px rgba(0,0,0,.35);
+      --r:16px;
     }
 
-    /* ======= CRITICAL: prevent selection/copy/callout in mobile webview ======= */
+    /* prevent selection/copy on mobile webviews */
     html, body{
       margin:0;
       background:var(--bg);
       color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      height:100%;
       -webkit-user-select:none;
       user-select:none;
       -webkit-touch-callout:none;
       overscroll-behavior:none;
+      height:100%;
     }
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
     .app{min-height:100vh;padding-bottom:86px}
     .topbar{
@@ -39,90 +35,68 @@
       padding:14px 16px;
       display:flex;align-items:center;justify-content:space-between;gap:12px
     }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:950}
-    .chip{
-      font-size:12px;padding:6px 10px;border:1px solid var(--line);
-      border-radius:999px;color:var(--muted);white-space:nowrap
-    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .chip{font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);white-space:nowrap}
     .container{padding:16px}
     .row{display:flex;gap:12px;flex-wrap:wrap}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      box-shadow:var(--shadow);
-      padding:14px
-    }
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
     .card h2{margin:0 0 8px 0;font-size:16px}
     .muted{color:var(--muted);line-height:1.35}
-    .tile{
-      background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      padding:14px;
-      min-height:120px;
-      display:flex;flex-direction:column;justify-content:space-between;
-      cursor:pointer;user-select:none
-    }
-    .tile .t{font-weight:950}
-    .tile .d{font-size:12px;color:var(--muted);margin-top:6px}
-    .pill{
-      display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
-      padding:10px 12px;border:1px solid var(--line);border-radius:14px;
-      background:rgba(255,255,255,.02);flex:1
-    }
-    .btn{
-      appearance:none;border:none;cursor:pointer;
-      border-radius:12px;padding:12px 14px;
-      font-size:15px;font-weight:950;width:100%
-    }
+    .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:900;width:100%}
     .btn.primary{background:var(--accent);color:#07110c}
     .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
     .btn.danger{background:var(--danger);color:#1a0b0b}
-    .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
-    .hidden{display:none!important}
-
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tile{
+      background:linear-gradient(180deg,rgba(140,255,193,.10),rgba(255,255,255,0));
+      border:1px solid var(--line);border-radius:var(--r);padding:14px;min-height:120px;
+      display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;user-select:none
+    }
+    .tile .t{font-weight:950}
+    .tile .d{font-size:12px;color:var(--muted);margin-top:6px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+    .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+    .kv:first-child{border-top:none;padding-top:0}
     .nav{
-      position:fixed;left:0;right:0;bottom:0;height:72px;
-      background:rgba(15,17,21,.92);
-      backdrop-filter:blur(10px);
-      border-top:1px solid var(--line);
-      display:flex;padding:10px 10px 14px;gap:10px;z-index:20
+      position:fixed;left:0;right:0;bottom:0;height:72px;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);
+      border-top:1px solid var(--line);display:flex;padding:10px 10px 14px;gap:10px;z-index:20
     }
     .nav button{
-      flex:1;border:none;background:transparent;color:var(--muted);
-      border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;
+      flex:1;border:none;background:transparent;color:var(--muted);border-radius:14px;padding:10px 8px;font-size:12px;cursor:pointer;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
     }
-    .nav button.active{
-      color:var(--text);
-      background:rgba(140,255,193,.12);
-      border:1px solid rgba(140,255,193,.25)
-    }
+    .nav button.active{color:var(--text);background:rgba(140,255,193,.12);border:1px solid rgba(140,255,193,.25)}
     .icon{font-size:18px;line-height:1}
-
+    .hidden{display:none!important}
+    .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
     .toast{
       position:fixed;left:50%;bottom:86px;transform:translateX(-50%);
-      background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);
-      font-size:13px;z-index:999;max-width:90vw;text-align:center;
+      background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+      box-shadow:var(--shadow);font-size:13px;z-index:999;max-width:90vw;text-align:center;
       opacity:0;pointer-events:none;transition:opacity .18s ease
     }
     .toast.show{opacity:1}
 
-    /* ===================== PENALTY ===================== */
+    /* Pong canvas */
+    .pongCanvas{
+      width:100%;max-width:440px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      display:block;margin:0 auto;
+      background:#0b0d12;
+      touch-action:none; /* important for mobile */
+    }
+
+    /* Penalty stage */
     .stage{
-      position:relative;width:100%;max-width:420px;margin:0 auto 12px;height:300px;
+      position:relative;width:100%;max-width:420px;margin:0 auto;height:300px;
       border-radius:18px;border:1px solid var(--line);overflow:hidden;
       background:
         radial-gradient(520px 240px at 50% 10%, rgba(255,255,255,.12), rgba(255,255,255,0)),
         linear-gradient(180deg, rgba(140,255,193,.06), rgba(0,0,0,0)),
         #0b0d12;
       box-shadow:var(--shadow);
-
-      /* CRITICAL: disable browser gestures inside playfield */
-      touch-action:none;
+      touch-action:none; /* critical */
     }
     .goal{
       position:absolute;top:28px;left:26px;right:26px;height:130px;
@@ -134,7 +108,7 @@
       background-image:
         linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
-      background-size: 24px 24px;opacity:.55;
+      background-size:24px 24px;opacity:.55;
     }
     .goalLine{position:absolute;top:160px;left:26px;right:26px;height:2px;background:rgba(255,255,255,.18)}
     .keeper{
@@ -150,10 +124,7 @@
       position:absolute;bottom:18px;left:50%;width:24px;height:24px;transform:translateX(-50%) scale(1);
       border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff, #cfd6e6);
       box-shadow:0 10px 22px rgba(0,0,0,.45);will-change:transform;
-
-      /* CRITICAL */
-      touch-action:none;
-      -webkit-user-drag:none;
+      touch-action:none;-webkit-user-drag:none;
     }
     .aimLine{
       position:absolute;width:2px;background:rgba(140,255,193,.85);
@@ -167,21 +138,17 @@
     }
     .aimSpot.show{opacity:1}
     .flash{position:absolute;inset:0;opacity:0;transition:opacity .15s ease}
-
-    .centerText{ text-align:center; }
-    .bigMsg{ margin-top:12px;font-size:18px;font-weight:950;min-height:26px }
-    .smallMsg{ margin-top:6px;color:var(--muted);font-size:13px;min-height:18px }
-
+    .centerText{text-align:center}
+    .bigMsg{margin-top:12px;font-size:18px;font-weight:950;min-height:26px}
+    .smallMsg{margin-top:6px;color:var(--muted);font-size:13px;min-height:18px}
     @keyframes kickL { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-210%) translateY(-190px) scale(.55)} }
     @keyframes kickC { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(-50%) translateY(-205px) scale(.55)} }
     @keyframes kickR { from{transform:translateX(-50%) translateY(0) scale(1)} to{transform:translateX(110%) translateY(-190px) scale(.55)} }
-
     @keyframes keepL { from{transform:translateX(-50%)} to{transform:translateX(-150%)} }
     @keyframes keepC { from{transform:translateX(-50%)} to{transform:translateX(-50%)} }
     @keyframes keepR { from{transform:translateX(-50%)} to{transform:translateX(50%)} }
   </style>
 </head>
-
 <body>
   <div class="app">
     <div class="topbar">
@@ -193,48 +160,46 @@
       <!-- GAMES -->
       <section id="page-games">
         <div class="card" style="margin-bottom:12px;">
-          <h2>Игры</h2>
-          <div class="muted">Собираем MVP: сейчас — Penalty. Air Hockey добавим следующим шагом.</div>
+          <h2>Выбор игры</h2>
+          <div class="muted">Reaction Duel • Ping Pong • Penalty</div>
         </div>
 
         <div class="grid">
-          <div class="tile" onclick="openGame('penalty')">
-            <div>
-              <div class="t">⚽ Penalty</div>
-              <div class="d">Swipe + Hold (направление + сила)</div>
-            </div>
+          <div class="tile" onclick="openGame('reaction')">
+            <div><div class="t">⚡ Reaction Duel</div><div class="d">Скорость реакции</div></div>
             <div class="muted" style="font-size:12px;">Открыть</div>
           </div>
-          <div class="tile" onclick="toast('Air Hockey скоро 🙂')">
-            <div>
-              <div class="t">🏒 Air Hockey</div>
-              <div class="d">Скоро (не трогаем сейчас)</div>
-            </div>
-            <div class="muted" style="font-size:12px;">Скоро</div>
+          <div class="tile" onclick="openGame('pong')">
+            <div><div class="t">🏓 Ping Pong</div><div class="d">Победа до 3 очков</div></div>
+            <div class="muted" style="font-size:12px;">Открыть</div>
+          </div>
+          <div class="tile" onclick="openGame('penalty')" style="grid-column: 1 / -1;">
+            <div><div class="t">⚽ Penalty</div><div class="d">Swipe + Hold: направление + сила</div></div>
+            <div class="muted" style="font-size:12px;">Открыть</div>
           </div>
         </div>
 
-        <div class="note">Звук в браузере включается после первого касания.</div>
+        <div class="note">Звук/вибрации включатся после первого касания (ограничение браузера).</div>
       </section>
 
-      <!-- WALLET -->
+      <!-- WALLET (старый баланс) -->
       <section id="page-wallet" class="hidden">
         <div class="card">
           <h2>Баланс</h2>
-          <div class="row" style="margin:10px 0 14px;">
-            <div class="pill"><span>🪙 Coins</span><strong id="coinsVal">0</strong></div>
-            <div class="pill"><span>🏆 Wins</span><strong id="winsVal">0</strong></div>
+          <div class="row" style="margin: 10px 0 14px;">
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>🪙 Coins</span><strong id="coinsVal">0</strong></div>
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>⭐ Stars</span><strong id="starsVal">0</strong></div>
           </div>
-          <div class="row">
-            <div class="pill"><span>🎮 Игры</span><strong id="playsVal">0</strong></div>
-            <div class="pill"><span>⭐ Level</span><strong id="levelVal">1</strong></div>
-          </div>
-          <div class="note">Пока всё локально (localStorage). PvP появится, когда подключим backend.</div>
+          <div class="kv"><span class="muted">Уровень</span><strong id="levelVal">1</strong></div>
+          <div class="kv"><span class="muted">Победы</span><strong id="winsVal">0</strong></div>
+          <div class="kv"><span class="muted">Игры</span><strong id="playsVal">0</strong></div>
 
-          <div class="row" style="margin-top:12px;">
-            <button class="btn ghost" onclick="addCoins(10); toast('+10 coins (тест)')">+10 coins</button>
-            <button class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
+          <div style="margin-top:14px;" class="row">
+            <button class="btn primary" onclick="addCoins(10); toast('+10 coins')">+10 coins (тест)</button>
+            <button class="btn ghost" onclick="convertCoinsToStars()">coins → stars</button>
           </div>
+          <button style="margin-top:10px;" class="btn danger" onclick="resetProgress()">Сбросить прогресс</button>
+          <div class="note">Пока всё локально (localStorage). Для PvP нужен backend.</div>
         </div>
       </section>
 
@@ -243,20 +208,50 @@
         <div class="card">
           <h2>Личный кабинет</h2>
           <div class="muted" id="profileLine">—</div>
-
-          <div style="margin-top:12px;">
-            <div class="row">
-              <div class="pill"><span>Ник</span><strong id="nickVal">—</strong></div>
-              <div class="pill"><span>TG ID</span><strong id="tgidVal">—</strong></div>
-            </div>
+          <div style="margin-top:14px;">
+            <div class="kv"><span class="muted">Ник</span><strong id="nickVal">—</strong></div>
+            <div class="kv"><span class="muted">Telegram ID</span><strong id="tgidVal">—</strong></div>
+            <div class="kv"><span class="muted">Статус</span><strong id="statusVal">Новичок</strong></div>
           </div>
-
-          <div class="row" style="margin-top:12px;">
+          <div style="margin-top:14px;" class="row">
+            <button class="btn ghost" onclick="toast('Скоро 🙂')">Настройки</button>
             <button class="btn primary" onclick="go('games')">Играть</button>
-            <button class="btn ghost" onclick="toast('Настройки скоро 🙂')">Настройки</button>
           </div>
+        </div>
+      </section>
 
-          <div class="note">Если открыть не через Telegram — профиль не подтянется.</div>
+      <!-- REACTION -->
+      <section id="page-reaction" class="hidden">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>⚡ Reaction Duel</h2><div class="muted">Жми «Ждать старт», затем тап по сигналу. Фальстарт — штраф.</div>
+        </div>
+        <div class="card">
+          <div id="light" style="width:120px;height:120px;border-radius:50%;margin:8px auto 18px;background:red;box-shadow:0 0 20px red;"></div>
+          <button id="startBtn" class="btn primary">Ждать старт</button>
+          <div id="result" style="margin-top:14px;font-size:20px;font-weight:950;"></div>
+          <div class="note">+5 coins (и +3 если &lt;250ms). Фальстарт −2.</div>
+          <button style="margin-top:12px;" class="btn ghost" onclick="go('games')">← Назад</button>
+        </div>
+      </section>
+
+      <!-- PONG -->
+      <section id="page-pong" class="hidden">
+        <div class="card" style="margin-bottom:12px;">
+          <h2>🏓 Ping Pong</h2>
+          <div class="muted">Победа до 3 очков. Управление: мышь/палец.</div>
+        </div>
+        <div class="card">
+          <div class="row" style="margin:0 0 12px;">
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>🙂 Ты</span><strong id="pongMe">0</strong></div>
+            <div class="pill" style="flex:1; justify-content:space-between;"><span>🤖 Бот</span><strong id="pongAi">0</strong></div>
+          </div>
+          <canvas id="pongCanvas" class="pongCanvas" width="440" height="560"></canvas>
+          <div class="row" style="margin-top:12px;">
+            <button id="pongStartBtn" class="btn primary" onclick="pongStart()">Старт</button>
+            <button class="btn ghost" onclick="pongReset()">Сброс</button>
+          </div>
+          <button style="margin-top:12px;" class="btn ghost" onclick="pongStop(); go('games')">← Назад</button>
+          <div class="note">Тап по полю = power-shot на короткое время.</div>
         </div>
       </section>
 
@@ -269,8 +264,8 @@
 
         <div class="card">
           <div class="row" style="margin:0 0 12px;">
-            <div class="pill"><span>🎯 Удар</span><strong id="penShotTxt">1/5</strong></div>
-            <div class="pill"><span>🥅 Голы</span><strong id="penGoalsTxt">0</strong></div>
+            <div class="pill" style="flex:1;justify-content:space-between;"><span>🎯 Удар</span><strong id="penShotTxt">1/5</strong></div>
+            <div class="pill" style="flex:1;justify-content:space-between;"><span>🥅 Голы</span><strong id="penGoalsTxt">0</strong></div>
           </div>
 
           <div class="stage" id="penStage">
@@ -313,23 +308,16 @@
   <div id="toast" class="toast"></div>
 
 <script>
-  // ========= Telegram =========
+  // Telegram
   const tg = window.Telegram?.WebApp;
   try{ tg?.ready(); tg?.expand(); }catch(e){}
 
-  const envChip = document.getElementById("envChip");
-  envChip.textContent = tg ? "Telegram WebApp" : "Browser";
-
-  // ========= UI helpers =========
-  const toastEl=document.getElementById("toast"); let toastTimer=null;
-  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1600); }
-
-  // ========= Haptics =========
-  function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
+  // Haptics
   function hImpact(type="light"){ try{ tg?.HapticFeedback?.impactOccurred(type); }catch(e){} }
   function hNote(type="success"){ try{ tg?.HapticFeedback?.notificationOccurred(type); }catch(e){} }
+  function hSelect(){ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} }
 
-  // ========= Audio (minimal) =========
+  // Audio (WebAudio)
   let audioUnlocked=false, audioCtx=null;
   function unlockAudio(){
     if(audioUnlocked) return;
@@ -341,10 +329,10 @@
       audioUnlocked=true;
     }catch(e){}
   }
-  function beep(freq=440,dur=0.07,vol=0.06,type="sine"){
+  function beep(freq=440,dur=0.08,vol=0.06,type="sine"){
     if(!audioCtx) return;
     const t=audioCtx.currentTime;
-    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
     o.type=type; o.frequency.value=freq;
     g.gain.setValueAtTime(0.0001,t);
     g.gain.exponentialRampToValueAtTime(vol,t+0.01);
@@ -352,32 +340,61 @@
     o.connect(g); g.connect(audioCtx.destination);
     o.start(t); o.stop(t+dur+0.02);
   }
+
   const sKick=()=>{beep(140,0.06,0.08,"triangle");beep(90,0.08,0.05,"sine");};
   const sGoal=()=>{beep(660,0.08,0.08,"sine");beep(880,0.10,0.08,"sine");};
   const sSave=()=>{beep(220,0.10,0.06,"square");};
   const sMiss=()=>{beep(180,0.14,0.05,"sawtooth");};
 
+  // Helpers
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-  // ========= Local state =========
-  const storeKey="f1duel_state_app_v1";
-  const defaultState={coins:0,wins:0,plays:0};
+  // Local state (старый баланс)
+  const storeKey="f1duel_state_v3";
+  const defaultState={coins:0,stars:0,wins:0,plays:0};
   const state=(()=>{ try{const r=localStorage.getItem(storeKey); return r?{...defaultState,...JSON.parse(r)}:{...defaultState}; }catch(e){ return {...defaultState}; } })();
 
-  function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); renderWallet(); }
-  function calcLevel(){ return Math.max(1, Math.floor(state.coins/120)+1); }
-  function addCoins(n){ state.coins=Math.max(0, state.coins+n); saveState(); }
-  function resetProgress(){ Object.assign(state,{...defaultState}); saveState(); toast("Прогресс сброшен"); }
+  const toastEl=document.getElementById("toast"); let toastTimer=null;
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1600); }
 
+  function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); renderWallet(); }
+  function calcLevel(){ const score=state.coins+state.stars*50; return Math.max(1, Math.floor(score/200)+1); }
   function renderWallet(){
     document.getElementById("coinsVal").textContent=state.coins;
+    document.getElementById("starsVal").textContent=state.stars;
     document.getElementById("winsVal").textContent=state.wins;
     document.getElementById("playsVal").textContent=state.plays;
     document.getElementById("levelVal").textContent=calcLevel();
   }
+  function addCoins(n){ state.coins=Math.max(0, state.coins+n); saveState(); }
+  function convertCoinsToStars(){
+    const rate=100;
+    if(state.coins<rate){ toast(`Нужно минимум ${rate} coins`); return; }
+    const s=Math.floor(state.coins/rate);
+    state.coins-=s*rate; state.stars+=s; saveState(); toast(`Обмен: +${s} ⭐`);
+  }
+  function resetProgress(){ Object.assign(state,{...defaultState}); saveState(); toast("Прогресс сброшен"); }
 
-  // ========= Profile =========
-  const userChip=document.getElementById("userChip");
+  // Routing
+  const pages=["games","wallet","profile","reaction","pong","penalty"];
+  function go(page){
+    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden", p!==page));
+    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active", t===page));
+    if(page==="reaction"||page==="pong"||page==="penalty"){
+      document.getElementById("tab-games").classList.add("active");
+      ["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"));
+    }
+    location.hash="#"+page;
+  }
+  function openGame(id){
+    if(id==="reaction")go("reaction");
+    if(id==="pong")go("pong");
+    if(id==="penalty")go("penalty");
+  }
+
+  // Header info
+  const envChip=document.getElementById("envChip"), userChip=document.getElementById("userChip");
+  envChip.textContent=tg?"Telegram WebApp":"Browser";
   const user=tg?.initDataUnsafe?.user;
   if(user){
     const nick=user.username||user.first_name||"Player";
@@ -386,26 +403,205 @@
     document.getElementById("tgidVal").textContent=user.id;
     document.getElementById("profileLine").textContent=`Привет, ${nick}.`;
   } else {
-    userChip.textContent="Гость";
     document.getElementById("profileLine").textContent="Открой через Telegram, чтобы подтянулся профиль.";
   }
 
-  // ========= Routing =========
-  const pages=["games","wallet","profile","penalty"];
-  function go(page){
-    pages.forEach(p=>document.getElementById("page-"+p).classList.toggle("hidden", p!==page));
-    ["games","wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.toggle("active", t===page));
-    if(page==="penalty"){
-      document.getElementById("tab-games").classList.add("active");
-      ["wallet","profile"].forEach(t=>document.getElementById("tab-"+t).classList.remove("active"));
+  // =========================
+  // REACTION
+  // =========================
+  const light=document.getElementById("light"), startBtn=document.getElementById("startBtn"), result=document.getElementById("result");
+  let startTime=0, waiting=false, timer=null;
+  function setLight(c){ light.style.background=c; light.style.boxShadow=(c==="lime")?"0 0 30px lime":"0 0 20px red"; }
+  startBtn.onclick=()=>{
+    unlockAudio(); hImpact("light");
+    if(waiting) return;
+    result.textContent=""; setLight("red"); waiting=true; startBtn.textContent="ЖДИ…";
+    timer=setTimeout(()=>{ setLight("lime"); startTime=Date.now(); hImpact("medium"); beep(520,0.06,0.05,"sine"); }, 1800+Math.random()*2600);
+  };
+  light.onclick=()=>{
+    unlockAudio();
+    if(!waiting) return;
+    if(!startTime){
+      clearTimeout(timer);
+      result.textContent="❌ Фальстарт! −2 coins";
+      addCoins(-2); toast("Фальстарт −2"); hNote("error"); beep(180,0.12,0.05,"square");
+      waiting=false; startTime=0; startBtn.textContent="Ещё раз";
+      return;
     }
-    location.hash="#"+page;
-  }
-  function openGame(id){
-    if(id==="penalty") go("penalty");
-  }
+    const r=Date.now()-startTime;
+    state.plays += 1;
+    let reward=5; if(r<250) reward += 3;
+    addCoins(reward); saveState();
+    result.textContent=`⚡ ${r} мс  •  +${reward} coins`;
+    toast(`+${reward} coins`); hNote("success"); beep(880,0.08,0.06,"sine");
+    waiting=false; startTime=0; startBtn.textContent="Ещё раз";
+  };
 
-  // ========= Penalty game =========
+  // =========================
+  // PONG
+  // =========================
+  const canvas=document.getElementById("pongCanvas");
+  const ctx=canvas.getContext("2d");
+  const pongMeEl=document.getElementById("pongMe");
+  const pongAiEl=document.getElementById("pongAi");
+  const pongStartBtn=document.getElementById("pongStartBtn");
+
+  const W=canvas.width, H=canvas.height;
+
+  let pongRunning=false, rafId=null;
+  const p1={w:110,h:14,x:W/2-55,y:H-34};
+  const p2={w:110,h:14,x:W/2-55,y:22};
+  const pb={r:7,x:W/2,y:H/2,vx:3.2,vy:3.6};
+
+  let me=0, ai=0;
+  let powerUntil=0;
+
+  function hudPong(){ pongMeEl.textContent=me; pongAiEl.textContent=ai; }
+  function resetBall(towardsPlayer){
+    pb.x=W/2; pb.y=H/2;
+    const base=3.1 + Math.random()*0.8;
+    pb.vx = (Math.random()>.5?1:-1)*base;
+    pb.vy = (towardsPlayer?1:-1)*(3.2 + Math.random()*1.0);
+  }
+  function drawPong(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#0b0d12";
+    ctx.fillRect(0,0,W,H);
+
+    ctx.globalAlpha=.18;
+    ctx.fillStyle="#ffffff";
+    ctx.fillRect(W/2-1, 16, 2, H-32);
+    ctx.globalAlpha=1;
+
+    ctx.fillStyle="#8cffc1";
+    ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
+    ctx.fillStyle="rgba(255,255,255,.25)";
+    ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
+
+    const now=performance.now();
+    const powerActive = now < powerUntil;
+    ctx.fillStyle = powerActive ? "#8cffc1" : "#ffffff";
+    ctx.beginPath();
+    ctx.arc(pb.x, pb.y, pb.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  function collide(p, b){
+    return (b.x + b.r > p.x && b.x - b.r < p.x + p.w && b.y + b.r > p.y && b.y - b.r < p.y + p.h);
+  }
+  function aiMove(){
+    const target = pb.x - p2.w/2 + (Math.random()*2-1)*8;
+    const dx = target - p2.x;
+    p2.x += clamp(dx, -4.6, 4.6);
+    p2.x = clamp(p2.x, 0, W-p2.w);
+  }
+  function loop(){
+    if(!pongRunning) return;
+
+    aiMove();
+
+    pb.x += pb.vx;
+    pb.y += pb.vy;
+
+    if(pb.x - pb.r <= 0 || pb.x + pb.r >= W){
+      pb.vx *= -1;
+      pb.x = clamp(pb.x, pb.r, W-pb.r);
+      beep(260,0.04,0.03,"sine");
+    }
+
+    if(pb.vy > 0 && collide(p1, pb)){
+      pb.vy *= -1;
+      const hit = (pb.x - (p1.x + p1.w/2)) / (p1.w/2);
+      pb.vx += hit * 1.15;
+      pb.vx = clamp(pb.vx, -6.0, 6.0);
+      hImpact("light");
+      beep(520,0.04,0.03,"triangle");
+      if(performance.now() < powerUntil){
+        pb.vx += hit * 1.6;
+        pb.vy *= 1.06;
+        hImpact("medium");
+        beep(740,0.05,0.05,"triangle");
+        powerUntil = 0;
+      }
+    }
+    if(pb.vy < 0 && collide(p2, pb)){
+      pb.vy *= -1;
+      const hit = (pb.x - (p2.x + p2.w/2)) / (p2.w/2);
+      pb.vx += hit * 0.85;
+      pb.vx = clamp(pb.vx, -6.0, 6.0);
+      beep(360,0.04,0.03,"square");
+    }
+
+    if(pb.y - pb.r <= 0){
+      me += 1; toast("Очко тебе!"); beep(840,0.06,0.04,"sine");
+      resetBall(false); hudPong();
+    }
+    if(pb.y + pb.r >= H){
+      ai += 1; toast("Очко боту"); beep(180,0.08,0.04,"square");
+      resetBall(true); hudPong();
+    }
+
+    if(me >= 3 || ai >= 3){
+      pongRunning=false;
+      state.plays += 1;
+      if(me >= 3){
+        state.wins += 1;
+        addCoins(15);
+        toast("🏆 Победа! +15 coins");
+        hNote("success");
+      } else {
+        toast("Поражение 😄");
+        hNote("error");
+      }
+      saveState();
+      pongStartBtn.textContent="Сыграть ещё";
+      drawPong();
+      return;
+    }
+
+    drawPong();
+    rafId = requestAnimationFrame(loop);
+  }
+  function pongStart(){
+    unlockAudio();
+    if(pongRunning) return;
+    pongRunning=true;
+    pongStartBtn.textContent="Идёт…";
+    toast("Поехали!");
+    rafId = requestAnimationFrame(loop);
+  }
+  function pongStop(){
+    pongRunning=false;
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId=null;
+  }
+  function pongReset(){
+    pongStop();
+    me=0; ai=0;
+    p1.x=W/2-p1.w/2; p2.x=W/2-p2.w/2;
+    resetBall(true);
+    pongStartBtn.textContent="Старт";
+    hudPong();
+    drawPong();
+  }
+  function setPaddleFromClientX(clientX){
+    const rect=canvas.getBoundingClientRect();
+    const x=(clientX-rect.left)*(W/rect.width);
+    p1.x = clamp(x - p1.w/2, 0, W - p1.w);
+  }
+  canvas.addEventListener("mousemove",(e)=>setPaddleFromClientX(e.clientX));
+  canvas.addEventListener("touchmove",(e)=>{e.preventDefault();setPaddleFromClientX(e.touches[0].clientX)},{passive:false});
+
+  function triggerPower(){
+    if(!pongRunning) return;
+    powerUntil = performance.now() + 220;
+    hImpact("light");
+  }
+  canvas.addEventListener("mousedown",()=>{unlockAudio();triggerPower();});
+  canvas.addEventListener("touchstart",(e)=>{e.preventDefault();unlockAudio();triggerPower();},{passive:false});
+
+  // =========================
+  // PENALTY (Swipe + Hold)
+  // =========================
   const penShotTxt=document.getElementById("penShotTxt");
   const penGoalsTxt=document.getElementById("penGoalsTxt");
   const penMsg=document.getElementById("penMsg");
@@ -455,7 +651,6 @@
     flash.style.opacity="1";
     setTimeout(()=>flash.style.opacity="0", 140);
   }
-
   function penRestart(){
     unlockAudio();
     shot=1; goals=0; locked=false; holding=false;
@@ -463,7 +658,6 @@
     penRender(); resetAnim();
     toast("Новая серия");
   }
-
   function endSeries(){
     locked=true;
     state.plays += 1;
@@ -482,10 +676,8 @@
     saveState();
   }
 
-  // Prevent context menu on stage (some webviews)
+  // block browser gestures on penalty stage (extra-robust)
   penStage.addEventListener("contextmenu", (e)=>{ e.preventDefault(); }, {passive:false});
-
-  // Also: prevent default scrolling/selection on the whole stage (more robust)
   function stageBlock(e){ e.preventDefault(); }
   penStage.addEventListener("touchstart", stageBlock, {passive:false});
   penStage.addEventListener("touchmove", stageBlock, {passive:false});
@@ -508,20 +700,18 @@
     penSub.textContent="Держи палец (сила растёт) → отпусти для удара.";
     hImpact("light");
   }
-
   function onTouchMove(e){
     if(!holding || locked) return;
     e.preventDefault(); e.stopPropagation();
 
     const t=e.touches[0];
     const dx=t.clientX-startX;
-    const dy=startY-t.clientY; // up is positive
+    const dy=startY-t.clientY;
 
     const len=Math.sqrt(dx*dx+dy*dy);
     const maxLen=150;
     const visLen=clamp(len,0,maxLen);
 
-    // stable angle calc
     const safeDy=Math.max(24, dy);
     const angle=Math.atan2(dx, safeDy);
     currentAngle=angle;
@@ -530,17 +720,14 @@
     line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
 
     power = clamp(visLen/110, 0, 1);
-    // small pulse by power (feel)
     ball.style.transform=`translateX(-50%) scale(${1 + power*0.25})`;
 
     let dir="C";
     if(angle < -0.28) dir="L";
     else if(angle > 0.28) dir="R";
     showSpot(dir);
-
     hSelect();
   }
-
   function onTouchEnd(e){
     if(!holding || locked) return;
     e.preventDefault(); e.stopPropagation();
@@ -548,16 +735,15 @@
     holding=false;
     line.style.display="none";
 
-    // HOLD bonus based on time pressed (adds FIFA-like "nerves")
     const holdMs = Date.now() - downAt;
-    const holdBoost = clamp((holdMs-160)/900, 0, 0.35); // up to +0.35
+    const holdBoost = clamp((holdMs-160)/900, 0, 0.35);
     const finalPower = clamp(power + holdBoost, 0.15, 1.0);
 
     let dir="C";
     if(currentAngle < -0.28) dir="L";
     else if(currentAngle > 0.28) dir="R";
 
-    // Keeper choose: biased center, sometimes reads repeated corners
+    // keeper choice
     const r=Math.random();
     let keeperDir="C";
     if(r < 0.42) keeperDir="C";
@@ -574,9 +760,7 @@
     hImpact("medium");
     sKick();
 
-    // Outcome logic
     const corner = (dir !== "C");
-    // miss risk grows with power and corners
     const missChance = clamp(
       (finalPower > 0.90 ? 0.12 : 0.05) +
       (corner && finalPower > 0.82 ? 0.10 : 0) +
@@ -622,57 +806,21 @@
           penSub.textContent="Следующий удар: коснись мяча.";
         }
       }, 260);
-
     }, 220);
   }
 
-  // Attach touch listeners with passive:false
   ball.addEventListener("touchstart", onTouchStart, {passive:false});
   ball.addEventListener("touchmove",  onTouchMove,  {passive:false});
   ball.addEventListener("touchend",   onTouchEnd,   {passive:false});
   ball.addEventListener("touchcancel",onTouchEnd,   {passive:false});
 
-  // Also allow mouse testing on desktop
-  let mouseDown=false;
-  ball.addEventListener("mousedown", (e)=>{
-    if(locked) return;
-    unlockAudio();
-    mouseDown=true;
-    startX=e.clientX; startY=e.clientY; downAt=Date.now();
-    holding=true; power=0; currentAngle=0;
-    line.style.display="block";
-    penSub.textContent="(Desktop) Зажми → веди → отпусти.";
-  });
-  window.addEventListener("mousemove", (e)=>{
-    if(!mouseDown || !holding || locked) return;
-    const dx=e.clientX-startX;
-    const dy=startY-e.clientY;
-    const len=Math.sqrt(dx*dx+dy*dy);
-    const visLen=clamp(len,0,150);
-    const safeDy=Math.max(24,dy);
-    const angle=Math.atan2(dx,safeDy);
-    currentAngle=angle;
-    line.style.height=visLen+"px";
-    line.style.transform=`translateX(-50%) rotate(${angle}rad)`;
-    power=clamp(visLen/110,0,1);
-    ball.style.transform=`translateX(-50%) scale(${1+power*0.25})`;
-    let dir="C";
-    if(angle < -0.28) dir="L";
-    else if(angle > 0.28) dir="R";
-    showSpot(dir);
-  });
-  window.addEventListener("mouseup", (e)=>{
-    if(!mouseDown) return;
-    mouseDown=false;
-    if(holding) onTouchEnd({preventDefault(){},stopPropagation(){}});
-  });
-
-  // ========= Boot =========
+  // Boot
   renderWallet();
+  pongReset();
   penRestart();
-
   const initial=(location.hash||"#games").slice(1);
   go(pages.includes(initial)?initial:"games");
 </script>
 </body>
 </html>
+
