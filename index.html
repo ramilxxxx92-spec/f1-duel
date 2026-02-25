@@ -25,9 +25,7 @@
       --danger:#FF7A7A;
       --danger-soft: rgba(255,92,92,.18);
 
-      --line: rgba(255,255,255,.10);
       --shadow: 0 20px 40px rgba(0,0,0,.40);
-
       --r: 22px;
     }
 
@@ -43,7 +41,6 @@
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
     a{color:inherit}
 
-    /* Subtle grain (optional) */
     body:before{
       content:"";
       position:fixed; inset:0; pointer-events:none;
@@ -82,6 +79,7 @@
     .card h2{margin:0 0 8px 0; font-size:16px; letter-spacing:.2px}
     .muted{color:var(--muted); line-height:1.35}
     .text2{color:var(--text2)}
+    .divider{height:1px; background: rgba(255,255,255,.08); margin:12px 0}
 
     .btn{
       width:100%;
@@ -133,52 +131,8 @@
       color: var(--text);
     }
     .icon{font-size:18px; line-height:1}
-
     .hidden{display:none!important}
-    .divider{height:1px; background: rgba(255,255,255,.08); margin:12px 0}
-    .kv{display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid rgba(255,255,255,.08)}
-    .kv:first-child{border-top:none; padding-top:0}
-    .pill{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px 12px;
-      border-radius:16px;
-      background: var(--glass-bg-strong);
-      border:1px solid var(--glass-border);
-      backdrop-filter: blur(var(--blur));
-    }
 
-    /* chips row */
-    .chipRow{
-      display:flex; gap:10px;
-      overflow:auto; padding-bottom:6px;
-      scroll-snap-type:x mandatory;
-    }
-    .chipBet{
-      flex:0 0 auto;
-      padding:10px 14px;
-      border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      font-weight:900;
-      cursor:pointer;
-      scroll-snap-align:start;
-      transition: transform .12s ease, box-shadow .18s ease, background .18s ease, color .18s ease, opacity .18s ease;
-    }
-    .chipBet:active{transform: scale(.97)}
-    .chipBet.selected{
-      background: linear-gradient(135deg, #8CFFC1, #4DFF9A);
-      color:#0B0E0C;
-      box-shadow: 0 0 18px rgba(140,255,193,.35);
-      border-color: rgba(140,255,193,.38);
-    }
-    .chipBet.disabled{
-      opacity:.35; cursor:not-allowed;
-      background: rgba(255,255,255,.04);
-      border-color: rgba(255,255,255,.08);
-    }
-
-    /* toast */
     .toast{
       position:fixed; left:50%; bottom:86px; transform:translateX(-50%);
       max-width:92vw; text-align:center;
@@ -193,7 +147,6 @@
     }
     .toast.show{opacity:1}
 
-    /* modal */
     .modalWrap{
       position:fixed; inset:0; z-index:100;
       display:none;
@@ -215,7 +168,6 @@
     .modal h3{margin:0 0 6px 0}
     .modal .muted{font-size:13px}
 
-    /* input */
     .field{
       width:100%;
       padding:12px 14px;
@@ -230,7 +182,6 @@
     .checkboxRow{display:flex; gap:10px; align-items:flex-start}
     .checkboxRow input{margin-top:3px}
 
-    /* online badge */
     .onlineBadge{
       display:flex; align-items:center; gap:8px;
       padding:10px 12px;
@@ -250,18 +201,31 @@
     .titleXL{font-size:22px; font-weight:950; letter-spacing:.2px; margin:0 0 2px 0}
     .subtitle{color:var(--text2); margin:0; font-size:13px}
 
-    /* match status pills */
-    .tag{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text2);
-      font-size:12px;
+    .pill{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      background: var(--glass-bg-strong);
+      border:1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur));
     }
-    .tag.win{border-color: rgba(140,255,193,.28); background: rgba(140,255,193,.12); color: #d7ffe9}
-    .tag.lose{border-color: rgba(255,122,122,.28); background: rgba(255,122,122,.12); color: #ffe0e0}
+
+    /* Game surface blocks */
+    .gameSurface{
+      border-radius: 22px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .center{
+      display:flex; align-items:center; justify-content:center; text-align:center;
+    }
+    .big{
+      font-size:34px; font-weight:1000; letter-spacing:.2px;
+    }
+    .hint{color:var(--text2); font-size:13px; line-height:1.35}
+    canvas{display:block; width:100%; height:auto; touch-action:none;}
   </style>
 </head>
 <body>
@@ -357,7 +321,7 @@
           <div class="row" style="align-items:center; justify-content:space-between;">
             <div>
               <div class="titleXL" style="margin:0">Игры</div>
-              <div class="subtitle">Выбери игру и ставку</div>
+              <div class="subtitle">Выбери игру и тренируйся</div>
             </div>
             <div class="onlineBadge">
               <div class="dot"></div>
@@ -369,144 +333,126 @@
           </div>
         </div>
 
-        <div class="glass card">
-          <h2>Ping Pong (дуэль)</h2>
-          <div class="muted">Ставка → поиск соперника → авто-старт</div>
+        <!-- Reaction game -->
+        <div class="glass card" style="margin-bottom:12px;">
+          <h2>⚡ Реакция</h2>
+          <div class="muted">Жди “GO” и тапни как можно быстрее. Сохраняем рекорд.</div>
           <div class="divider"></div>
-
-          <div class="small">Выбери ставку</div>
-          <div style="margin-top:10px" class="chipRow" id="betRow"></div>
-
-          <div class="divider"></div>
-
-          <div class="row" style="align-items:flex-start;">
-            <div class="pill" style="flex:1">
-              <span class="text2">Ставка</span>
-              <strong id="uiStake">—</strong>
-            </div>
-            <div class="pill" style="flex:1">
-              <span class="text2">Победа</span>
-              <strong id="uiPayout" style="color:var(--accent)">—</strong>
-            </div>
-          </div>
-          <div class="small" style="margin-top:10px">Комиссия уже учтена</div>
-
-          <div style="margin-top:14px">
-            <button id="findBtn" class="btn primary" disabled>Найти соперника</button>
-          </div>
-          <div class="small" id="insufText" style="margin-top:8px; display:none; color:var(--danger)">Недостаточно coins</div>
-        </div>
-      </section>
-
-      <!-- SEARCHING -->
-      <section id="page-search" class="hidden">
-        <div class="glass card">
-          <h2 class="titleXL">Ищем соперника…</h2>
-          <p class="subtitle" id="searchGameLine">Ping Pong</p>
-          <div class="divider"></div>
-
           <div class="row">
             <div class="pill" style="flex:1">
-              <span class="text2">Ставка</span>
-              <strong id="searchStake">—</strong>
+              <span class="text2">Лучшее</span>
+              <strong id="reactBest">—</strong>
             </div>
             <div class="pill" style="flex:1">
-              <span class="text2">Победа</span>
-              <strong id="searchPayout" style="color:var(--accent)">—</strong>
+              <span class="text2">Последнее</span>
+              <strong id="reactLast">—</strong>
             </div>
           </div>
-
-          <div class="divider"></div>
-
-          <div class="row" style="justify-content:space-between; align-items:center">
-            <div class="tag">⌛ Поиск</div>
-            <div class="tag"><span class="small">таймер</span> <strong id="searchTimer">01:00</strong></div>
-          </div>
-
           <div style="margin-top:14px">
-            <button id="cancelSearch" class="btn ghost">Отменить поиск</button>
+            <button class="btn primary" id="openReaction">Играть</button>
           </div>
-          <div class="small" style="margin-top:10px">Ставка уже заблокирована на время поиска</div>
+        </div>
+
+        <!-- Pong game -->
+        <div class="glass card">
+          <h2>🏓 Пинг-понг</h2>
+          <div class="muted">Классический Pong. Управляй ракеткой пальцем. Бот умнеет и ускоряется.</div>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Результат</span>
+              <strong id="pongScore">0 : 0</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">До победы</span>
+              <strong id="pongToWin">5</strong>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn primary" id="openPong">Играть</button>
+          </div>
         </div>
       </section>
 
-      <!-- MATCH (auto-started) -->
-      <section id="page-match" class="hidden">
+      <!-- REACTION GAME -->
+      <section id="page-reaction" class="hidden">
         <div class="glass card">
           <div class="row" style="align-items:center; justify-content:space-between;">
             <div>
-              <div class="titleXL" style="margin:0">Матч начался</div>
-              <div class="subtitle">Ping Pong • авто-старт</div>
+              <div class="titleXL" style="margin:0">⚡ Реакция</div>
+              <div class="subtitle">Тапни как можно быстрее после “GO”</div>
             </div>
-            <div class="tag" id="matchNet">🟢 online</div>
+            <button class="btn ghost" style="width:auto; padding:10px 12px; font-size:13px" id="backFromReaction">Назад</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="gameSurface center" id="reactSurface" style="height:320px;">
+            <div>
+              <div class="big" id="reactText">Нажми “Старт”</div>
+              <div class="hint" id="reactHint" style="margin-top:10px">
+                После старта жди сигнал “GO” и тапни по полю.
+              </div>
+            </div>
           </div>
 
           <div class="divider"></div>
 
           <div class="row">
             <div class="pill" style="flex:1">
-              <span class="text2">Ты</span>
-              <strong id="meLine">—</strong>
+              <span class="text2">Лучшее</span>
+              <strong id="reactBest2">—</strong>
             </div>
             <div class="pill" style="flex:1">
-              <span class="text2">Соперник</span>
-              <strong id="oppLine">—</strong>
+              <span class="text2">Последнее</span>
+              <strong id="reactLast2">—</strong>
             </div>
           </div>
 
-          <div class="divider"></div>
-
-          <div class="row">
-            <div class="pill" style="flex:1">
-              <span class="text2">Ставка</span>
-              <strong id="matchStake">—</strong>
-            </div>
-            <div class="pill" style="flex:1">
-              <span class="text2">Победа</span>
-              <strong id="matchPayout" style="color:var(--accent)">—</strong>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="muted">
-            Здесь позже будет игра. Сейчас — тестовый режим результата.
-          </div>
-
-          <div class="row" style="margin-top:14px">
-            <button id="btnWin" class="btn primary">Тест: я победил</button>
-            <button id="btnLose" class="btn ghost">Тест: я проиграл</button>
-          </div>
-
-          <div style="margin-top:10px">
-            <button id="btnSurrender" class="btn danger">Сдаться</button>
-            <div class="small" style="margin-top:8px">Выход/сдача = поражение. Потеря ставки + возможный штраф.</div>
-          </div>
-
-          <div class="divider"></div>
-          <div class="small">
-            Симуляция выхода соперника: <button id="btnOppLeaves" class="btn ghost" style="width:auto; padding:8px 10px; font-size:13px">Соперник вышел</button>
+          <div style="margin-top:14px" class="row">
+            <button class="btn primary" id="reactStart">Старт</button>
+            <button class="btn ghost" id="reactReset">Сбросить</button>
           </div>
         </div>
       </section>
 
-      <!-- RESULT -->
-      <section id="page-result" class="hidden">
+      <!-- PONG GAME -->
+      <section id="page-pong" class="hidden">
         <div class="glass card">
-          <div class="titleXL" id="resTitle">Результат</div>
-          <div class="subtitle" id="resSub">—</div>
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div>
+              <div class="titleXL" style="margin:0">🏓 Пинг-понг</div>
+              <div class="subtitle">Двигай пальцем по экрану — ракетка повторяет</div>
+            </div>
+            <button class="btn ghost" style="width:auto; padding:10px 12px; font-size:13px" id="backFromPong">Назад</button>
+          </div>
+
           <div class="divider"></div>
 
-          <div class="pill">
-            <span class="text2">Итог</span>
-            <strong id="resDelta">—</strong>
+          <div class="gameSurface">
+            <canvas id="pongCanvas" width="900" height="540"></canvas>
           </div>
 
           <div class="divider"></div>
 
           <div class="row">
-            <button id="resAgain" class="btn primary">Сыграть ещё</button>
-            <button id="resToMatches" class="btn ghost">В историю</button>
+            <div class="pill" style="flex:1">
+              <span class="text2">Счёт</span>
+              <strong id="pongScore2">0 : 0</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Сложность</span>
+              <strong id="pongDiff">1.0×</strong>
+            </div>
+          </div>
+
+          <div style="margin-top:14px" class="row">
+            <button class="btn primary" id="pongRestart">Начать заново</button>
+            <button class="btn ghost" id="pongPause">Пауза</button>
+          </div>
+
+          <div class="small" style="margin-top:10px">
+            Подсказка: чем дольше розыгрыш — тем быстрее мяч и умнее бот.
           </div>
         </div>
       </section>
@@ -544,19 +490,16 @@
           <div class="row" style="align-items:center; justify-content:space-between;">
             <div>
               <div class="titleXL" style="margin:0">Матчи</div>
-              <div class="subtitle">История дуэлей</div>
+              <div class="subtitle">История (пока демо)</div>
             </div>
-            <div class="tag">Ping Pong</div>
+            <div class="chip">MVP</div>
           </div>
 
           <div class="divider"></div>
 
           <div id="matchesEmpty" class="muted">
-            Матчей пока нет.<br>
-            Сыграй первую дуэль — и история появится здесь.
-            <div style="margin-top:12px">
-              <button class="btn primary" onclick="go('games')">Перейти к играм</button>
-            </div>
+            Пока истории нет.<br>
+            (Мы вернём PvP-дуэли позже, когда подключим сервер.)
           </div>
 
           <div id="matchesList" style="display:none; flex-direction:column; gap:10px"></div>
@@ -577,46 +520,41 @@
           <div class="divider"></div>
 
           <div class="row">
-            <div class="pill" style="flex:1"><span class="text2">Победы</span><strong id="stWins">0</strong></div>
-            <div class="pill" style="flex:1"><span class="text2">Поражения</span><strong id="stLoss">0</strong></div>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <div class="pill" style="flex:1"><span class="text2">Матчи</span><strong id="stMatches">0</strong></div>
-            <div class="pill" style="flex:1"><span class="text2">Серия</span><strong id="stStreak">0</strong></div>
+            <div class="pill" style="flex:1"><span class="text2">Реакция (best)</span><strong id="profReactBest">—</strong></div>
+            <div class="pill" style="flex:1"><span class="text2">Pong</span><strong id="profPongBest">—</strong></div>
           </div>
 
           <div class="divider"></div>
 
-          <div class="kv">
-            <span class="text2">Правила дуэлей</span>
-            <span class="small" id="rulesAcceptedLine">—</span>
-          </div>
-
-          <div class="divider"></div>
-
-          <h2 style="margin:0 0 8px 0; font-size:16px">Рефералы</h2>
-          <div class="pill">
-            <span class="text2">Твой код</span>
-            <strong id="myRefCode">—</strong>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <button class="btn ghost" id="copyRefBtn">Скопировать код</button>
-            <button class="btn primary" id="shareRefBtn">Поделиться</button>
-          </div>
-          <div class="small" style="margin-top:8px">
-            За друга: +100 coins (после его первой дуэли). Реальные начисления — через сервер.
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Правила</span>
+              <strong id="rulesAcceptedLine">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Твой код</span>
+              <strong id="myRefCode">—</strong>
+            </div>
           </div>
 
           <div class="divider"></div>
 
           <h2 style="margin:0 0 8px 0; font-size:16px">Настройки</h2>
-          <div class="kv">
-            <span class="text2">Звук</span>
-            <input type="checkbox" id="setSound" />
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Звук</span>
+              <input type="checkbox" id="setSound" />
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Вибрация</span>
+              <input type="checkbox" id="setHaptic" />
+            </div>
           </div>
-          <div class="kv">
-            <span class="text2">Вибрация</span>
-            <input type="checkbox" id="setHaptic" />
+
+          <div class="divider"></div>
+          <div class="row">
+            <button class="btn ghost" id="copyRefBtn">Скопировать код</button>
+            <button class="btn primary" id="shareRefBtn">Поделиться</button>
           </div>
         </div>
       </section>
@@ -633,7 +571,6 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Modal confirm surrender -->
   <div id="modalWrap" class="modalWrap">
     <div class="modal">
       <h3 id="modalTitle">Подтвердить</h3>
@@ -652,16 +589,8 @@
   const envChip = document.getElementById("envChip");
   envChip.textContent = tg ? "Telegram WebApp" : "Browser";
 
-  function hImpact(type="light"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.impactOccurred(type);}catch(e){} }
-  function hNote(type="success"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.notificationOccurred(type);}catch(e){} }
-  function hSelect(){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.selectionChanged();}catch(e){} }
-
-  // ===== Toast
-  const toastEl = document.getElementById("toast"); let toastTimer=null;
-  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1500); }
-
-  // ===== State (local)
-  const KEY="f1duel_mvp_state_v1";
+  // ===== State
+  const KEY="f1duel_state_v2_games";
   const now = ()=>Date.now();
 
   function randCode(len=6){
@@ -669,9 +598,7 @@
     let s=""; for(let i=0;i<len;i++) s+=a[Math.floor(Math.random()*a.length)];
     return s;
   }
-  function shortId(){
-    return randCode(4);
-  }
+  function shortId(){ return randCode(4); }
 
   const defaultState = {
     onboarding: { rulesAccepted:false, nicknameSet:false, referralAsked:false },
@@ -681,19 +608,15 @@
       rulesAcceptedAt: 0,
       nicknameChangedAt: 0,
       myRefCode: randCode(6),
-      referredBy: "",          // code entered at registration
-      refStatus: "none",       // none | pending | activated
-      refRewardGiven: false
+      referredBy: "",
+      refStatus: "none",
     },
-    wallet: { coins: 120, stars: 0, lockedCoins: 0 }, // give some coins for testing
+    wallet: { coins: 120, stars: 0 },
     settings: { sound:true, haptic:true },
-    stats: { wins:0, losses:0, matches:0, streak:0 },
-    tx: [], // {ts,type,amount,label}
-    matches: [], // {ts, game, stake, payout, opp, status, delta}
-    session: {
-      selectedStake: 0,
-      current: null // {matchId, opp, stake, payout, startedAt}
-    }
+    tx: [],
+    // games
+    reaction: { bestMs: 0, lastMs: 0 },
+    pong: { bestWins: 0, bestDiff: 1.0 }
   };
 
   const state = (()=> {
@@ -701,7 +624,6 @@
       const raw = localStorage.getItem(KEY);
       if(!raw) return structuredClone(defaultState);
       const s = JSON.parse(raw);
-      // shallow merge (simple)
       return {
         ...defaultState,
         ...s,
@@ -709,10 +631,9 @@
         profile:{...defaultState.profile, ...(s.profile||{})},
         wallet:{...defaultState.wallet, ...(s.wallet||{})},
         settings:{...defaultState.settings, ...(s.settings||{})},
-        stats:{...defaultState.stats, ...(s.stats||{})},
-        tx: Array.isArray(s.tx)? s.tx : [],
-        matches: Array.isArray(s.matches)? s.matches : [],
-        session:{...defaultState.session, ...(s.session||{})}
+        reaction:{...defaultState.reaction, ...(s.reaction||{})},
+        pong:{...defaultState.pong, ...(s.pong||{})},
+        tx: Array.isArray(s.tx)? s.tx : []
       };
     }catch(e){
       return structuredClone(defaultState);
@@ -721,345 +642,16 @@
 
   function save(){ localStorage.setItem(KEY, JSON.stringify(state)); renderAll(); }
 
-  function addTx(type, amount, label){
-    state.tx.unshift({ts: now(), type, amount, label});
-    state.tx = state.tx.slice(0, 40);
-  }
+  // ===== Haptics
+  function hImpact(type="light"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.impactOccurred(type);}catch(e){} }
+  function hNote(type="success"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.notificationOccurred(type);}catch(e){} }
+  function hSelect(){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.selectionChanged();}catch(e){} }
 
-  function coinsDelta(n, label){
-    state.wallet.coins = Math.max(0, state.wallet.coins + n);
-    addTx("coins", n, label);
-  }
+  // ===== Toast
+  const toastEl = document.getElementById("toast"); let toastTimer=null;
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1500); }
 
-  // ===== UI routing
-  const pages = ["onb-rules","onb-nick","onb-ref","games","search","match","result","wallet","matches","profile"];
-  function go(page){
-    pages.forEach(p=>{
-      const el = document.getElementById("page-"+p);
-      if(el) el.classList.toggle("hidden", p!==page);
-    });
-    ["games","wallet","matches","profile"].forEach(t=>{
-      const tab = document.getElementById("tab-"+t);
-      if(tab) tab.classList.toggle("active", t===page);
-    });
-    location.hash = "#"+page;
-  }
-
-  // ===== Onboarding gating
-  function needsOnboarding(){
-    if(!state.onboarding.rulesAccepted) return "onb-rules";
-    if(!state.onboarding.nicknameSet) return "onb-nick";
-    if(!state.onboarding.referralAsked) return "onb-ref";
-    return null;
-  }
-
-  // ===== User chip (hide TG username)
-  const userChip = document.getElementById("userChip");
-  const tgUser = tg?.initDataUnsafe?.user;
-  const displayNick = ()=> (state.profile.nickname || "Player");
-  function displayMe(){
-    return `${displayNick()} #${state.profile.publicId}`;
-  }
-
-  // ===== Bets and payout
-  const BETS = [5,10,20,50,100];
-  const FEE_RATE = 0.05; // 5% of pot (2*stake)
-  function calcPayout(stake){
-    const pot = stake*2;
-    const fee = Math.floor(pot * FEE_RATE);
-    return pot - fee;
-  }
-
-  // ===== Bet chips render
-  const betRow = document.getElementById("betRow");
-  const uiStake = document.getElementById("uiStake");
-  const uiPayout = document.getElementById("uiPayout");
-  const findBtn = document.getElementById("findBtn");
-  const insufText = document.getElementById("insufText");
-
-  function renderBets(){
-    betRow.innerHTML="";
-    const available = state.wallet.coins;
-    BETS.forEach(v=>{
-      const b = document.createElement("button");
-      b.className="chipBet";
-      b.textContent = v;
-      const disabled = available < v;
-      if(disabled) b.classList.add("disabled");
-      if(state.session.selectedStake === v) b.classList.add("selected");
-
-      b.onclick = ()=>{
-        if(disabled) { hImpact("light"); toast("Недостаточно coins"); return; }
-        state.session.selectedStake = v;
-        hSelect();
-        save();
-      };
-      betRow.appendChild(b);
-    });
-
-    const stake = state.session.selectedStake || 0;
-    if(!stake){
-      uiStake.textContent="—";
-      uiPayout.textContent="—";
-      findBtn.disabled=true;
-      insufText.style.display="none";
-      return;
-    }
-    uiStake.textContent = `${stake} coins`;
-    uiPayout.textContent = `${calcPayout(stake)} coins`;
-
-    const ok = state.wallet.coins >= stake;
-    findBtn.disabled = !ok;
-    insufText.style.display = ok ? "none" : "block";
-  }
-
-  // ===== SEARCH flow (MVP simulation)
-  let searchInterval=null;
-  let searchLeft=60;
-  const searchStake = document.getElementById("searchStake");
-  const searchPayout = document.getElementById("searchPayout");
-  const searchTimer = document.getElementById("searchTimer");
-  const cancelSearch = document.getElementById("cancelSearch");
-
-  function fmtTime(sec){
-    const m = String(Math.floor(sec/60)).padStart(2,"0");
-    const s = String(sec%60).padStart(2,"0");
-    return `${m}:${s}`;
-  }
-
-  function lockStake(stake){
-    // lock immediately (A)
-    state.wallet.coins -= stake;
-    state.wallet.lockedCoins += stake;
-    addTx("lock", -stake, `Ставка заблокирована (${stake})`);
-  }
-  function unlockStake(stake, reason="Ставка возвращена"){
-    state.wallet.lockedCoins = Math.max(0, state.wallet.lockedCoins - stake);
-    state.wallet.coins += stake;
-    addTx("unlock", +stake, reason);
-  }
-
-  function startSearch(){
-    const stake = state.session.selectedStake;
-    if(!stake) return;
-    if(state.wallet.coins < stake){ toast("Недостаточно coins"); return; }
-
-    lockStake(stake);
-    save();
-
-    // show search screen
-    searchLeft = 60;
-    searchStake.textContent = `${stake} coins`;
-    searchPayout.textContent = `${calcPayout(stake)} coins`;
-    searchTimer.textContent = fmtTime(searchLeft);
-    go("search");
-    hImpact("medium");
-    toast("Поиск соперника…");
-
-    // simulate opponent found between 2..8 sec
-    const foundAt = 2 + Math.floor(Math.random()*7);
-    const startedAt = now();
-
-    clearInterval(searchInterval);
-    searchInterval = setInterval(()=>{
-      const elapsed = Math.floor((now()-startedAt)/1000);
-      searchLeft = Math.max(0, 60 - elapsed);
-      searchTimer.textContent = fmtTime(searchLeft);
-
-      if(elapsed >= foundAt){
-        clearInterval(searchInterval);
-        autoStartMatch();
-        return;
-      }
-      if(searchLeft<=0){
-        clearInterval(searchInterval);
-        // timeout → unlock
-        unlockStake(stake, "Поиск: соперник не найден");
-        state.session.selectedStake = stake; // keep selected
-        save();
-        toast("Соперник не найден");
-        go("games");
-      }
-    }, 250);
-  }
-
-  cancelSearch.onclick = ()=>{
-    clearInterval(searchInterval);
-    const stake = state.session.selectedStake;
-    unlockStake(stake, "Поиск отменён: ставка возвращена");
-    save();
-    toast("Поиск отменён");
-    go("games");
-  };
-
-  // ===== MATCH (auto-start)
-  const meLine = document.getElementById("meLine");
-  const oppLine = document.getElementById("oppLine");
-  const matchStake = document.getElementById("matchStake");
-  const matchPayout = document.getElementById("matchPayout");
-  const btnWin = document.getElementById("btnWin");
-  const btnLose = document.getElementById("btnLose");
-  const btnSurrender = document.getElementById("btnSurrender");
-  const btnOppLeaves = document.getElementById("btnOppLeaves");
-  const matchNet = document.getElementById("matchNet");
-
-  function genOpponent(){
-    const names=["Ghost","Blitz","Kappa","Nova","Raven","Vega","Pulse","Neon","Drift","Bison"];
-    return `${names[Math.floor(Math.random()*names.length)]} #${shortId()}`;
-  }
-
-  // 10 sec disconnect rule (we simulate by marking "offline" if page hidden too long)
-  let hiddenAt=0;
-  document.addEventListener("visibilitychange", ()=>{
-    if(document.hidden) hiddenAt = now();
-    else{
-      if(hiddenAt && state.session.current && (now()-hiddenAt) > 10000){
-        // treat as you left
-        finishMatch("YOU_LEFT_TIMEOUT");
-      }
-      hiddenAt=0;
-    }
-  });
-
-  function autoStartMatch(){
-    const stake = state.session.selectedStake;
-    const payout = calcPayout(stake);
-    const opp = genOpponent();
-    const matchId = "m_"+randCode(8);
-
-    state.session.current = {matchId, opp, stake, payout, startedAt: now()};
-    save();
-
-    meLine.textContent = displayMe();
-    oppLine.textContent = opp;
-    matchStake.textContent = `${stake} coins`;
-    matchPayout.textContent = `${payout} coins`;
-    matchNet.textContent = "🟢 online";
-
-    go("match");
-    hNote("success");
-    toast("Матч начался");
-  }
-
-  // ===== Result + History
-  const resTitle = document.getElementById("resTitle");
-  const resSub = document.getElementById("resSub");
-  const resDelta = document.getElementById("resDelta");
-  const resAgain = document.getElementById("resAgain");
-  const resToMatches = document.getElementById("resToMatches");
-
-  function pushMatch(status, delta, label){
-    const cur = state.session.current;
-    state.matches.unshift({
-      ts: now(),
-      game:"Ping Pong",
-      stake: cur?.stake || 0,
-      payout: cur?.payout || 0,
-      opp: cur?.opp || "—",
-      status,
-      delta,
-      label
-    });
-    state.matches = state.matches.slice(0, 50);
-  }
-
-  function finishMatch(type){
-    const cur = state.session.current;
-    if(!cur) return;
-
-    const stake = cur.stake;
-    const payout = cur.payout;
-
-    // Resolve locked stake (always remove from locked)
-    state.wallet.lockedCoins = Math.max(0, state.wallet.lockedCoins - stake);
-
-    let title="Результат", subtitle="—", delta=0, status="";
-
-    const pot = stake*2;
-    const fee = Math.floor(pot * FEE_RATE);
-    const penalty = fee*2;
-
-    if(type==="WIN"){
-      // winner gets payout (stake already locked -> not in coins). Give payout to available.
-      coinsDelta(+payout, `Победа (выплата ${payout})`);
-      title="Победа";
-      subtitle=`Ping Pong • ставка ${stake}`;
-      delta = +payout;
-      status="WIN";
-      state.stats.wins += 1;
-      state.stats.matches += 1;
-      state.stats.streak = Math.max(0, state.stats.streak) + 1;
-      pushMatch(status, delta, "Победа");
-
-      // referral activation trigger (invitee first duel)
-      maybeActivateReferralAfterFirstDuel();
-
-    } else if(type==="LOSE"){
-      // you lose your locked stake (already removed from locked). No coins returned.
-      addTx("lose", 0, `Поражение (ставка ${stake} сгорела)`);
-      title="Поражение";
-      subtitle=`Ping Pong • ставка ${stake}`;
-      delta = -stake;
-      status="LOSE";
-      state.stats.losses += 1;
-      state.stats.matches += 1;
-      state.stats.streak = 0;
-      pushMatch(status, delta, "Поражение");
-
-      maybeActivateReferralAfterFirstDuel();
-
-    } else if(type==="OPP_LEFT"){
-      // opponent left: return your stake
-      coinsDelta(+stake, `Соперник вышел (ставка возвращена ${stake})`);
-      title="Соперник покинул матч";
-      subtitle="Твоя ставка возвращена";
-      delta = +stake;
-      status="OPPONENT_LEFT";
-      state.stats.matches += 1;
-      // streak not affected
-      pushMatch(status, delta, "Соперник вышел");
-
-    } else if(type==="YOU_LEFT" || type==="YOU_LEFT_TIMEOUT"){
-      // you left: lose stake + penalty
-      // stake already gone; apply penalty from available coins
-      const before = state.wallet.coins;
-      state.wallet.coins = Math.max(0, state.wallet.coins - penalty);
-      addTx("penalty", -penalty, `Штраф за выход (${penalty})`);
-      title="Ты покинул матч";
-      subtitle = type==="YOU_LEFT_TIMEOUT" ? "Отключение > 10 сек" : "Сдача";
-      delta = -(stake + penalty);
-      status="YOU_LEFT";
-      state.stats.losses += 1;
-      state.stats.matches += 1;
-      state.stats.streak = 0;
-      pushMatch(status, delta, "Выход/сдача");
-
-      // return stake to the other player (we don't track them). In real backend.
-      // house takes fee*2 (penalty) in real backend.
-    }
-
-    // clear current match
-    state.session.current = null;
-
-    // UI
-    resTitle.textContent = title;
-    resSub.textContent = subtitle;
-    resDelta.textContent = `${delta>0?"+":""}${delta} coins`;
-    resDelta.style.color = delta>=0 ? "var(--accent)" : "var(--danger)";
-
-    save();
-    go("result");
-    hNote(delta>=0 ? "success" : "error");
-  }
-
-  btnWin.onclick = ()=> finishMatch("WIN");
-  btnLose.onclick = ()=> finishMatch("LOSE");
-  btnOppLeaves.onclick = ()=> {
-    // return your stake and end
-    finishMatch("OPP_LEFT");
-  };
-
-  // ===== Modal confirm surrender
+  // ===== Modal
   const modalWrap = document.getElementById("modalWrap");
   const modalTitle = document.getElementById("modalTitle");
   const modalText = document.getElementById("modalText");
@@ -1076,102 +668,135 @@
     };
     modalCancel.onclick = ()=> modalWrap.classList.remove("show");
   }
-  btnSurrender.onclick = ()=>{
-    const cur = state.session.current;
-    if(!cur) return;
-    const pot = cur.stake*2;
-    const fee = Math.floor(pot * FEE_RATE);
-    const penalty = fee*2;
-    openModal(
-      "Сдаться?",
-      `Ты потеряешь ставку и получишь штраф ${penalty} coins.`,
-      ()=> finishMatch("YOU_LEFT")
-    );
+
+  // ===== Routing
+  const pages = ["onb-rules","onb-nick","onb-ref","games","reaction","pong","wallet","matches","profile"];
+  function go(page){
+    pages.forEach(p=>{
+      const el = document.getElementById("page-"+p);
+      if(el) el.classList.toggle("hidden", p!==page);
+    });
+    ["games","wallet","matches","profile"].forEach(t=>{
+      const tab = document.getElementById("tab-"+t);
+      if(tab) tab.classList.toggle("active", t===page);
+    });
+    location.hash = "#"+page;
+
+    if(page==="pong") pongStart();
+    if(page!=="pong") pongStop();
+  }
+
+  function needsOnboarding(){
+    if(!state.onboarding.rulesAccepted) return "onb-rules";
+    if(!state.onboarding.nicknameSet) return "onb-nick";
+    if(!state.onboarding.referralAsked) return "onb-ref";
+    return null;
+  }
+
+  // ===== Top chip
+  const userChip = document.getElementById("userChip");
+  const displayNick = ()=> (state.profile.nickname || "Player");
+  function displayMe(){ return `${displayNick()} #${state.profile.publicId}`; }
+
+  // ===== Online counter (simulated)
+  const onlineNow = document.getElementById("onlineNow");
+  let onlineBase = 80 + Math.floor(Math.random()*140);
+  function tickOnline(){
+    const wobble = Math.floor((Math.random()*10)-5);
+    onlineBase = Math.max(20, onlineBase + wobble);
+    onlineNow.textContent = onlineBase;
+  }
+  setInterval(tickOnline, 8000);
+
+  // ===== Onboarding
+  const rulesCheck = document.getElementById("rulesCheck");
+  const rulesContinue = document.getElementById("rulesContinue");
+  rulesCheck.onchange = ()=>{ rulesContinue.disabled = !rulesCheck.checked; };
+  rulesContinue.onclick = ()=>{
+    state.onboarding.rulesAccepted = true;
+    state.profile.rulesAcceptedAt = now();
+    save();
+    go("onb-nick");
   };
 
-  resAgain.onclick = ()=> go("games");
-  resToMatches.onclick = ()=> go("matches");
+  const nickInput = document.getElementById("nickInput");
+  const nickSave = document.getElementById("nickSave");
+  const nickSkip = document.getElementById("nickSkip");
+  const nickError = document.getElementById("nickError");
 
-  // ===== Referral (MVP UI)
-  // Note: Without backend, we can't credit inviter across users. We still store referredBy + pending.
+  function setNick(nick){
+    nickError.style.display="none";
+    const n = (nick||"").trim();
+    if(!n){
+      state.profile.nickname = "Player_"+randCode(3);
+    } else {
+      if(!/^[A-Za-z0-9_]{3,16}$/.test(n)){
+        nickError.textContent="Неверный формат. Только латиница/цифры/_ (3–16)";
+        nickError.style.display="block";
+        return false;
+      }
+      state.profile.nickname = n;
+    }
+    state.onboarding.nicknameSet = true;
+    state.profile.nicknameChangedAt = now();
+    return true;
+  }
+  nickSave.onclick = ()=>{ if(setNick(nickInput.value)){ save(); go("onb-ref"); } };
+  nickSkip.onclick = ()=>{ if(setNick("")){ save(); go("onb-ref"); } };
+
+  const refInput = document.getElementById("refInput");
+  const refApply = document.getElementById("refApply");
+  const refSkip = document.getElementById("refSkip");
+  const refError = document.getElementById("refError");
+
   function normalizeRef(code){ return (code||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,""); }
 
-  function maybeActivateReferralAfterFirstDuel(){
-    // If user entered referral code at registration, mark activated after first duel (any result)
-    if(state.profile.referredBy && state.profile.refStatus==="pending"){
-      state.profile.refStatus="activated";
-      addTx("ref", 0, "Реферал активирован (начисление пригласившему — на сервере)");
-      toast("Реферал активирован");
+  refApply.onclick = ()=>{
+    refError.style.display="none";
+    const code = normalizeRef(refInput.value);
+    if(code && code === normalizeRef(state.profile.myRefCode)){
+      refError.textContent="Нельзя использовать свой код";
+      refError.style.display="block";
+      return;
     }
-  }
-
-  // ===== Profile screen
-  const profNick = document.getElementById("profNick");
-  const profId = document.getElementById("profId");
-  const rulesAcceptedLine = document.getElementById("rulesAcceptedLine");
-  const myRefCode = document.getElementById("myRefCode");
-  const copyRefBtn = document.getElementById("copyRefBtn");
-  const shareRefBtn = document.getElementById("shareRefBtn");
-  const editNickBtn = document.getElementById("editNickBtn");
-
-  function formatDate(ts){
-    try{
-      const d=new Date(ts);
-      return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"short",year:"numeric"});
-    }catch(e){ return "—"; }
-  }
-
-  editNickBtn.onclick = ()=>{
-    openModal(
-      "Изменить ник",
-      "Введи новый ник в следующем окне.",
-      ()=>{
-        const next = prompt("Новый ник (3–16, латиница/цифры/_):", state.profile.nickname || "");
-        if(next===null) return;
-        const nick = next.trim();
-        if(!/^[A-Za-z0-9_]{3,16}$/.test(nick)){
-          toast("Неверный формат ника");
-          return;
-        }
-        state.profile.nickname = nick;
-        state.profile.nicknameChangedAt = now();
-        save();
-        toast("Ник обновлён");
-      }
-    );
+    if(code){
+      state.profile.referredBy = code;
+      state.profile.refStatus = "pending";
+      toast("Код применён");
+    }
+    state.onboarding.referralAsked = true;
+    save();
+    go("games");
+  };
+  refSkip.onclick = ()=>{
+    state.onboarding.referralAsked = true;
+    save();
+    go("games");
   };
 
-  copyRefBtn.onclick = async ()=>{
-    try{
-      await navigator.clipboard.writeText(state.profile.myRefCode);
-      toast("Код скопирован");
-    }catch(e){
-      toast("Не удалось скопировать");
-    }
-  };
+  // ===== Buttons to open games
+  document.getElementById("openReaction").onclick = ()=>{ hImpact("light"); go("reaction"); reactionResetUI(); };
+  document.getElementById("openPong").onclick = ()=>{ hImpact("light"); go("pong"); };
 
-  shareRefBtn.onclick = ()=>{
-    const text = `Мой реф-код в F1 Duel: ${state.profile.myRefCode}`;
-    try{
-      if(tg?.shareText) tg.shareText(text);
-      else {
-        navigator.clipboard?.writeText(text);
-        toast("Текст скопирован");
-      }
-    }catch(e){
-      toast("Поделиться не получилось");
-    }
-  };
+  document.getElementById("backFromReaction").onclick = ()=>go("games");
+  document.getElementById("backFromPong").onclick = ()=>go("games");
 
-  // ===== Wallet render
+  // ===== Wallet + tx
   const coinsVal = document.getElementById("coinsVal");
   const starsVal = document.getElementById("starsVal");
   const txList = document.getElementById("txList");
   const resetBtn = document.getElementById("resetBtn");
 
+  function addTx(label, amount=0){
+    state.tx.unshift({ts: now(), label, amount});
+    state.tx = state.tx.slice(0, 30);
+  }
+
   resetBtn.onclick = ()=>{
-    localStorage.removeItem(KEY);
-    location.reload();
+    openModal("Сбросить прогресс?", "Это удалит локальные данные на этом устройстве.", ()=>{
+      localStorage.removeItem(KEY);
+      location.reload();
+    });
   };
 
   function renderWallet(){
@@ -1201,199 +826,465 @@
     });
   }
 
-  // ===== Matches render
-  const matchesEmpty = document.getElementById("matchesEmpty");
-  const matchesList = document.getElementById("matchesList");
-  function renderMatches(){
-    if(state.matches.length===0){
-      matchesEmpty.style.display="block";
-      matchesList.style.display="none";
-      return;
-    }
-    matchesEmpty.style.display="none";
-    matchesList.style.display="flex";
-    matchesList.innerHTML="";
-
-    state.matches.slice(0,20).forEach(m=>{
-      const card=document.createElement("div");
-      card.className="pill";
-      const color = m.delta>=0 ? "var(--accent)" : "var(--danger)";
-      const sign = m.delta>0 ? "+" : "";
-      const tagClass = m.status==="WIN" ? "win" : (m.status==="LOSE" || m.status==="YOU_LEFT" ? "lose" : "");
-      const statusLabel =
-        m.status==="WIN" ? "Победа" :
-        m.status==="LOSE" ? "Поражение" :
-        m.status==="OPPONENT_LEFT" ? "Соперник вышел" :
-        m.status==="YOU_LEFT" ? "Выход/сдача" : "Матч";
-
-      card.innerHTML = `
-        <div style="min-width:0">
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
-            <strong>${m.game}</strong>
-            <span class="tag ${tagClass}">${statusLabel}</span>
-          </div>
-          <div class="small">vs ${m.opp} • ставка ${m.stake} • ${new Date(m.ts).toLocaleString("ru-RU")}</div>
-        </div>
-        <div style="font-weight:950; color:${color}">${sign}${m.delta} coins</div>
-      `;
-      matchesList.appendChild(card);
-    });
-  }
-
-  // ===== Settings
+  // ===== Profile
+  const profNick = document.getElementById("profNick");
+  const profId = document.getElementById("profId");
+  const rulesAcceptedLine = document.getElementById("rulesAcceptedLine");
+  const myRefCode = document.getElementById("myRefCode");
+  const copyRefBtn = document.getElementById("copyRefBtn");
+  const shareRefBtn = document.getElementById("shareRefBtn");
+  const editNickBtn = document.getElementById("editNickBtn");
   const setSound = document.getElementById("setSound");
   const setHaptic = document.getElementById("setHaptic");
+  const profReactBest = document.getElementById("profReactBest");
+  const profPongBest = document.getElementById("profPongBest");
+
+  function formatDate(ts){
+    try{
+      const d=new Date(ts);
+      return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"short",year:"numeric"});
+    }catch(e){ return "—"; }
+  }
+
+  editNickBtn.onclick = ()=>{
+    openModal("Изменить ник", "Ник: 3–16 символов (латиница/цифры/_)", ()=>{
+      const next = prompt("Новый ник:", state.profile.nickname || "");
+      if(next===null) return;
+      const n = next.trim();
+      if(!/^[A-Za-z0-9_]{3,16}$/.test(n)){
+        toast("Неверный формат ника");
+        return;
+      }
+      state.profile.nickname = n;
+      state.profile.nicknameChangedAt = now();
+      addTx("Ник обновлён");
+      save();
+      toast("Ник обновлён");
+    });
+  };
+
+  copyRefBtn.onclick = async ()=>{
+    try{
+      await navigator.clipboard.writeText(state.profile.myRefCode);
+      toast("Код скопирован");
+    }catch(e){
+      toast("Не удалось скопировать");
+    }
+  };
+
+  shareRefBtn.onclick = ()=>{
+    const text = `Мой реф-код в F1 Duel: ${state.profile.myRefCode}`;
+    try{
+      if(tg?.shareText) tg.shareText(text);
+      else {
+        navigator.clipboard?.writeText(text);
+        toast("Текст скопирован");
+      }
+    }catch(e){
+      toast("Поделиться не получилось");
+    }
+  };
+
   setSound.onchange = ()=>{ state.settings.sound = !!setSound.checked; save(); };
   setHaptic.onchange = ()=>{ state.settings.haptic = !!setHaptic.checked; save(); };
 
-  // ===== Online counter (simulated)
-  const onlineNow = document.getElementById("onlineNow");
-  let onlineBase = 80 + Math.floor(Math.random()*140);
-  function tickOnline(){
-    const wobble = Math.floor((Math.random()*10)-5);
-    onlineBase = Math.max(20, onlineBase + wobble);
-    onlineNow.textContent = onlineBase;
-  }
-  setInterval(tickOnline, 8000);
-
-  // ===== Onboarding actions
-  const rulesCheck = document.getElementById("rulesCheck");
-  const rulesContinue = document.getElementById("rulesContinue");
-  rulesCheck.onchange = ()=>{ rulesContinue.disabled = !rulesCheck.checked; };
-  rulesContinue.onclick = ()=>{
-    state.onboarding.rulesAccepted = true;
-    state.profile.rulesAcceptedAt = now();
-    save();
-    go("onb-nick");
-  };
-
-  const nickInput = document.getElementById("nickInput");
-  const nickSave = document.getElementById("nickSave");
-  const nickSkip = document.getElementById("nickSkip");
-  const nickError = document.getElementById("nickError");
-
-  function setNick(nick){
-    nickError.style.display="none";
-    const n = (nick||"").trim();
-    if(!n){
-      // allow skip -> random
-      const auto = "Player_"+randCode(3);
-      state.profile.nickname = auto;
-    } else {
-      if(!/^[A-Za-z0-9_]{3,16}$/.test(n)){
-        nickError.textContent="Неверный формат. Только латиница/цифры/_ (3–16)";
-        nickError.style.display="block";
-        return false;
-      }
-      state.profile.nickname = n;
-    }
-    state.onboarding.nicknameSet = true;
-    state.profile.nicknameChangedAt = now();
-    return true;
-  }
-
-  nickSave.onclick = ()=>{
-    if(setNick(nickInput.value)){
-      save();
-      go("onb-ref");
-    }
-  };
-  nickSkip.onclick = ()=>{
-    if(setNick("")){
-      save();
-      go("onb-ref");
-    }
-  };
-
-  const refInput = document.getElementById("refInput");
-  const refApply = document.getElementById("refApply");
-  const refSkip = document.getElementById("refSkip");
-  const refError = document.getElementById("refError");
-
-  function applyReferral(){
-    refError.style.display="none";
-    const code = normalizeRef(refInput.value);
-    if(!code){
-      state.onboarding.referralAsked = true;
-      save();
-      go("games");
-      return;
-    }
-    if(code === normalizeRef(state.profile.myRefCode)){
-      refError.textContent="Нельзя использовать свой код";
-      refError.style.display="block";
-      return;
-    }
-    // In MVP we accept any non-empty code (backend will validate).
-    state.profile.referredBy = code;
-    state.profile.refStatus = "pending";
-    addTx("ref_pending", 0, `Реф-код применён: ${code}`);
-    state.onboarding.referralAsked = true;
-    save();
-    toast("Код применён");
-    go("games");
-  }
-
-  refApply.onclick = applyReferral;
-  refSkip.onclick = ()=>{
-    state.onboarding.referralAsked = true;
-    save();
-    go("games");
-  };
-
-  // ===== Main button
-  findBtn.onclick = startSearch;
-
-  // ===== Render all
   function renderProfile(){
     profNick.textContent = displayNick();
     profId.textContent = `#${state.profile.publicId}`;
     rulesAcceptedLine.textContent = state.profile.rulesAcceptedAt ? `Приняты: ${formatDate(state.profile.rulesAcceptedAt)}` : "—";
     myRefCode.textContent = state.profile.myRefCode;
 
-    document.getElementById("stWins").textContent = state.stats.wins;
-    document.getElementById("stLoss").textContent = state.stats.losses;
-    document.getElementById("stMatches").textContent = state.stats.matches;
-    document.getElementById("stStreak").textContent = state.stats.streak;
-
     setSound.checked = !!state.settings.sound;
     setHaptic.checked = !!state.settings.haptic;
+
+    profReactBest.textContent = state.reaction.bestMs ? `${state.reaction.bestMs} ms` : "—";
+    profPongBest.textContent = state.pong.bestWins ? `Wins: ${state.pong.bestWins}` : "—";
   }
 
-  function renderTopUserChip(){
-    userChip.textContent = displayMe();
+  // ===== Matches placeholder
+  function renderMatches(){
+    // оставили заглушку
   }
 
+  // ===== Reaction game
+  const reactBest = document.getElementById("reactBest");
+  const reactLast = document.getElementById("reactLast");
+  const reactBest2 = document.getElementById("reactBest2");
+  const reactLast2 = document.getElementById("reactLast2");
+
+  const reactSurface = document.getElementById("reactSurface");
+  const reactText = document.getElementById("reactText");
+  const reactHint = document.getElementById("reactHint");
+  const reactStart = document.getElementById("reactStart");
+  const reactReset = document.getElementById("reactReset");
+
+  let reactState = "idle"; // idle | waiting | go | done
+  let reactGoAt = 0;
+  let reactTimer = null;
+
+  function reactionResetUI(){
+    clearTimeout(reactTimer);
+    reactState = "idle";
+    reactGoAt = 0;
+    reactText.textContent = "Нажми “Старт”";
+    reactHint.textContent = "После старта жди сигнал “GO” и тапни по полю.";
+    renderReactionStats();
+  }
+
+  function renderReactionStats(){
+    reactBest.textContent = state.reaction.bestMs ? `${state.reaction.bestMs} ms` : "—";
+    reactLast.textContent = state.reaction.lastMs ? `${state.reaction.lastMs} ms` : "—";
+    reactBest2.textContent = reactBest.textContent;
+    reactLast2.textContent = reactLast.textContent;
+
+    document.getElementById("reactBest").textContent = reactBest.textContent;
+    document.getElementById("reactLast").textContent = reactLast.textContent;
+  }
+
+  reactStart.onclick = ()=>{
+    if(reactState==="waiting" || reactState==="go") return;
+    hImpact("light");
+    reactState = "waiting";
+    reactText.textContent = "Жди…";
+    reactHint.textContent = "Не нажимай раньше времени 😄";
+    const delay = 1200 + Math.floor(Math.random()*2200); // 1.2–3.4 sec
+    clearTimeout(reactTimer);
+    reactTimer = setTimeout(()=>{
+      reactState = "go";
+      reactGoAt = now();
+      reactText.textContent = "GO!";
+      reactHint.textContent = "Тапни по полю!";
+      hNote("success");
+    }, delay);
+  };
+
+  reactReset.onclick = ()=>{
+    openModal("Сбросить рекорды?", "Это сбросит best/last в игре Реакция.", ()=>{
+      state.reaction.bestMs = 0;
+      state.reaction.lastMs = 0;
+      addTx("Сброс: Реакция");
+      save();
+      reactionResetUI();
+      toast("Сброшено");
+    });
+  };
+
+  reactSurface.addEventListener("pointerdown", ()=>{
+    if(reactState==="idle"){ toast("Нажми “Старт”"); return; }
+
+    if(reactState==="waiting"){
+      // too early
+      hNote("error");
+      reactState = "done";
+      clearTimeout(reactTimer);
+      reactText.textContent = "Слишком рано!";
+      reactHint.textContent = "Попробуй ещё раз.";
+      return;
+    }
+
+    if(reactState==="go"){
+      const ms = Math.max(1, now() - reactGoAt);
+      state.reaction.lastMs = ms;
+      if(!state.reaction.bestMs || ms < state.reaction.bestMs) state.reaction.bestMs = ms;
+      addTx(`Реакция: ${ms} ms`);
+      save();
+      hImpact("medium");
+      reactState = "done";
+      reactText.textContent = `${ms} ms`;
+      reactHint.textContent = ms < 220 ? "🔥 Очень быстро!" : (ms < 300 ? "Отлично!" : "Норм, можно быстрее 😄");
+      renderReactionStats();
+    }
+  });
+
+  // ===== Pong game
+  const pongCanvas = document.getElementById("pongCanvas");
+  const ctx = pongCanvas.getContext("2d");
+  const pongScore = document.getElementById("pongScore");
+  const pongScore2 = document.getElementById("pongScore2");
+  const pongDiff = document.getElementById("pongDiff");
+  const pongToWin = document.getElementById("pongToWin");
+
+  const pongRestart = document.getElementById("pongRestart");
+  const pongPause = document.getElementById("pongPause");
+
+  let pongRAF = null;
+  let pongRunning = false;
+  let pongPaused = false;
+
+  const TO_WIN = 5;
+  pongToWin.textContent = TO_WIN;
+
+  const game = {
+    w: pongCanvas.width, h: pongCanvas.height,
+    scoreL: 0, scoreR: 0,
+    diff: 1.0,
+    rally: 0,
+    ball: { x:0,y:0,vx:0,vy:0,r:10 },
+    paddleL: { x:40, y:0, w:16, h:120 },
+    paddleR: { x:0, y:0, w:16, h:120 },
+    touchY: null
+  };
+
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  function pongResetBall(dir=1){
+    game.ball.x = game.w/2;
+    game.ball.y = game.h/2;
+    const speed = 6 + (game.diff-1)*3;
+    const angle = (Math.random()*0.8 - 0.4); // -0.4..0.4
+    game.ball.vx = dir * speed;
+    game.ball.vy = speed * angle;
+    game.rally = 0;
+  }
+
+  function pongReset(){
+    game.scoreL = 0; game.scoreR = 0;
+    game.diff = 1.0;
+    game.paddleL.y = game.h/2 - game.paddleL.h/2;
+    game.paddleR.x = game.w - 40 - game.paddleR.w;
+    game.paddleR.y = game.h/2 - game.paddleR.h/2;
+    pongResetBall(Math.random() < 0.5 ? -1 : 1);
+    updatePongUI();
+  }
+
+  function updatePongUI(){
+    pongScore.textContent = `${game.scoreL} : ${game.scoreR}`;
+    pongScore2.textContent = pongScore.textContent;
+    pongDiff.textContent = `${game.diff.toFixed(2)}×`;
+    document.getElementById("pongScore").textContent = pongScore.textContent;
+  }
+
+  function pongDraw(){
+    ctx.clearRect(0,0,game.w,game.h);
+
+    // background field
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.fillRect(0,0,game.w,game.h);
+
+    // soft borders
+    ctx.strokeStyle = "rgba(255,255,255,0.10)";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(10,10,game.w-20,game.h-20);
+
+    // paddles
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    roundRect(ctx, game.paddleL.x, game.paddleL.y, game.paddleL.w, game.paddleL.h, 10, true, false);
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    roundRect(ctx, game.paddleR.x, game.paddleR.y, game.paddleR.w, game.paddleR.h, 10, true, false);
+
+    // ball
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(140,255,193,0.95)";
+    ctx.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI*2);
+    ctx.fill();
+
+    // score
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.font = "900 44px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText(game.scoreL, game.w*0.35, 70);
+    ctx.fillText(game.scoreR, game.w*0.65, 70);
+  }
+
+  function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y,   x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x,   y+h, r);
+    ctx.arcTo(x,   y+h, x,   y,   r);
+    ctx.arcTo(x,   y,   x+w, y,   r);
+    ctx.closePath();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
+  }
+
+  function pongStep(){
+    if(!pongRunning){ return; }
+    if(pongPaused){
+      pongDraw();
+      pongRAF = requestAnimationFrame(pongStep);
+      return;
+    }
+
+    // player paddle follow
+    const targetY = game.touchY ?? (game.ball.y);
+    game.paddleL.y = clamp(targetY - game.paddleL.h/2, 20, game.h - game.paddleL.h - 20);
+
+    // bot AI: smoother + slightly imperfect
+    const botCenter = game.paddleR.y + game.paddleR.h/2;
+
+    // bot target: predict a bit but with noise
+    const noise = (Math.random()*2 - 1) * (10 + game.diff*6); // grows with diff
+    const desired = game.ball.y + noise;
+
+    // smoothness (lower = smoother)
+    const aiSpeed = 0.08 + (game.diff-1)*0.03; // 0.08.. ~
+    const next = botCenter + (desired - botCenter) * aiSpeed;
+    game.paddleR.y = clamp(next - game.paddleR.h/2, 20, game.h - game.paddleR.h - 20);
+
+    // ball move
+    game.ball.x += game.ball.vx;
+    game.ball.y += game.ball.vy;
+
+    // wall bounce
+    if(game.ball.y - game.ball.r < 20){
+      game.ball.y = 20 + game.ball.r;
+      game.ball.vy *= -1;
+      hSelect();
+    }
+    if(game.ball.y + game.ball.r > game.h - 20){
+      game.ball.y = game.h - 20 - game.ball.r;
+      game.ball.vy *= -1;
+      hSelect();
+    }
+
+    // paddle collision helper
+    function hitPaddle(p){
+      const bx = game.ball.x, by = game.ball.y, r = game.ball.r;
+      if(bx + r < p.x || bx - r > p.x + p.w) return false;
+      if(by + r < p.y || by - r > p.y + p.h) return false;
+      return true;
+    }
+
+    // left paddle
+    if(hitPaddle(game.paddleL) && game.ball.vx < 0){
+      game.ball.x = game.paddleL.x + game.paddleL.w + game.ball.r;
+      // reflect + add angle based on hit position
+      const rel = (game.ball.y - (game.paddleL.y + game.paddleL.h/2)) / (game.paddleL.h/2);
+      const speed = Math.min(16, Math.abs(game.ball.vx) + 0.4);
+      game.ball.vx = speed;
+      game.ball.vy = speed * rel * 0.9;
+      game.rally++;
+
+      // difficulty grows with rally (smooth, not too fast)
+      game.diff = 1.0 + Math.min(1.8, game.rally * 0.05);
+      hImpact("light");
+    }
+
+    // right paddle
+    if(hitPaddle(game.paddleR) && game.ball.vx > 0){
+      game.ball.x = game.paddleR.x - game.ball.r;
+      const rel = (game.ball.y - (game.paddleR.y + game.paddleR.h/2)) / (game.paddleR.h/2);
+      const speed = Math.min(16, Math.abs(game.ball.vx) + 0.4);
+      game.ball.vx = -speed;
+      game.ball.vy = speed * rel * 0.9;
+      game.rally++;
+      game.diff = 1.0 + Math.min(1.8, game.rally * 0.05);
+      hImpact("light");
+    }
+
+    // scoring
+    if(game.ball.x < -50){
+      game.scoreR++;
+      hNote("error");
+      updatePongUI();
+      if(checkPongEnd()) return;
+      pongResetBall(1);
+    }
+    if(game.ball.x > game.w + 50){
+      game.scoreL++;
+      hNote("success");
+      updatePongUI();
+      if(checkPongEnd()) return;
+      pongResetBall(-1);
+    }
+
+    pongDraw();
+    pongRAF = requestAnimationFrame(pongStep);
+  }
+
+  function checkPongEnd(){
+    if(game.scoreL >= TO_WIN || game.scoreR >= TO_WIN){
+      pongPaused = true;
+      pongDraw();
+
+      const win = game.scoreL > game.scoreR;
+      if(win){
+        toast("Победа! 🔥");
+        state.pong.bestWins = Math.max(state.pong.bestWins, 1);
+        addTx("Pong: победа");
+      } else {
+        toast("Поражение 😄");
+        addTx("Pong: поражение");
+      }
+      state.pong.bestDiff = Math.max(state.pong.bestDiff, game.diff);
+      save();
+      return true;
+    }
+    return false;
+  }
+
+  function pongStart(){
+    if(pongRunning) return;
+    pongRunning = true;
+    pongPaused = false;
+    pongReset();
+    pongRAF = requestAnimationFrame(pongStep);
+  }
+
+  function pongStop(){
+    pongRunning = false;
+    if(pongRAF) cancelAnimationFrame(pongRAF);
+    pongRAF = null;
+  }
+
+  pongRestart.onclick = ()=>{
+    hImpact("light");
+    pongPaused = false;
+    pongReset();
+    toast("Новый матч");
+  };
+
+  pongPause.onclick = ()=>{
+    pongPaused = !pongPaused;
+    pongPause.textContent = pongPaused ? "Продолжить" : "Пауза";
+    hSelect();
+  };
+
+  // Touch/mouse control
+  function canvasToY(ev){
+    const rect = pongCanvas.getBoundingClientRect();
+    const clientY = ev.touches ? ev.touches[0].clientY : ev.clientY;
+    const y = (clientY - rect.top) * (pongCanvas.height / rect.height);
+    return y;
+  }
+  pongCanvas.addEventListener("pointerdown", (e)=>{ game.touchY = canvasToY(e); });
+  pongCanvas.addEventListener("pointermove", (e)=>{ if(e.buttons || e.pointerType==="touch") game.touchY = canvasToY(e); });
+  pongCanvas.addEventListener("pointerup", ()=>{ game.touchY = null; });
+
+  pongCanvas.addEventListener("touchstart", (e)=>{ game.touchY = canvasToY(e); }, {passive:true});
+  pongCanvas.addEventListener("touchmove", (e)=>{ game.touchY = canvasToY(e); }, {passive:true});
+  pongCanvas.addEventListener("touchend", ()=>{ game.touchY = null; }, {passive:true});
+
+  // ===== Render
   function renderAll(){
-    renderTopUserChip();
-    renderBets();
+    userChip.textContent = displayMe();
+    tickOnline();
     renderWallet();
     renderMatches();
     renderProfile();
-    tickOnline();
+    renderReactionStats();
+
+    // games summary
+    document.getElementById("reactBest").textContent = state.reaction.bestMs ? `${state.reaction.bestMs} ms` : "—";
+    document.getElementById("reactLast").textContent = state.reaction.lastMs ? `${state.reaction.lastMs} ms` : "—";
+    pongScore.textContent = pongScore2.textContent;
   }
 
-  // ===== Init navigation + start page
   function initNav(){
     const required = needsOnboarding();
-    if(required){
-      go(required);
-      return;
-    }
+    if(required){ go(required); return; }
     const hash = (location.hash||"#games").slice(1);
     if(pages.includes(hash)) go(hash);
     else go("games");
   }
 
   // ===== Start
+  reactionResetUI();
   renderAll();
   initNav();
-
-  // If telegram user exists, keep hidden info only for backend later (we don't show username)
-  if(tgUser){
-    // could store tg_id locally for debug (not shown)
-    // state.profile.tgId = tgUser.id; // optional
-  }
 </script>
 </body>
 </html>
