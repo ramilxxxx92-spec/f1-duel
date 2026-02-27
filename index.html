@@ -631,13 +631,11 @@
   </div>
 
 <script>
-  // ===== Telegram + Haptics
   const tg = window.Telegram?.WebApp;
   try{ tg?.ready(); tg?.expand(); }catch(e){}
   const envChip = document.getElementById("envChip");
   envChip.textContent = tg ? "Telegram WebApp" : "Browser";
 
-  // ===== State
   const KEY="f1duel_state_v2_games";
   const now = ()=>Date.now();
 
@@ -690,16 +688,13 @@
 
   function save(){ localStorage.setItem(KEY, JSON.stringify(state)); renderAll(); }
 
-  // ===== Haptics
   function hImpact(type="light"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.impactOccurred(type);}catch(e){} }
   function hNote(type="success"){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.notificationOccurred(type);}catch(e){} }
   function hSelect(){ if(!state.settings.haptic) return; try{ tg?.HapticFeedback?.selectionChanged();}catch(e){} }
 
-  // ===== Toast
   const toastEl = document.getElementById("toast"); let toastTimer=null;
   function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"), 1500); }
 
-  // ===== Modal
   const modalWrap = document.getElementById("modalWrap");
   const modalTitle = document.getElementById("modalTitle");
   const modalText = document.getElementById("modalText");
@@ -717,7 +712,6 @@
     modalCancel.onclick = ()=> modalWrap.classList.remove("show");
   }
 
-  // ===== Routing
   const pages = ["onb-rules","onb-nick","onb-ref","games","reaction","pong","wallet","matches","profile"];
   function go(page){
     pages.forEach(p=>{
@@ -741,12 +735,10 @@
     return null;
   }
 
-  // ===== Top chip
   const userChip = document.getElementById("userChip");
   const displayNick = ()=> (state.profile.nickname || "Player");
   function displayMe(){ return `${displayNick()} #${state.profile.publicId}`; }
 
-  // ===== Online counter (simulated)
   const onlineNow = document.getElementById("onlineNow");
   let onlineBase = 80 + Math.floor(Math.random()*140);
   function tickOnline(){
@@ -756,7 +748,6 @@
   }
   setInterval(tickOnline, 8000);
 
-  // ===== Onboarding
   const rulesCheck = document.getElementById("rulesCheck");
   const rulesContinue = document.getElementById("rulesContinue");
   rulesCheck.onchange = ()=>{ rulesContinue.disabled = !rulesCheck.checked; };
@@ -822,14 +813,12 @@
     go("games");
   };
 
-  // ===== Buttons to open games
   document.getElementById("openReaction").onclick = ()=>{ hImpact("light"); go("reaction"); reactionResetUI(); };
   document.getElementById("openPong").onclick = ()=>{ hImpact("light"); go("pong"); };
 
   document.getElementById("backFromReaction").onclick = ()=>go("games");
   document.getElementById("backFromPong").onclick = ()=>go("games");
 
-  // ===== External PvP games
   const FROG_HUNT_URL = "https://reliable-purpose-production-6509.up.railway.app";
   const OBSTACLE_RACE_URL = "https://trap-runner-demo-production.up.railway.app";
 
@@ -881,7 +870,6 @@
     }catch(e){}
   }
 
-  // ===== Wallet + tx
   const coinsVal = document.getElementById("coinsVal");
   const starsVal = document.getElementById("starsVal");
   const txList = document.getElementById("txList");
@@ -926,7 +914,6 @@
     });
   }
 
-  // ===== Profile
   const profNick = document.getElementById("profNick");
   const profId = document.getElementById("profId");
   const rulesAcceptedLine = document.getElementById("rulesAcceptedLine");
@@ -1001,12 +988,10 @@
     profPongBest.textContent = state.pong.bestWins ? `Wins: ${state.pong.bestWins}` : "—";
   }
 
-  // ===== Matches placeholder
   function renderMatches(){
     // оставили заглушку
   }
 
-  // ===== Reaction game
   const reactBest = document.getElementById("reactBest");
   const reactLast = document.getElementById("reactLast");
   const reactBest2 = document.getElementById("reactBest2");
@@ -1096,7 +1081,6 @@
     }
   });
 
-  // ===== Pong game
   const pongCanvas = document.getElementById("pongCanvas");
   const ctx = pongCanvas.getContext("2d");
   const pongScore = document.getElementById("pongScore");
@@ -1358,7 +1342,6 @@
   pongCanvas.addEventListener("touchmove", (e)=>{ game.touchY = canvasToY(e); }, {passive:true});
   pongCanvas.addEventListener("touchend", ()=>{ game.touchY = null; }, {passive:true});
 
-  // ===== Render
   function renderAll(){
     userChip.textContent = displayMe();
     tickOnline();
@@ -1382,7 +1365,6 @@
     else go("games");
   }
 
-  // ===== Start
   reactionResetUI();
   renderAll();
   initNav();
