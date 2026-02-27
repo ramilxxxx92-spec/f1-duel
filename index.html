@@ -354,7 +354,7 @@
         </div>
 
         <!-- Pong game -->
-        <div class="glass card">
+        <div class="glass card" style="margin-bottom:12px;">
           <h2>🏓 Пинг-понг</h2>
           <div class="muted">Классический Pong. Управляй ракеткой пальцем. Бот умнеет и ускоряется.</div>
           <div class="divider"></div>
@@ -370,6 +370,54 @@
           </div>
           <div style="margin-top:14px">
             <button class="btn primary" id="openPong">Играть</button>
+          </div>
+        </div>
+
+        <!-- Frog Hunt PvP -->
+        <div class="glass card" style="margin-bottom:12px;">
+          <h2>🐸 Охота на жабу</h2>
+          <div class="muted">PvP: один прячет жабу на кувшинках, другой стреляет. BO2 + тайбрейк.</div>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Побед</span>
+              <strong id="frogWins">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Поражений</span>
+              <strong id="frogLosses">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Игр</span>
+              <strong id="frogGames">—</strong>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn primary" id="openFrogHunt">Играть</button>
+          </div>
+        </div>
+
+        <!-- Obstacle Race PvP -->
+        <div class="glass card">
+          <h2>🏁 Полоса препятствий</h2>
+          <div class="muted">PvP: расставляй ловушки и беги по полосе соперника. Кто быстрее!</div>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="pill" style="flex:1">
+              <span class="text2">Побед</span>
+              <strong id="raceWins">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Поражений</span>
+              <strong id="raceLosses">—</strong>
+            </div>
+            <div class="pill" style="flex:1">
+              <span class="text2">Игр</span>
+              <strong id="raceGames">—</strong>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn primary" id="openObstacleRace">Играть</button>
           </div>
         </div>
       </section>
@@ -780,6 +828,58 @@
 
   document.getElementById("backFromReaction").onclick = ()=>go("games");
   document.getElementById("backFromPong").onclick = ()=>go("games");
+
+  // ===== External PvP games
+  const FROG_HUNT_URL = "https://reliable-purpose-production-6509.up.railway.app";
+  const OBSTACLE_RACE_URL = "https://trap-runner-demo-production.up.railway.app";
+
+  function getTgUserId(){
+    try{
+      const user = tg?.initDataUnsafe?.user;
+      return user ? String(user.id) : null;
+    }catch(e){ return null; }
+  }
+
+  function openExternalGame(baseUrl){
+    const userId = getTgUserId();
+    const url = userId ? `${baseUrl}?userId=${userId}` : baseUrl;
+    if(tg?.openLink){
+      tg.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+
+  document.getElementById("openFrogHunt").onclick = ()=>{
+    hImpact("light");
+    openExternalGame(FROG_HUNT_URL);
+  };
+  document.getElementById("openObstacleRace").onclick = ()=>{
+    hImpact("light");
+    openExternalGame(OBSTACLE_RACE_URL);
+  };
+
+  // Fetch stats from game servers
+  async function loadExternalStats(){
+    const userId = getTgUserId();
+    if(!userId) return;
+
+    try{
+      const res = await fetch(`${FROG_HUNT_URL}/api/stats/${userId}`);
+      const data = await res.json();
+      document.getElementById("frogWins").textContent = data.wins || 0;
+      document.getElementById("frogLosses").textContent = data.losses || 0;
+      document.getElementById("frogGames").textContent = data.games || 0;
+    }catch(e){}
+
+    try{
+      const res = await fetch(`${OBSTACLE_RACE_URL}/api/stats/${userId}`);
+      const data = await res.json();
+      document.getElementById("raceWins").textContent = data.wins || 0;
+      document.getElementById("raceLosses").textContent = data.losses || 0;
+      document.getElementById("raceGames").textContent = data.games || 0;
+    }catch(e){}
+  }
 
   // ===== Wallet + tx
   const coinsVal = document.getElementById("coinsVal");
@@ -1271,6 +1371,7 @@
     document.getElementById("reactBest").textContent = state.reaction.bestMs ? `${state.reaction.bestMs} ms` : "—";
     document.getElementById("reactLast").textContent = state.reaction.lastMs ? `${state.reaction.lastMs} ms` : "—";
     pongScore.textContent = pongScore2.textContent;
+    loadExternalStats();
   }
 
   function initNav(){
