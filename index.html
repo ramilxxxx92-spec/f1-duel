@@ -819,8 +819,8 @@
   document.getElementById("backFromReaction").onclick = ()=>go("games");
   document.getElementById("backFromPong").onclick = ()=>go("games");
 
-  const FROG_HUNT_URL = "https://reliable-purpose-production-6509.up.railway.app";
-  const OBSTACLE_RACE_URL = "https://trap-runner-demo-production.up.railway.app";
+  const FROG_HUNT_API = "https://reliable-purpose-production-6509.up.railway.app";
+  const OBSTACLE_RACE_API = "https://trap-runner-demo-production.up.railway.app";
 
   function getTgUserId(){
     try{
@@ -829,23 +829,13 @@
     }catch(e){ return null; }
   }
 
-  function openExternalGame(baseUrl){
-    const userId = getTgUserId();
-    const url = userId ? `${baseUrl}?userId=${userId}` : baseUrl;
-    if(tg?.openLink){
-      tg.openLink(url);
-    } else {
-      window.open(url, '_blank');
-    }
-  }
-
   document.getElementById("openFrogHunt").onclick = ()=>{
     hImpact("light");
-    openExternalGame(FROG_HUNT_URL);
+    window.location.href = "/frog-hunt/";
   };
   document.getElementById("openObstacleRace").onclick = ()=>{
     hImpact("light");
-    openExternalGame(OBSTACLE_RACE_URL);
+    window.location.href = "/obstacle-race/";
   };
 
   // Fetch stats from game servers
@@ -854,7 +844,7 @@
     if(!userId) return;
 
     try{
-      const res = await fetch(`${FROG_HUNT_URL}/api/stats/${userId}`);
+      const res = await fetch(`${FROG_HUNT_API}/api/stats/${userId}`);
       const data = await res.json();
       document.getElementById("frogWins").textContent = data.wins || 0;
       document.getElementById("frogLosses").textContent = data.losses || 0;
@@ -862,7 +852,7 @@
     }catch(e){}
 
     try{
-      const res = await fetch(`${OBSTACLE_RACE_URL}/api/stats/${userId}`);
+      const res = await fetch(`${OBSTACLE_RACE_API}/api/stats/${userId}`);
       const data = await res.json();
       document.getElementById("raceWins").textContent = data.wins || 0;
       document.getElementById("raceLosses").textContent = data.losses || 0;
